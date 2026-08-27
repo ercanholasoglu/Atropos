@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tooling
+        run: sudo apt-get update && sudo apt-get install -y cmake clang clang-format clang-tidy ninja-build
+      - name: Configure
+        run: cmake -S atropos -B atropos/build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build atropos/build --parallel
+      - name: Test
+        run: ctest --test-dir atropos/build --output-on-failure
+      - name: Format check
+        run: cmake --build atropos/build --target format-check
+      - name: Lint
+        run: cmake --build atropos/build --target lint

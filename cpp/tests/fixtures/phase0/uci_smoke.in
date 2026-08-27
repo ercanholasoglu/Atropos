@@ -1,0 +1,9 @@
+uci
+isready
+setoption name Hash value 16
+setoption name Threads value 1
+setoption name Seed value 0
+ucinewgame
+position startpos
+go depth 1
+quit

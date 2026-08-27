@@ -1,0 +1,5 @@
+# name|fen|note
+startpos|rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1|standard starting position
+castle_transit_attacked|r3k2r/8/8/8/2b5/8/8/R3K2R w KQkq - 0 1|white king-side castling crosses attacked f1
+ep_discovered_check|4r3/8/8/3pP3/8/8/8/4K3 w - d6 0 1|e5xd6 en passant exposes e-file rook check and is illegal
+white_promotions|4k3/P7/8/8/8/8/8/4K3 w - - 0 1|white pawn has four quiet promotions
