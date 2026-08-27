@@ -1,0 +1,3 @@
+# Notebooks are committed with their outputs so the measurements are readable
+# on GitHub without running anything; diffs on them are noisy by nature.
+*.ipynb -diff

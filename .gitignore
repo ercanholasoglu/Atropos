@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+data/*.db
+data/games/*.pgn
+.DS_Store
+.env
+!data/games/.gitkeep
+.ipynb_checkpoints/
