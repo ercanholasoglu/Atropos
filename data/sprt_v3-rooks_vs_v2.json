@@ -1,0 +1,23 @@
+{
+ "a": "v3-rooks",
+ "b": "v2",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 138,
+ "draws": 82,
+ "losses": 98,
+ "games": 318,
+ "score": 0.5628930817610063,
+ "llr": 2.951814541941376,
+ "elo_estimate": 43.93529229031923,
+ "verdict": "accept H1",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 30.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 1500,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}

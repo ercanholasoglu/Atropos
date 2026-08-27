@@ -1,0 +1,23 @@
+{
+ "a": "v3-passers",
+ "b": "v2",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 297,
+ "draws": 142,
+ "losses": 275,
+ "games": 714,
+ "score": 0.5154061624649859,
+ "llr": -0.784980185426484,
+ "elo_estimate": 10.708687952296367,
+ "verdict": "continue",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 30.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 1500,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "a": "v3-shelter",
+ "b": "v2",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 149,
+ "draws": 59,
+ "losses": 151,
+ "games": 359,
+ "score": 0.4972144846796657,
+ "llr": -2.9579025547907563,
+ "elo_estimate": -1.9355943173858838,
+ "verdict": "accept H0",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 1200,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}

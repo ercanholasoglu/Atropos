@@ -1,0 +1,64 @@
+{
+ "engine": "atropos",
+ "reported_name": "Atropos 0.0.1",
+ "movetime": 0.3,
+ "games_per_level": 12,
+ "rows": [
+  {
+   "level": 2,
+   "level_elo": 600,
+   "score": 1.0,
+   "wins": 12,
+   "draws": 0,
+   "losses": 0,
+   "implied_elo": 1400.0
+  },
+  {
+   "level": 3,
+   "level_elo": 900,
+   "score": 0.9166666666666666,
+   "wins": 10,
+   "draws": 2,
+   "losses": 0,
+   "implied_elo": 1316.5570740632897
+  },
+  {
+   "level": 4,
+   "level_elo": 1200,
+   "score": 0.7083333333333334,
+   "wins": 5,
+   "draws": 7,
+   "losses": 0,
+   "implied_elo": 1354.140352545607
+  },
+  {
+   "level": 5,
+   "level_elo": 1500,
+   "score": 0.75,
+   "wins": 6,
+   "draws": 6,
+   "losses": 0,
+   "implied_elo": 1690.848501887865
+  },
+  {
+   "level": 6,
+   "level_elo": 1800,
+   "score": 0.125,
+   "wins": 0,
+   "draws": 3,
+   "losses": 9,
+   "implied_elo": 1461.9607839942973
+  },
+  {
+   "level": 7,
+   "level_elo": 2100,
+   "score": 0.041666666666666664,
+   "wins": 0,
+   "draws": 1,
+   "losses": 11,
+   "implied_elo": 1555.3088655929628
+  }
+ ],
+ "performance_rating": 1514.374754675578,
+ "seconds": 1161.9600109579042
+}

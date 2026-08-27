@@ -1,0 +1,578 @@
+# chess-bot
+
+A level-based chess engine: **8 difficulty levels** from random mover to a
+neural/LLM-assisted searcher, each one tracked with a live Elo rating earned
+in self-play tournaments.
+
+Built as an extension of the [Athena](https://github.com/) platform — the
+engine ladder doubles as a controlled testbed for evaluating search,
+evaluation and LLM-assisted reasoning against a measurable score.
+
+## Status
+
+| Phase | Scope | State |
+|-------|-------|-------|
+| 1 | Core engine, Level 1–2, tests | ✅ done |
+| 2 | Minimax, alpha-beta (L3–L4), match runner | ✅ done |
+| 3 | PST + tapered eval (L5) | ✅ done |
+| 4 | Quiescence, TT, pruning (L6–L7) | ✅ done |
+| 5 | Elo database + calculator | ✅ done |
+| 6 | Tournament system | ✅ done |
+| 7 | Streamlit UI | ✅ done |
+| — | Perft, UCI, external calibration, tactical suite | ✅ done |
+| 8 | Level 8 + LLM commentary | ✅ done |
+
+## The ladder
+
+| Level | Technique | Target Elo | Measured |
+|-------|-----------|-----------:|---------:|
+| 1 | Random legal move | 200 | — |
+| 2 | Material count, 1-ply | 600 | **96.9%** vs L1 |
+| 3 | Minimax, depth 3 | 900 | **100%** vs L2 |
+| 4 | Alpha-beta + iterative deepening, depth 4 | 1200 | **93.8%** vs L3 |
+| 5 | Piece-square tables, tapered eval, depth 5 | 1500 | **84.4%** vs L4 |
+| 6 | Quiescence, transposition table, killers, MVV-LVA | 1800 | **90.6%** vs L5 |
+| 7 | Null-move, LMR, history, aspiration windows | 2100 | **75.0%** vs L6 † |
+| 8 | Adaptive time management, optional LLM advisor | 2400 | **−85 vs L7 †† ** |
+
+Measured over 16 games per pairing from the opening book, 300-ply limit, at a
+fixed 0.3s per move (`make ladder`, 2026-08-23).
+
+### The same claim, tested sequentially
+
+Those numbers came from fixed sixteen-game matches — the method that, tested
+against itself elsewhere in this project, called an evaluation change +60 Elo
+at 64 games and −2 at 359. The claim deserved the better instrument, so every
+adjacent pairing was re-run as an SPRT against `H1: at least 100 Elo`
+(`make ladder-sprt`, 0.1s per move):
+
+| pairing | games | score | Elo | 95% interval | verdict |
+|---|---:|---:|---:|---:|---|
+| L2 vs L1 | 9 | 88.9% | +361 | [+194, +800] | accepted |
+| L3 vs L2 | 7 | 100.0% | +800 | [+800, +800] | accepted |
+| L4 vs L3 | 9 | 88.9% | +361 | [+194, +800] | accepted |
+| L5 vs L4 | 33 | 68.2% | +132 | [+45, +240] | accepted |
+| L6 vs L5 | 9 | 88.9% | +361 | [+134, +800] | accepted |
+| L7 vs L6 | 65 | 63.1% | +93 | [+21, +174] | accepted |
+| **L8 vs L7** | **25** | **38.0%** | **−85** | **[−238, +40]** | **rejected** |
+
+**The ladder is ordered up to Level 7. Level 8 adds nothing measurable.**
+
+The first thing that table shows is what sequential testing buys: the bottom
+three rungs were settled in **25 games between them**, where the fixed gauntlet
+spent 48 and proved less. Budget goes where the question is hard — L7 vs L6
+needed 65 games.
+
+### A correction, and the mistake behind it
+
+This section first reported the last row as *"Level 8 is a regression"*. That
+was an over-read, and the table itself contains the reason: the interval is
+**[−238, +40]**, which includes zero. What an accepted H0 proves is "not ≥100
+Elo better" — it says nothing about which side of zero the truth is on.
+
+The bracket was the real error. Asking "is this worth at least 100 Elo?" of two
+engines that differ in one time-allocation heuristic was never going to return
+anything interesting: H0 was close to certain before a game was played, exactly
+the mistake made earlier with a 39% speedup measured against ±110 Elo error
+bars. A bracket is a hypothesis about effect size and has to be picked from
+what the change plausibly does.
+
+Tested properly — the feature against its own absence, same engine, same
+search, only the adaptive clock switched off:
+
+| 54 games, 0.1s per move | score | Elo | 95% interval | verdict |
+|---|---:|---:|---:|---|
+| L8-uniform vs L8 | 48.1% | −13 | [−99, +72] | unresolved |
+
+So the adaptive clock is not what costs Level 8 anything, and the diagnosis
+that followed from the over-read — that redistributing time is noise — is not
+supported either. Measured over 192 real positions the factor averages
+**1.06×** in a range of 0.80× to 1.76×, so it redistributes rather than
+underspends; whether that helps or hurts is still open, and 54 games cannot
+say.
+
+What stands after both tests is narrower and duller than the first claim:
+**Level 8 has no measurable advantage over Level 7**, which is what should be
+expected of a level that is Level 7's search plus one heuristic. The learned
+evaluator it was designed around is still untrained; `static_eval` is the hook,
+and until something goes in there Level 8 is a placeholder with a clock.
+
+Each level must score **> 70%** against the level below it. `make ladder`
+runs the gauntlet that produces those numbers and exits non-zero when a
+pairing misses the bar; the test suite carries a cheaper regression guard,
+because a sample small enough to run in CI cannot certify a 70% threshold
+without flaking.
+
+**†† Level 8 fails its pairing** — see the sequential table below.
+
+**† Level 7 is the one pairing whose result depends on the clock**, and
+tracking down why was the most interesting result in the ladder.
+
+| Time control | L7 vs L6 | W-D-L |
+|---|---:|---|
+| 0.3s per move | 68.8% | 9-4-3 |
+| 1.5s per move | **75.0%** | 10-4-2 |
+
+Everything Level 7 adds — null-move pruning, late move reductions, history —
+is a gamble that buys depth. At 0.3s per move in a middlegame position that
+budget buys *both* levels exactly three plies: Level 7 saves nodes it has no
+time to spend, and pruning without extra depth is a gamble with no upside, so
+it lands slightly *behind* the level whose techniques are all exact. Given a
+second or more it runs one to two plies deeper everywhere, and the rating gap
+appears.
+
+Two things this rules out. The first suspect was the null-move guard —
+`depth - 1 - R` could bottom out at zero, making the verification search pure
+quiescence, a free gamble. That was a real bug and it is fixed (the invariant
+is now a test), but fixing it did not move the 0.3s number at all: 68.8%
+before, 68.8% after. The second was the sample; the colour-reversed opening
+book and 16 games make that unlikely, and the 1.5s run reproduces cleanly.
+The clock was the whole story.
+
+## Setup
+
+```bash
+make install          # uv venv (Python 3.11) + dependencies
+make test             # full suite
+make test-fast        # skip the self-play matches
+make cov              # coverage report
+make ladder           # long gauntlet: every level vs the one below it
+make notebooks        # run the research notebooks
+```
+
+## Research
+
+Five experiments built on top of the ladder, each measured against it rather
+than against a training curve. See [`research/README.md`](research/README.md)
+for the findings and [`notebooks/`](notebooks/) for the experiments themselves.
+
+## Conventions
+
+* **Scores are centipawns.** 100 = one pawn.
+* **`evaluate()` and `SearchResult.score` are always from White's
+  perspective** — positive means White is better. Search internals use
+  negamax (side-to-move relative) and convert at the boundary.
+* **Mate scores** shrink with distance (`MATE_SCORE - ply`) so shorter mates
+  win, and anything above `MATE_THRESHOLD` is a forced mate.
+* **Every engine owns a seeded RNG** (`self.rng`); no level touches the
+  global `random` module, so tournaments replay exactly.
+* **Search is negamax** — internally every score is relative to the side to
+  move, converted to White-relative once, at the root, in `SearchEngine`.
+* **Alpha-beta must agree with minimax.** Same depth, same evaluation, same
+  score — only the node count differs. That equivalence is a test, and it is
+  the safety net under every future pruning trick.
+* **Piece-square tables are written from White's side** — index 0 is a8. The
+  lookup mirrors for each colour (`table[square ^ 56]` for White,
+  `table[square]` for Black), and every table is folded together with its
+  piece value at import, so one lookup covers material and placement.
+* **Evaluation is tapered**, never switched. Middlegame and endgame scores
+  are both computed and blended by the material left on the board, so trading
+  a piece cannot make the score jump.
+* **Exact techniques must not change the score.** Alpha-beta, the
+  transposition table, killers and MVV-LVA only reorder or skip work that
+  provably cannot matter, so Level 6 at a given depth agrees with plain
+  minimax — a test asserts it. Level 7's null-move pruning and late move
+  reductions are gambles by design and are held to no such rule.
+* **The game log is the source of truth.** Ratings in the `engines` table are
+  a cache of it — `EloTracker.rebuild()` replays every game and must reproduce
+  them exactly, which is what makes changing the K-factor a safe operation.
+* **From Level 6 up the clock is the limit, not the depth.** Quiescence makes
+  a full-width depth-6 search unaffordable in every position, so the levels
+  iteratively deepen under a time budget and Level 7's advantage is the extra
+  plies its pruning buys in the same three seconds.
+
+## Layout
+
+```
+engine/
+  base_engine.py     BaseEngine + SearchResult
+  board.py           ChessGame — moves, results, PGN
+  perft.py           move-generation proof and the throughput benchmark
+  levels/            one module per level, a shared SearchEngine, registry
+  evaluation/        material, pst, positional, tapered, structure, complexity
+  search/            context, minimax, alphabeta, advanced (L6/L7),
+                     quiescence, transposition, move_ordering, pruning
+  utils/             constants, helpers
+uci/
+  protocol.py        command, go and position parsing
+  options.py         Hash, Level, Move Overhead, Ponder
+  time_manager.py    clock -> thinking budget
+  engine.py          the loop, on a worker thread with cooperative stop
+tournament/
+  match.py           play_game / play_match — the base of every other mode
+  uci_engine.py      an external UCI process wearing the BaseEngine interface
+  base.py            pairings in, standings out; shared by all three formats
+  round_robin.py     swiss.py     gauntlet.py
+  openings.py        8-line opening book for low-variance testing
+elo/
+  calculator.py      expected score, rating updates, performance ratings
+  database.py        SQLite: engines, games, elo_history
+  tracker.py         ties games to ratings; rebuild() replays the log
+  leaderboard.py     rankings, head-to-head, gauntlet ratings
+app/
+  streamlit_app.py   entry point (make run)
+  pages/             play, watch, tournaments, leaderboard, analysis
+  components/        board_view, eval_bar, move_history, elo_chart
+research/
+  features.py        384/768-dim position features shared by every experiment
+  params.py          the evaluation as a tunable vector
+  rl_tuning/         policy-gradient parameter tuning
+  self_play/         TDLeaf(λ) value learning
+  minimal_nnue/      architecture search and feature ablation
+  hybrid_eval/       complexity-routed tiered evaluation
+  alphazero_lite/    ResNet + PUCT MCTS + self-play loop
+notebooks/           one per research module, with the experiments run
+llm/                 optional Claude commentary and analysis
+scripts/             ladder.py, tournament.py, leaderboard.py
+tests/               pytest suite
+data/                elo.db + PGN archive
+```
+
+## Playing other engines
+
+The engine speaks UCI, so it plays in any chess GUI and against anything else
+that does:
+
+```bash
+python -m uci                    # the engine on stdin/stdout
+make calibrate                   # rate an external engine against the ladder
+```
+
+`Level` is a UCI option (1–8), which is what makes the ladder externally
+measurable — a GUI or a match runner can pick the rung it wants to play.
+
+External engines are driven over a pipe by `tournament/uci_engine.py`, which
+wraps a subprocess in the same `BaseEngine` interface everything else uses, so
+matches, gauntlets and the Elo tracker work on it unchanged. There is no
+cutechess-cli dependency: speaking the protocol directly is a few hundred lines
+and removes an install step, and the hard part was never the protocol — it is
+an opponent that hangs, dies mid-game, or answers with an illegal move. Each of
+those ends one game rather than the tournament.
+
+### A calibration against something not written here
+
+A ladder measured only against itself is self-consistent and could still be
+uniformly terrible. **Atropos**, a C++ UCI engine with its own negamax,
+quiescence, transposition table, killers and history, played the rungs at a
+fixed 0.3s per move:
+
+| matchup | score | W-D-L | implied |
+|---|---:|---:|---:|
+| atropos vs L2 | 100.0% | 12-0-0 | 1400 |
+| atropos vs L3 | 91.7% | 10-2-0 | 1317 |
+| atropos vs L4 | 70.8% | 5-7-0 | 1354 |
+| atropos vs L5 | 75.0% | 6-6-0 | 1691 |
+| atropos vs L6 | 12.5% | 0-3-9 | 1462 |
+| atropos vs L7 | 4.2% | 0-1-11 | 1555 |
+
+**Performance rating over the whole gauntlet: 1514** — between Level 5 (1500)
+and Level 6 (1800), which is where an engine with that feature list belongs.
+
+Re-run after the ladder got 39% faster, expecting Atropos to drop:
+
+| matchup | score | W-D-L | implied |
+|---|---:|---:|---:|
+| atropos vs L4 | 85.0% | 7-3-0 | 1501 |
+| atropos vs L5 | 50.0% | 2-6-2 | 1500 |
+| atropos vs L6 | 15.0% | 0-3-7 | 1499 |
+| atropos vs L7 | 15.0% | 1-1-8 | 1799 |
+
+**1538.** It did not drop, and the prediction was wrong in a way worth writing
+down rather than explaining away. A 1.39× speedup is worth roughly **+29 Elo**
+by the usual rule of thumb; one standard error on a ten-game pairing is about
+**110 Elo**. The effect was a quarter of the noise before the run started —
+the experiment could not have detected it either way, and the +24 that came
+out is a coincidence of the same size as the thing being looked for.
+
+What the second run does show is consistency: three of the four pairings imply
+1499–1501, which is Level 5's rung almost exactly.
+
+The interesting part is *why* it stops there. Atropos has everything Level 6
+has — quiescence, a transposition table, killers, MVV-LVA — and loses to it
+87.5%. What it does not have is throughput: measured on the same five
+positions at depth 4 it runs at **8,938 nodes/second against this engine's
+41,817**, so at the same clock Level 6 simply searches deeper. Feature parity,
+four and a half times the speed, three hundred Elo.
+
+Two caveats worth stating. These numbers are in *this ladder's nominal units* —
+calibrating against an absolute scale needs an engine with a known rating. And
+twelve games per pairing has a standard error near 14%, which is why the
+per-level implied ratings scatter from 1317 to 1691 while the aggregate is
+steady.
+
+## Where the time actually went
+
+Three measurements in a row pointed at throughput — Atropos losing 300 Elo to
+Level 6 on speed alone, and Evaluation v3 failing because it cost too much per
+leaf. So the search got profiled instead of guessed at.
+
+The profile said one thing loudly: **1,318,794 move generations for 199,916
+nodes** — 6.6 per node, where one would do. Quiescence was building the full
+legal move list and then filtering it down to the captures, and quiescence is
+69% of all nodes searched.
+
+`python-chess` will generate only the captures if asked. Adding the quiet
+promotions separately (a pawn stepping onto the last rank is as forcing as
+anything) makes the two lists identical — verified move-for-move across 400
+random positions — at a fraction of the cost:
+
+| | |
+|---|---:|
+| build all legal moves, then filter | 36.8 µs |
+| generate the loud moves directly | 8.3 µs |
+
+The second change was the pawn structure, which counted doubled and isolated
+pawns with a loop over eight files. The standard bitboard file-fill does the
+same job in about ten integer operations. It is exactly equivalent — asserted
+against the old counters across 1,600 colour-positions — and the first attempt
+was *wrong*, marking every pawn doubled because a bidirectional fill covers a
+whole file and a file is trivially above itself. The equivalence test caught it
+on the first run.
+
+| depth-4 bench, five positions | nps |
+|---|---:|
+| before | 41,817 |
+| generating loud moves directly | 51,000 |
+| plus the bitboard pawn structure | **58,138** |
+
+Same tree, same node counts — 108,966 either way. **+39% for free**, and move
+generation fell from 6.6 per node to 2.1.
+
+Two things worth saying about it. Micro-benchmarking the pawn structure in
+isolation showed a change of 0.3µs and the full evaluation reading *slower*,
+which was noise; only the search-level measurement, repeated, showed the real
+gain. And a speedup invalidates every rating measured before it — the Atropos
+calibration below was taken against the slower ladder.
+
+## Evaluation v3, and why it is not the default
+
+Passed pawns, rook files and king safety went in, measured, and **did not
+ship**. The terms exist, they are correct, and they are behind a flag.
+
+A new evaluation term is always an improvement on paper — it knows something
+the old one did not. In a search it is also a cost: every microsecond at a leaf
+is depth not searched, and depth is the strongest thing an engine has. The two
+effects point in opposite directions and no amount of reasoning settles which
+is larger. So they played, at the same search and the same time per move, with
+only the evaluation different:
+
+| | score vs v2 | Elo | verdict |
+|---|---:|---:|---|
+| **v3-full** (with the attacker term), 60 games | 43.3% | −47 | not an improvement |
+| **v3-shelter** (without it), 359 games, SPRT | 49.7% | −2 | **rejected** |
+
+v3-full was settled in sixty games: one standard error the wrong side of level,
+weak evidence it is worse and firm evidence it is not better.
+
+v3-shelter took 359 and is the more interesting one, because the answer changed
+three times on the way:
+
+| games | score | Elo | LLR |
+|---:|---:|---:|---:|
+| 64 | 58.6% | +60 | +1.00 |
+| 198 | 57.1% | +49 | **+2.31** |
+| 313 | 52.7% | +19 | −0.07 |
+| 359 | 49.7% | **−2** | **−2.96** → rejected |
+
+At 198 games the likelihood ratio was **0.63 away from accepting it** as a
+forty-Elo improvement. A fixed match that happened to stop there — or a
+slightly looser bound — would have shipped it. A hundred and sixty games later
+the evidence had crossed the *opposite* bound and the effect was gone: 49.7%,
+a point estimate of −2 Elo.
+
+The original sixty-game match read 54.2% and was dismissed as noise. It was
+closer to the truth than the sequential test's own reading at 64 games. The
+lesson is not that sequential testing is always right — it is that a small
+sample errs in both directions, and the only thing that reliably tells you
+*when to stop believing a number* is a test that knows what evidence it still
+needs.
+
+The two results together say something more useful than either alone: the
+knowledge is worth having, but only while it is cheap. The king-attacker term
+is 58% of the cost of the whole module, and adding it is what turns a possible
+small gain into a measured loss. v3-full runs at 17.5µs per leaf against v2's
+6.5µs — two and a half times the price for knowledge the search was mostly
+finding anyway. That is the Atropos calibration's lesson from the other
+direction: **feature parity loses to throughput.**
+
+Neither variant is the default: both were measured, both failed.
+
+### Testing the terms one at a time
+
+A bundle failing says nothing about its parts, so the terms were separated —
+which parallel game generation made affordable (six workers, ~250 games per
+twelve minutes against ~50 serially).
+
+| term | cost vs v2 | games | score | Elo | 95% interval | verdict |
+|---|---:|---:|---:|---:|---:|---|
+| passed pawns only | 1.4× | 714 | 51.5% | +11 | [−12, +34] | unresolved |
+| rook open files only | 1.3× | — | — | — | — | running |
+
+The passed-pawn run is stopped rather than finished, and the reason is worth
+being plain about: the bracket asks "is this worth at least 30 Elo?" and the
+answer is converging on something near +10. Resolving an effect that size needs
+a much narrower bracket and several thousand games. **Not shown to win is not
+adopted**, so it stays off — but "unresolved" is the honest label, not
+"rejected".
+
+There is a structural reason to expect these terms to be small here, and it is
+visible in the tables rather than inferred from the results:
+
+| pawn on rank | PST endgame bonus | passed-pawn bonus | total |
+|---:|---:|---:|---:|
+| 4 | 20 | 40 | 60 |
+| 6 | 50 | 120 | 170 |
+| 7 | 80 | 200 | 280 |
+
+The piece-square table already pays a pawn for advancing, and the passed-pawn
+term pays it again on top. The same overlap covers king shelter, which restates
+what `KING_MG` already encodes by pushing the king to the corner. Rook files
+are the one term of the three a table genuinely *cannot* express — where a rook
+stands is in the table, whether the file under it is open depends on pawns the
+table cannot see — which is why it is being tested separately.
+
+That is a structural observation about the tables, not a conclusion about the
+results. It was briefly written up here as the latter, on the strength of a −3
+Elo reading that moved to +21 a hundred games later.
+
+### Fixed-length matches ask the wrong question
+
+Three times in this project a fixed match came back "inside the noise" — Level 7
+at six games, v3-shelter at sixty, the speedup calibration at ten — each time
+after spending the whole budget to learn nothing. The last one was the clearest
+mistake: a 39% speedup is worth about **+29 Elo** and one standard error on a
+ten-game pairing is about **110**, so the experiment could not have detected the
+effect before it started.
+
+`elo/sprt.py` fixes the design. After every game it asks how much likelier the
+results are under "worth at least *elo1*" than under "worth at most *elo0*",
+and stops the moment the ratio is decisive. A clearly good change is confirmed
+in a couple of hundred games, a clearly bad one rejected as fast, and only a
+change sitting exactly on the boundary costs the full budget — which is the
+case where the games are genuinely needed.
+
+The probability model is BayesElo's, with the draw rate estimated from the
+games rather than assumed: draws carry almost no information about which side
+is better, so a pairing that draws 80% of the time needs far more games than
+one that does not.
+
+Simulated, to pick a bracket the compute budget can afford:
+
+| bracket | true +0 | true +30 | true +60 |
+|---|---:|---:|---:|
+| [0, 10] | 1200+ games | 1128 | 549 |
+| [0, 25] | 822 | 450 | 220 |
+| **[0, 40]** | **344** | **326** | **159** |
+
+`[0, 40]` asks a coarser question — "is this worth at least forty Elo?" — and
+answers it in about an hour instead of four. `scripts/sprt_match.py` runs it in
+resumable chunks, writing state after **every game**, because anything that
+takes an hour gets interrupted eventually. It has been, four times, and no
+games were lost.
+
+### What the test says while it is still running
+
+"Continue" is not an answer. Alongside the likelihood ratio the test reports a
+confidence interval in Elo and, when it has not decided, why:
+
+```
+292 games  +133 =49 -110  (53.9%)  LLR +0.90  Elo [-8, +62]  continue
+the interval [-8, +62] still spans the whole bracket [+0, +40] — more games
+```
+
+That is a real answer where a bare percentage is not. It also exposes a trap
+worth naming: **a match that is all draws has a perfectly precise score and no
+information at all.** Precision is not evidence, and engine matches draw often
+enough for that to matter.
+
+### A bracket chosen before the data
+
+Midway through, the point estimate sat near +27 Elo — the middle of the
+bracket, and the one case an SPRT resolves slowest because the evidence favours
+neither hypothesis. `[0, 20]` would have decided it far sooner *if* +27 had
+been the truth.
+
+Moving the bracket at that moment would have been choosing the hypothesis to
+fit the data, so it stayed where it was set — and the run went on to settle at
+−2 Elo, where the original bracket was fine and the "better" one would have
+been fitted to a number that turned out to be noise.
+
+Two things were worth keeping from the exercise. The endgame skip (king safety
+is not computed once the phase makes it worth nearly nothing) took the term
+from 12.1µs to 2.4µs there, and the passed-pawn scan now returns both phases
+from one walk instead of scanning twice. Neither changes a score; both are
+free.
+
+## The app
+
+```bash
+make run            # streamlit run app/streamlit_app.py
+```
+
+* **Play** — click-to-move against any level, with an evaluation bar, the
+  engine's search statistics, undo, PGN export, and optional per-move
+  commentary from Claude.
+* **Watch** — two levels against each other, live evaluation graph, speed
+  control.
+* **Tournament** — round-robin, Swiss or gauntlet, with live progress; results
+  go straight into the rating database.
+* **Leaderboard** — ratings, rating history, head-to-head matrix.
+* **Analysis** — one position, every level's answer side by side.
+
+Or from the command line:
+
+```bash
+make tournament     # round-robin over the whole ladder
+make gauntlet       # one level against the field
+make leaderboard    # the current table
+```
+
+Get an engine by level:
+
+```python
+from engine.levels import create_engine
+
+engine = create_engine(4, seed=42)
+result = engine.analyse(board)     # -> SearchResult(move, score, depth, nodes, ...)
+```
+
+Play engines against each other:
+
+```python
+from tournament.match import play_match
+from tournament.openings import book
+
+match = play_match(create_engine(4), create_engine(3), openings=book())
+print(match.summary())             # 'L4-AlphaBeta vs L3-Minimax: +13 =2 -1 (87.5%)'
+```
+
+### Where the language model goes — and does not
+
+The obvious reading of "hybrid evaluation" is to route each search *leaf* to
+a cheap or expensive evaluator. That does not survive contact with the
+numbers: a leaf evaluation costs about six microseconds and a language model
+costs seconds — six orders of magnitude apart. So the routing happens once,
+at the root, where a millisecond of thought can redirect seconds of search.
+Level 8 uses a complexity estimate to stretch or shrink its clock, and will
+consult a model only to break a tie between moves the search has already
+vetted. The engine calculates; the model explains and, at most, chooses
+between two answers it was handed.
+
+Every language-model feature is optional. With no `ANTHROPIC_API_KEY` the
+engine plays, the tournaments run and the whole test suite passes; the
+commentary is simply an empty string.
+
+### A note on Zobrist hashing
+
+The transposition table is not keyed on a Zobrist hash, and that is
+deliberate. `chess.polyglot.zobrist_hash` recomputes from scratch at ~10µs
+per call — more than twice the cost of the whole evaluation the table exists
+to save. Maintaining the key incrementally instead would mean shadowing
+python-chess's own make/unmake logic, where one missed XOR silently returns
+the wrong move. python-chess already maintains an equivalent position key for
+its repetition detection, and reading it costs ~0.4µs. `search/transposition.py`
+uses that.
+
+## License
+
+MIT

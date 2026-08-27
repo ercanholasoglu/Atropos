@@ -1,0 +1,23 @@
+{
+ "a": "L8-uniform",
+ "b": "L8",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 21,
+ "draws": 10,
+ "losses": 23,
+ "games": 54,
+ "score": 0.48148148148148145,
+ "llr": -1.3262727674259724,
+ "elo_estimate": -12.87387334856053,
+ "verdict": "continue",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 60.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 600,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}
