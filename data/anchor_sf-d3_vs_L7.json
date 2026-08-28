@@ -1,0 +1,18 @@
+{
+ "depth": 3,
+ "level": 7,
+ "wins": 45,
+ "draws": 105,
+ "losses": 12,
+ "games": 162,
+ "score": 0.6018518518518519,
+ "elo_vs_level": 71.77796042530765,
+ "elo_interval_95": [
+  41.159409047976055,
+  103.53995066060584
+ ],
+ "llr": 9.122139568436747,
+ "verdict": "accept H1",
+ "movetime": 0.1,
+ "min_games": 160
+}

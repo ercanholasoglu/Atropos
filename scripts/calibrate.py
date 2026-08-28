@@ -13,14 +13,18 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import time
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+from typing import Any
 
 from elo.calculator import elo_diff_from_score, performance_rating
 from engine.levels import available_levels, create_engine
 from engine.utils.constants import INITIAL_ELO
-from tournament.match import play_match
-from tournament.openings import book
+from tournament.match import play_game
+from tournament.openings import OPENING_BOOK
+from scripts.telemetry import TelemetryRecorder
 from tournament.uci_engine import UciEngineError, UciEngineProcess, UciLimits
 
 
@@ -38,6 +42,52 @@ def parse_levels(spec: str) -> list[int]:
     return [level for level in levels if level in available_levels()]
 
 
+def score_interval(score: float, games: int) -> tuple[float, float]:
+    """95% interval on a match score, normal approximation.
+
+    Here so the implied rating can be printed with the width of its own
+    uncertainty; a rung implied by ten games and one implied by two hundred
+    look identical without it.
+    """
+    if games == 0:
+        return (0.0, 1.0)
+    se = math.sqrt(max(score * (1 - score), 1e-9) / games)
+    return (
+        min(max(score - 1.96 * se, 1e-6), 1 - 1e-6),
+        min(max(score + 1.96 * se, 1e-6), 1 - 1e-6),
+    )
+
+
+def play_calibration_job(job: tuple[str, str, int, int, float, int]) -> tuple[float, int]:
+    """One game against one rung, scored for the external engine.
+
+    Module level and taking a single tuple because a process pool on macOS
+    spawns rather than forks. Each game gets its own external process: the
+    cost is a few milliseconds of startup and the gain is that a match can be
+    spread over workers at all, which is the difference between a ten-game
+    pairing and one wide enough to have an interval worth reporting.
+    """
+    engine_path, name, level, index, movetime, max_plies = job
+
+    opening = OPENING_BOOK[(index // 2) % len(OPENING_BOOK)]
+    external_is_white = index % 2 == 0
+    external = UciEngineProcess([engine_path], name=name, limits=UciLimits(movetime=movetime))
+    # Fixed time per move on both sides. Fixed *depth* would compare nothing:
+    # one engine's depth 6 is another's depth 3.
+    ours = create_engine(level, seed=level * 13 + index, time_limit=movetime)
+    try:
+        external.start()
+        white, black = (external, ours) if external_is_white else (ours, external)
+        record = play_game(
+            white, black, start_fen=opening.fen, max_plies=max_plies, opening=opening.name
+        )
+    finally:
+        external.close()
+
+    white_score = {"1-0": 1.0, "0-1": 0.0, "1/2-1/2": 0.5}[record.result]
+    return (white_score if external_is_white else 1 - white_score), record.nodes
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Rate an external UCI engine against the ladder")
     parser.add_argument("--engine", required=True, help="path to the external UCI engine")
@@ -46,6 +96,7 @@ def main() -> int:
     parser.add_argument("--games", type=int, default=8, help="games per level")
     parser.add_argument("--movetime", type=float, default=0.2, help="seconds per move, both sides")
     parser.add_argument("--max-plies", type=int, default=200)
+    parser.add_argument("--workers", type=int, default=1, help="parallel games")
     parser.add_argument("--out", default="data/calibration.json")
     args = parser.parse_args()
 
@@ -53,65 +104,99 @@ def main() -> int:
     if not levels:
         raise SystemExit(f"no implemented levels in {args.levels!r}")
 
-    external = UciEngineProcess(
-        [args.engine],
-        name=args.name or Path(args.engine).name,
-        limits=UciLimits(movetime=args.movetime),
+    name = args.name or Path(args.engine).name
+    if not Path(args.engine).exists():
+        raise SystemExit(f"no engine at {args.engine}")
+
+    # One handshake up front, purely to record what the engine calls itself.
+    # The games each start their own process, so without this the record would
+    # say only which path was executed.
+    probe = UciEngineProcess([args.engine], name=name, limits=UciLimits(movetime=args.movetime))
+    with probe:
+        reported_name = probe.reported_name
+
+    recorder = TelemetryRecorder(
+        "calibrate",
+        {
+            "engine": args.engine,
+            "name": args.name,
+            "levels": args.levels,
+            "games_per_level": args.games,
+            "workers": args.workers,
+            "movetime": args.movetime,
+            "max_plies": args.max_plies,
+        },
     )
 
     print(f"{'matchup':<28} {'score':>7} {'W-D-L':>10} {'implied':>9} {'time':>7}")
     print("-" * 66)
 
-    rows = []
+    rows: list[dict[str, Any]] = []
     opponent_ratings: list[float] = []
     points = 0.0
     started = time.perf_counter()
 
-    with external:
-        for level in levels:
-            # Fixed time per move on both sides. Fixed *depth* would compare
-            # nothing: one engine's depth 6 is another's depth 3.
-            ours = create_engine(level, seed=level * 13, time_limit=args.movetime)
-            external.new_game()
-            elapsed = time.perf_counter()
-            try:
-                match = play_match(
-                    external,
-                    ours,
-                    openings=book(max(1, args.games // 2)),
-                    games=args.games,
-                    max_plies=args.max_plies,
-                )
-            except UciEngineError as error:
-                print(f"{external.name} vs L{level}: aborted — {error}")
-                break
+    for level in levels:
+        elapsed = time.perf_counter()
+        jobs = [
+            (args.engine, name, level, i, args.movetime, args.max_plies) for i in range(args.games)
+        ]
+        wins = draws = losses = 0
+        try:
+            with ProcessPoolExecutor(max_workers=max(1, args.workers)) as pool:
+                for score, nodes in pool.map(play_calibration_job, jobs):
+                    recorder.add_nodes(nodes)
+                    recorder.add_games()
+                    if score > 0.75:
+                        wins += 1
+                    elif score < 0.25:
+                        losses += 1
+                    else:
+                        draws += 1
+        except UciEngineError as error:
+            print(f"{name} vs L{level}: aborted — {error}")
+            break
 
-            rating = INITIAL_ELO[level]
-            opponent_ratings += [float(rating)] * match.played
-            points += match.score * match.played
-            rows.append(
-                {
-                    "level": level,
-                    "level_elo": rating,
-                    "score": match.score,
-                    "wins": match.wins,
-                    "draws": match.draws,
-                    "losses": match.losses,
-                    "implied_elo": rating + elo_diff_from_score(match.score),
-                }
-            )
-            print(
-                f"{external.name + ' vs L' + str(level):<28} {match.score:>6.1%} "
-                f"{f'{match.wins}-{match.draws}-{match.losses}':>10} "
-                f"{rating + elo_diff_from_score(match.score):>9.0f} "
-                f"{time.perf_counter() - elapsed:>6.0f}s"
-            )
+        played = wins + draws + losses
+        if not played:
+            continue
+        score = (wins + 0.5 * draws) / played
+        rating = INITIAL_ELO[level]
+        opponent_ratings += [float(rating)] * played
+        points += score * played
+        # Reported alongside the point estimate because a twelve-game pairing
+        # and a two-hundred-game one produce the same-looking number and mean
+        # very different things.
+        lo, hi = score_interval(score, played)
+        rows.append(
+            {
+                "level": level,
+                "level_elo": rating,
+                "games": played,
+                "score": score,
+                "wins": wins,
+                "draws": draws,
+                "losses": losses,
+                "implied_elo": rating + elo_diff_from_score(score),
+                "implied_interval": [
+                    rating + elo_diff_from_score(lo),
+                    rating + elo_diff_from_score(hi),
+                ],
+            }
+        )
+        print(
+            f"{name + ' vs L' + str(level):<28} {score:>6.1%} "
+            f"{f'{wins}-{draws}-{losses}':>10} "
+            f"{rating + elo_diff_from_score(score):>9.0f} "
+            f"{time.perf_counter() - elapsed:>6.0f}s",
+            flush=True,
+        )
 
     print("-" * 66)
     if opponent_ratings:
         overall = performance_rating(opponent_ratings, points / len(opponent_ratings))
-        print(f"{external.name} performance rating over the whole gauntlet: {overall:.0f}")
-        nearest = min(rows, key=lambda row: abs(row["score"] - 0.5))
+        print(f"{name} performance rating over the whole gauntlet: {overall:.0f}")
+        nearest = min(rows, key=lambda row: abs(float(row["score"]) - 0.5))
         print(f"closest rung: Level {nearest['level']} (scored {nearest['score']:.1%} against it)")
     else:
         overall = None
@@ -121,8 +206,8 @@ def main() -> int:
     output.write_text(
         json.dumps(
             {
-                "engine": external.name,
-                "reported_name": external.reported_name,
+                "engine": name,
+                "reported_name": reported_name,
                 "movetime": args.movetime,
                 "games_per_level": args.games,
                 "rows": rows,
@@ -132,7 +217,17 @@ def main() -> int:
             indent=1,
         )
     )
+    recorder.write(
+        {
+            "engine": name,
+            "reported_name": reported_name,
+            "performance_rating": overall,
+            "rows": rows,
+        }
+    )
     print(f"written to {output}")
+    print(f"telemetry: {recorder.summary()}")
+    print(f"           {recorder.path}")
     return 0
 
 
