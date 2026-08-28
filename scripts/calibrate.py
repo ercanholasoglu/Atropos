@@ -15,7 +15,7 @@ import argparse
 import json
 import math
 import time
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +40,26 @@ def parse_levels(spec: str) -> list[int]:
         else:
             levels.append(int(part))
     return [level for level in levels if level in available_levels()]
+
+
+def finish(row: dict, rating: int, args: argparse.Namespace) -> None:
+    """Recompute a pairing's derived numbers from its running counts.
+
+    Called after every game so the checkpoint on disk is always a complete,
+    readable record rather than raw tallies waiting to be interpreted.
+    """
+    played = row["games"]
+    row["score"] = (row["wins"] + 0.5 * row["draws"]) / played
+    row["implied_elo"] = rating + elo_diff_from_score(row["score"])
+    # Reported alongside the point estimate because a twelve-game pairing and
+    # a two-hundred-game one produce the same-looking number and mean very
+    # different things.
+    lo, hi = score_interval(row["score"], played)
+    row["implied_interval"] = [
+        rating + elo_diff_from_score(lo),
+        rating + elo_diff_from_score(hi),
+    ]
+    row["complete"] = played >= args.games
 
 
 def write_partial(path: Path, payload: dict) -> None:
@@ -111,6 +131,9 @@ def main() -> int:
     parser.add_argument("--max-plies", type=int, default=200)
     parser.add_argument("--workers", type=int, default=1, help="parallel games")
     parser.add_argument("--restart", action="store_true", help="discard any resumable run")
+    parser.add_argument(
+        "--minutes", type=float, default=0.0, help="budget for this chunk; 0 = no limit"
+    )
     parser.add_argument("--out", default="data/calibration.json")
     args = parser.parse_args()
 
@@ -172,61 +195,11 @@ def main() -> int:
     points = 0.0
     started = time.perf_counter()
 
-    done = {row["level"]: row for row in rows}
-    for level in levels:
-        if level in done:
-            row = done[level]
-            print(f"{name + ' vs L' + str(level):<28} {row['score']:>6.1%}  (resumed)", flush=True)
-            opponent_ratings += [float(row["level_elo"])] * row["games"]
-            points += row["score"] * row["games"]
-            continue
-        elapsed = time.perf_counter()
-        jobs = [
-            (args.engine, name, level, i, args.movetime, args.max_plies) for i in range(args.games)
-        ]
-        wins = draws = losses = 0
-        try:
-            with ProcessPoolExecutor(max_workers=max(1, args.workers)) as pool:
-                for score, nodes in pool.map(play_calibration_job, jobs):
-                    recorder.add_nodes(nodes)
-                    recorder.add_games()
-                    if score > 0.75:
-                        wins += 1
-                    elif score < 0.25:
-                        losses += 1
-                    else:
-                        draws += 1
-        except UciEngineError as error:
-            print(f"{name} vs L{level}: aborted — {error}")
-            break
+    by_level = {row["level"]: row for row in rows}
+    deadline = started + args.minutes * 60 if args.minutes else None
+    stopped_early = False
 
-        played = wins + draws + losses
-        if not played:
-            continue
-        score = (wins + 0.5 * draws) / played
-        rating = INITIAL_ELO[level]
-        opponent_ratings += [float(rating)] * played
-        points += score * played
-        # Reported alongside the point estimate because a twelve-game pairing
-        # and a two-hundred-game one produce the same-looking number and mean
-        # very different things.
-        lo, hi = score_interval(score, played)
-        rows.append(
-            {
-                "level": level,
-                "level_elo": rating,
-                "games": played,
-                "score": score,
-                "wins": wins,
-                "draws": draws,
-                "losses": losses,
-                "implied_elo": rating + elo_diff_from_score(score),
-                "implied_interval": [
-                    rating + elo_diff_from_score(lo),
-                    rating + elo_diff_from_score(hi),
-                ],
-            }
-        )
+    def checkpoint() -> None:
         write_partial(
             Path(args.out),
             {
@@ -236,16 +209,80 @@ def main() -> int:
                 "games_per_level": args.games,
                 "rows": rows,
                 "performance_rating": None,
-                "complete": False,
+                "complete": all(r["games"] >= args.games for r in rows)
+                and len(rows) == len(levels),
             },
         )
+
+    for level in levels:
+        rating = INITIAL_ELO[level]
+        row = by_level.get(level)
+        if row is None:
+            row = {
+                "level": level,
+                "level_elo": rating,
+                "games": 0,
+                "wins": 0,
+                "draws": 0,
+                "losses": 0,
+            }
+            rows.append(row)
+            by_level[level] = row
+        if row["games"] >= args.games:
+            print(f"{name + ' vs L' + str(level):<28} {row['score']:>6.1%}  (resumed)", flush=True)
+            continue
+
+        elapsed = time.perf_counter()
+        # Games are indexed from where the last chunk stopped, so a resumed
+        # run continues the opening book and the colour alternation instead of
+        # replaying the same games it already has.
+        jobs = [
+            (args.engine, name, level, i, args.movetime, args.max_plies)
+            for i in range(row["games"], args.games)
+        ]
+        try:
+            with ProcessPoolExecutor(max_workers=max(1, args.workers)) as pool:
+                pending = {pool.submit(play_calibration_job, job) for job in jobs}
+                for future in as_completed(pending):
+                    score_one, nodes = future.result()
+                    recorder.add_nodes(nodes)
+                    recorder.add_games()
+                    row["games"] += 1
+                    if score_one > 0.75:
+                        row["wins"] += 1
+                    elif score_one < 0.25:
+                        row["losses"] += 1
+                    else:
+                        row["draws"] += 1
+                    finish(row, rating, args)
+                    checkpoint()
+                    if deadline is not None and time.perf_counter() > deadline:
+                        # Cancel what has not started; the games in flight are
+                        # already paid for, so they are allowed to finish.
+                        for other in pending:
+                            other.cancel()
+                        stopped_early = True
+                        break
+        except UciEngineError as error:
+            print(f"{name} vs L{level}: aborted — {error}")
+            break
+
+        if row["games"] == 0:
+            continue
+        wdl = f"{row['wins']}-{row['draws']}-{row['losses']}"
+        partial = "  (partial)" if row["games"] < args.games else ""
         print(
-            f"{name + ' vs L' + str(level):<28} {score:>6.1%} "
-            f"{f'{wins}-{draws}-{losses}':>10} "
-            f"{rating + elo_diff_from_score(score):>9.0f} "
-            f"{time.perf_counter() - elapsed:>6.0f}s",
+            f"{name + ' vs L' + str(level):<28} {row['score']:>6.1%} "
+            f"{wdl:>10} {row['implied_elo']:>9.0f} "
+            f"{time.perf_counter() - elapsed:>6.0f}s{partial}",
             flush=True,
         )
+        if stopped_early:
+            break
+
+    for row in rows:
+        opponent_ratings += [float(row["level_elo"])] * row["games"]
+        points += row["score"] * row["games"]
 
     print("-" * 66)
     if opponent_ratings:
