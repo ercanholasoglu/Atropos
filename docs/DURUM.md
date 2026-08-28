@@ -52,6 +52,26 @@ Merdivenin tamamı sekans testinden geçirildi (`H1: en az 100 Elo`, 0.1sn/hamle
 **Merdiven Level 7'ye kadar sıralı.** Alt üç basamak toplam 25 oyunda çözüldü —
 sabit gauntlet aynı üçü için 48 oyun harcamış ve daha zayıf bir iddia üretmişti.
 
+#### "Hedef Elo" sütunu bir isim listesi
+
+Basamaklar 300 Elo arayla etiketli. **Bu projede bunu hiçbir ölçüm doğrulamadı, ve
+elimizdeki ölçümler aksini söylüyor.**
+
+Yukarıdaki eşleşmelerin hepsi `elo0=0, elo1=100` parantezinde koştu. "Kabul", *bu fark
+0'dan çok 100'e benziyor* demek — bir **sıralama** testi. 300'ün testi değil ve öyle
+okunamaz. Aralığın sansürlenmediği yerlerde ölçülen fark etiketin çok altında: L7 vs L6
+**+93 [+21, +174]**, L5 vs L4 **+132 [+45, +240]** — ikisinde de nominal 300'e karşı.
+
+Sabit derinlikli Stockfish aynı şeyi dışarıdan söylüyor (`docs/ANCHOR.md`): Level 7'ye
+karşı −17 Elo, Level 6'ya karşı −21 Elo. Yani iki basamak **4 Elo arayla, aralık
+[−47, +40]** — etiketlerin 300 dediği yerde. Biri içeriden biri dışarıdan iki alet, ve
+hiçbiri isimlerin iddia ettiği aralığı bulmuyor.
+
+Sayılar `INITIAL_ELO`'dan geliyor; kuruluşta **hedef** olarak atanmışlar. Her seviyenin
+*nişan aldığı* şey onlar. "Hedef Elo" sütununu olduğu gibi — bir şartname olarak — okuyun;
+"Ölçülen" sütunu ise ortaya atılan tek iddia: **merdiven sıralı, ve sıralama doğrulandı.
+Aralıklar doğrulanmadı.**
+
 Merdivenin omurgası şu kural: **alpha-beta, minimax ile aynı skoru döndürmeli.**
 Aynı derinlik, aynı değerlendirme, aynı sonuç — sadece node sayısı farklı. Bu eşdeğerlik
 bir test, ve L6/L7'de gelen her budama numarasının altındaki emniyet ağı.
@@ -111,7 +131,39 @@ Sahip olmadığı şey hız: **8.938 node/sn'ye karşı ~54.000**.
 
 Bu sayılar merdivenin nominal birimlerinde; mutlak Elo için bilinen ratingli bir motor gerekir.
 
-### 3.2 Hız: +%39, bedavaya
+### 3.2 Mutlak çıpa: Stockfish sabit derinlikte
+
+Sabit **derinlik**, `Skill Level` değil: skill ayarları motoru bilerek hata yaptırıyor,
+ve kasıtlı hatalar ölçülen güçle ilgisi olmayan varyans ekliyor. Sabit derinlik
+tekrarlanabilir bir rakip.
+
+Level 7'ye karşı, her biri 162 oyun, bizim tarafta 0.1sn/hamle:
+
+| rakip | skor | L7'ye karşı Elo | %95 aralık | SPRT |
+|---|---:|---:|---:|---|
+| Stockfish depth 1 | %47.5 | −17 | [−48, +13] | hüküm yok |
+| Stockfish depth 2 | %58.6 | +61 | [+23, +100] | kabul |
+| Stockfish depth 3 | %60.2 | +72 | [+41, +104] | kabul |
+
+Depth 1 ile Level 7 eşit. Depth 2 ile 3 birbirinden ayırt edilemiyor. Üçü de 90 Elo'luk
+bir bantta, çünkü Stockfish'in "depth 1"i zaten quiescence ve NNUE taşıyor — gücünün
+çoğu ilk plide mevcut, sonraki ikisi az şey ekliyor.
+
+> *Bir motorun derinlik sayısı, başka bir motorun aynı sayısıyla aynı işi adlandırmıyor.*
+
+Masrafını çıkaran eşleşme fazladan olanıydı: **aynı rakip Level 6'ya karşı**. Orada −21,
+L7'ye karşı −17 — yani iki basamak **4 Elo arayla, aralık [−47, +40]**, etiketlerin 300
+dediği yerde. Yukarıdaki 2.1'deki düzeltme buradan çıktı.
+
+**Vermediği şey mutlak reyting.** Sabit derinlikli Stockfish hiçbir yayınlanmış listede
+yok — CCRL ve CEGT motorları zaman kontrolünde reytingliyor. Bu yüzden Level 7'nin
+mutlak Elo'su ancak koşullu yazılabilir: kullanılan Stockfish yapılandırmasının varsayılan
+mutlak reytingi R(d) olmak üzere, Level 7 = R(1) + 17 ± 30, ya da R(2) − 61 ± 39, ya da
+R(3) − 72 ± 31. Bu ±'lar istatistiksel kısım, oyun sayısıyla küçülür. R(d) ise buradaki
+hiçbir oyunun küçültemeyeceği kısım; onun için CCRL listesindeki bir motora karşı gerçek
+zaman kontrolü ya da Lichess bot havuzu gerekir. Ayrıntı: `docs/ANCHOR.md`.
+
+### 3.3 Hız: +%39, bedavaya
 
 Profil tek bir şeyi yüksek sesle söyledi: **199.916 node için 1.318.794 hamle üretimi**
 — node başına 6.6, bir tane yeterken. Quiescence tüm legal listeyi kurup alışlara
@@ -125,7 +177,7 @@ filtreliyordu, ve quiescence node'ların %69'u.
 
 Aynı ağaç, aynı node sayısı (108.966). Hamle üretimi node başına 6.6'dan 2.1'e düştü.
 
-### 3.3 Evaluation v3: demet düştü, içindeki bir terim ship edildi
+### 3.4 Evaluation v3: demet düştü, içindeki bir terim ship edildi
 
 Passed pawn, açık hat, kral güvenliği. **Demet olarak iki kez reddedildi** —
 sonra terimler tek tek test edildi ve biri kabul edildi.
@@ -167,7 +219,7 @@ v3-shelter'ın yolculuğu öğretici:
 
 198. oyunda kabul etmeye **0.63 kalmıştı**. Orada duran sabit bir maç onu ship ederdi.
 
-### 3.4 TDLeaf(λ): 10.000 oyun
+### 3.5 TDLeaf(λ): 10.000 oyun
 
 ```
 öğrenilen tablo vs material-only başlangıç:  %59.4  →  +66 Elo
@@ -183,7 +235,7 @@ Soğuk başlangıç bulgusu: sıfır ağırlıktan öğrenme çalışmıyor. Her
 eval rastgele oynar, rastgele oyunlar kesin bitmez, beraberlik serisi gradyan taşımaz.
 İlk koşuda ortalama TD farkı **tam olarak 0.0000** çıktı.
 
-### 3.5 Minimal NNUE: gecikme sütunu tartışmayı bitiriyor
+### 3.6 Minimal NNUE: gecikme sütunu tartışmayı bitiriyor
 
 ```
 architecture      params   MAE cp   1-pos µs
@@ -201,7 +253,7 @@ yerine geçeceğinin 2-4 katı. **Bu ölçekte, bu dilde bir NNUE aramanın içi
 Ablasyon sürprizi: **katlanmış 384'lük kodlama, yarı parametreyle 768'liği yeniyor**
 (157.7 vs 180.9 cp). Renk simetrisi, onu kırma özgürlüğünden değerli.
 
-### 3.6 AlphaZero-lite: hamle kodlaması tasarımın %96'sı
+### 3.7 AlphaZero-lite: hamle kodlaması tasarımın %96'sı
 
 | | düz `from × to` | AlphaZero 8×8×73 |
 |---|---:|---:|

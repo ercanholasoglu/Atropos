@@ -63,6 +63,31 @@ three rungs were settled in **25 games between them**, where the fixed gauntlet
 spent 48 and proved less. Budget goes where the question is hard — L7 vs L6
 needed 65 games.
 
+### The Target Elo column is a column of names
+
+The second thing it shows took an outside instrument to see. The rungs are
+labelled 300 Elo apart. **Nothing in this project has ever measured that, and
+the measurements that exist disagree with it.**
+
+Every pairing above was tested with the bracket `elo0=0, elo1=100`. "Accepted"
+therefore means *this gap looks more like 100 Elo than like 0* — a test of
+ordering. It is not a test of 300 and cannot be read as confirming one. Where
+the intervals are informative rather than censored at the bound, they come in
+well under the label: L7 vs L6 is **+93 [+21, +174]** and L5 vs L4 is **+132
+[+45, +240]**, against a nominal 300 in both cases.
+
+A fixed-depth Stockfish placed against two rungs in turn says the same thing
+from outside (`docs/ANCHOR.md`): it scores −17 Elo against Level 7 and −21
+against Level 6, putting the two rungs **4 Elo apart, interval [−47, +40]**,
+where the labels claim 300. Two instruments, one internal and one external,
+and neither finds the spacing the names assert.
+
+The numbers themselves come from `INITIAL_ELO`, where they were assigned at
+construction as targets. They are what each level was *aiming at*. Read the
+"Target Elo" column as the specification it is, and the "Measured" column as
+the only claim being made: **the ladder is ordered, and the ordering is
+verified. The spacing is not.**
+
 ### A correction, and the mistake behind it
 
 This section first reported the last row as *"Level 8 is a regression"*. That
@@ -299,6 +324,44 @@ calibrating against an absolute scale needs an engine with a known rating. And
 twelve games per pairing has a standard error near 14%, which is why the
 per-level implied ratings scatter from 1317 to 1691 while the aggregate is
 steady.
+
+### An outside ruler, and what it caught
+
+Atropos moved the rating from one unmeasured scale to another — it has no
+published rating either. **Stockfish 18 at fixed depth** was the next
+instrument (`docs/ANCHOR.md`). Fixed *depth*, not `Skill Level`: the skill
+settings make the engine blunder on purpose, and deliberate mistakes add
+variance that has nothing to do with the strength being measured.
+
+162 games each, 0.1s per move on our side, against Level 7:
+
+| opponent | score | Elo vs L7 | 95% interval | SPRT |
+|---|---:|---:|---:|---|
+| Stockfish depth 1 | 47.5% | −17 | [−48, +13] | no verdict |
+| Stockfish depth 2 | 58.6% | +61 | [+23, +100] | accepted |
+| Stockfish depth 3 | 60.2% | +72 | [+41, +104] | accepted |
+
+Depth 1 is Level 7's equal. Depths 2 and 3 cannot be told apart from each
+other. All three land inside a 90-Elo band, because Stockfish's "depth 1"
+already carries a quiescence search and an NNUE evaluation — most of its
+strength is present at the first ply, and the next two add little. **A depth
+number from one engine does not name the same work as the same number from
+another.**
+
+The pairing that earned its cost was the extra one: the *same* opponent
+against **Level 6**. It scored −21 there against −17 against Level 7, which
+puts the two rungs **4 Elo apart, interval [−47, +40]**, where their labels
+claim 300. That is the measurement written up two sections above — the reason
+the "Target Elo" column is a column of names.
+
+What it does **not** give is an absolute rating. Fixed-depth Stockfish appears
+on no published list — CCRL and CEGT rate engines at time controls — so
+Level 7's absolute Elo can only be stated as a conditional: given an assumed
+R(d) for the Stockfish configuration used, Level 7 is R(1) + 17 ± 30, or
+R(2) − 61 ± 39, or R(3) − 72 ± 31. Those ± are the statistical part and more
+games would shrink them. R(d) is the part that no amount of play here can
+reduce, and getting it means playing a rated engine at a rated time control,
+or entering the Lichess bot pool.
 
 ## Where the time actually went
 
