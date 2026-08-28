@@ -84,7 +84,8 @@ from __future__ import annotations
 import argparse
 import json
 import math
-from concurrent.futures import ProcessPoolExecutor
+import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 from elo.calculator import elo_diff_from_score
@@ -150,17 +151,36 @@ def interval(score: float, games: int) -> tuple[float, float]:
     return elo_diff_from_score(lo), elo_diff_from_score(hi)
 
 
-def run_pairing(arm: str, divisor: int, args, recorder: TelemetryRecorder) -> dict:
-    jobs = [(arm, divisor, i, args.max_plies) for i in range(args.games)]
-    total = 0.0
-    played = 0
-    print(f"full speed vs 1/{divisor} ({arm})", flush=True)
-    with ProcessPoolExecutor(max_workers=args.workers) as pool:
-        for score, nodes in pool.map(play_one, jobs):
-            total += score
+def run_pairing(
+    arm: str, divisor: int, args, recorder: TelemetryRecorder, state: dict, save
+) -> bool:
+    """Play a pairing, resuming and stopping on the chunk deadline.
+
+    Returns whether the chunk deadline ended it. The pool is fed one job per
+    completion so the deadline binds: a future already handed to a worker
+    cannot be cancelled, and submitting all of them makes --minutes advisory.
+    """
+    total = state["points"]
+    played = state["games"]
+    if played >= args.games:
+        return False
+    print(f"full speed vs 1/{divisor} ({arm}), from game {played}", flush=True)
+    queue = [(arm, divisor, i, args.max_plies) for i in range(played, args.games)]
+    workers = max(1, args.workers)
+    hit_deadline = False
+
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        pending = {pool.submit(play_one, queue.pop(0)) for _ in range(min(workers, len(queue)))}
+        while pending:
+            future = next(as_completed(pending))
+            pending.discard(future)
+            score_one, nodes = future.result()
+            total += score_one
             played += 1
             recorder.add_games(1)
             recorder.add_nodes(nodes)
+            state["points"], state["games"] = total, played
+            save()
             if played % 40 == 0:
                 lo, hi = interval(total / played, played)
                 print(
@@ -168,7 +188,16 @@ def run_pairing(arm: str, divisor: int, args, recorder: TelemetryRecorder) -> di
                     f"{elo_diff_from_score(total / played):+7.1f} Elo  [{lo:+.0f}, {hi:+.0f}]",
                     flush=True,
                 )
+            if args.minutes and time.monotonic() > args.deadline:
+                hit_deadline = True
+                queue.clear()
+            if queue:
+                pending.add(pool.submit(play_one, queue.pop(0)))
+    return hit_deadline
 
+
+def summarise(arm: str, divisor: int, state: dict) -> dict:
+    played, total = state["games"], state["points"]
     score = total / played
     lo, hi = interval(score, played)
     # Reported from the slowed engine's side: the question is what slowing it
@@ -184,6 +213,7 @@ def run_pairing(arm: str, divisor: int, args, recorder: TelemetryRecorder) -> di
         "predicted_elo_for_slowed": PREDICTED[divisor],
         "budget_nodes": BASE_NODES // divisor if arm == "nodes" else None,
         "budget_seconds": None if arm == "nodes" else BASE_MOVETIME / divisor,
+        "complete": played >= state["target"],
     }
 
 
@@ -215,10 +245,38 @@ def main() -> int:
     parser.add_argument("--games", type=int, default=GAMES_PER_PAIRING)
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--max-plies", type=int, default=200)
+    parser.add_argument("--minutes", type=float, default=0.0, help="budget for this chunk")
+    parser.add_argument("--restart", action="store_true")
     args = parser.parse_args()
+    args.deadline = time.monotonic() + args.minutes * 60
 
     divisors = DIVISORS_NODES if args.arm == "nodes" else DIVISORS_MOVETIME
     out = Path(f"data/speed_elo_{args.arm}.json")
+
+    # One tally per pairing, written after every game. These runs are long
+    # enough to be interrupted, and a pairing that has to restart from zero
+    # after 200 games is a pairing that never finishes.
+    states: dict[int, dict] = {
+        d: {"games": 0, "points": 0.0, "target": args.games} for d in divisors
+    }
+    if out.exists() and not args.restart:
+        stored = json.loads(out.read_text())
+        if stored.get("games_per_pairing") == args.games and stored.get("arm") == args.arm:
+            for row in stored.get("pairings", []):
+                if row["divisor"] in states:
+                    states[row["divisor"]] = {
+                        "games": row["games"],
+                        "points": row["score_for_full_speed"] * row["games"],
+                        "target": args.games,
+                    }
+            done = sum(st["games"] for st in states.values())
+            if done:
+                print(f"resuming: {done} games already played", flush=True)
+        elif stored.get("pairings"):
+            raise SystemExit(
+                f"{out} holds a different run (arm={stored.get('arm')}, "
+                f"games={stored.get('games_per_pairing')}); pass --restart to discard it"
+            )
 
     with TelemetryRecorder(
         "speed_elo",
@@ -233,12 +291,33 @@ def main() -> int:
             "max_plies": args.max_plies,
         },
     ) as recorder:
-        rows = [run_pairing(args.arm, d, args, recorder) for d in divisors]
-        fit = slope(rows)
-        result = {"pairings": rows, "fit": fit}
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(result, indent=1))
-        recorder.snapshot(result)
+
+        def save() -> None:
+            rows = [summarise(args.arm, d, states[d]) for d in divisors if states[d]["games"]]
+            usable = [r for r in rows if r["complete"]]
+            payload = {
+                "arm": args.arm,
+                "games_per_pairing": args.games,
+                "base_nodes": BASE_NODES,
+                "base_movetime": BASE_MOVETIME,
+                "pairings": rows,
+                "fit": slope(usable) if len(usable) >= 2 else None,
+                "complete": len(usable) == len(divisors),
+            }
+            out.parent.mkdir(parents=True, exist_ok=True)
+            tmp = out.with_suffix(".tmp")
+            tmp.write_text(json.dumps(payload, indent=1))
+            tmp.replace(out)
+
+        for divisor in divisors:
+            if run_pairing(args.arm, divisor, args, recorder, states[divisor], save):
+                print("chunk budget spent; rerun to continue", flush=True)
+                break
+        save()
+        rows = [summarise(args.arm, d, states[d]) for d in divisors if states[d]["games"]]
+        usable = [r for r in rows if r["complete"]]
+        fit = slope(usable) if len(usable) >= 2 else None
+        recorder.snapshot({"pairings": rows, "fit": fit})
 
     print()
     print(f"{'budget':>10}  {'games':>6}  {'measured':>18}  {'predicted':>10}")
@@ -248,11 +327,14 @@ def main() -> int:
         print(
             f"{'1/' + str(row['divisor']):>10}  {row['games']:6d}  "
             f"{row['elo_for_slowed']:+7.1f} [{lo:+.0f},{hi:+.0f}]  "
-            f"{row['predicted_elo_for_slowed']:+10.0f}"
+            f"{row['predicted_elo_for_slowed']:+10.0f}" + ("" if row["complete"] else "  (partial)")
         )
     print("-" * 52)
-    lo, hi = fit["interval"]
-    print(f"slope: {fit['elo_per_doubling']:+.1f} Elo per doubling  [{lo:+.1f}, {hi:+.1f}]")
+    if fit is None:
+        print("slope: not fitted — fewer than two pairings are complete")
+    else:
+        lo, hi = fit["interval"]
+        print(f"slope: {fit['elo_per_doubling']:+.1f} Elo per doubling  [{lo:+.1f}, {hi:+.1f}]")
     print(f"written to {out}")
     return 0
 
