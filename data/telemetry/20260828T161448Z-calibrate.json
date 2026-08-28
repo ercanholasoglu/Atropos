@@ -1,0 +1,53 @@
+{
+ "tool": "calibrate",
+ "started_at": "2026-08-28T16:14:48+00:00",
+ "finished_at": "2026-08-28T16:14:52+00:00",
+ "commit": "c0f184a",
+ "tree_dirty": true,
+ "parameters": {
+  "engine": "/opt/homebrew/bin/stockfish",
+  "name": "sf-c",
+  "levels": "3-4",
+  "games_per_level": 12,
+  "workers": 4,
+  "movetime": 0.02,
+  "max_plies": 200
+ },
+ "wall_seconds": 3.831562125007622,
+ "cpu_seconds": 13.357429999999999,
+ "cpu_per_wall": 3.4861577508608,
+ "peak_rss_mb_largest_process": 372.75,
+ "nodes": 5168713,
+ "nodes_per_cpu_second": 386954.15210860176,
+ "games": 8,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "engine": "sf-c",
+  "reported_name": "Stockfish 18",
+  "performance_rating": 1700.0,
+  "rows": [
+   {
+    "level": 3,
+    "level_elo": 900,
+    "games": 8,
+    "wins": 8,
+    "draws": 0,
+    "losses": 0,
+    "score": 1.0,
+    "implied_elo": 1700.0,
+    "implied_interval": [
+     2763.7117620556674,
+     3299.999826281142
+    ],
+    "complete": false
+   }
+  ]
+ },
+ "notes": []
+}

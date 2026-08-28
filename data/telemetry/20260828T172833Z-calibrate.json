@@ -1,0 +1,98 @@
+{
+ "tool": "calibrate",
+ "started_at": "2026-08-28T17:28:33+00:00",
+ "finished_at": "2026-08-28T17:36:50+00:00",
+ "commit": "953fbd7",
+ "tree_dirty": true,
+ "parameters": {
+  "engine": "/Users/ercanholasoglu/Desktop/atropos/build/atropos",
+  "name": "atropos",
+  "levels": "4-7",
+  "games_per_level": 120,
+  "workers": 6,
+  "movetime": 0.3,
+  "max_plies": 160
+ },
+ "wall_seconds": 496.151832667063,
+ "cpu_seconds": 2670.134024,
+ "cpu_per_wall": 5.381687314640563,
+ "peak_rss_mb_largest_process": 105.734375,
+ "nodes": 97348807,
+ "nodes_per_cpu_second": 36458.39726582953,
+ "games": 114,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "engine": "atropos",
+  "reported_name": "Atropos 0.0.1",
+  "performance_rating": 1502.1796347510021,
+  "rows": [
+   {
+    "level": 4,
+    "level_elo": 1200,
+    "games": 120,
+    "wins": 60,
+    "draws": 59,
+    "losses": 1,
+    "score": 0.7458333333333333,
+    "implied_elo": 1387.0092783876505,
+    "implied_interval": [
+     1321.4019844752938,
+     1467.84833543782
+    ],
+    "complete": true
+   },
+   {
+    "level": 5,
+    "level_elo": 1500,
+    "games": 120,
+    "wins": 45,
+    "draws": 57,
+    "losses": 18,
+    "score": 0.6125,
+    "implied_elo": 1579.5337544776964,
+    "implied_interval": [
+     1517.617942850085,
+     1646.9157077821937
+    ],
+    "complete": true
+   },
+   {
+    "level": 6,
+    "level_elo": 1800,
+    "games": 120,
+    "wins": 5,
+    "draws": 17,
+    "losses": 98,
+    "score": 0.1125,
+    "implied_elo": 1441.1936642880999,
+    "implied_interval": [
+     1309.167729123092,
+     1523.3589299578555
+    ],
+    "complete": true
+   },
+   {
+    "level": 7,
+    "level_elo": 2100,
+    "games": 56,
+    "wins": 0,
+    "draws": 12,
+    "losses": 44,
+    "score": 0.10714285714285714,
+    "implied_elo": 1731.67249841905,
+    "implied_interval": [
+     1471.4799320874513,
+     1846.0137773678873
+    ],
+    "complete": false
+   }
+  ]
+ },
+ "notes": []
+}

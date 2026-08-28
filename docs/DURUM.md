@@ -114,22 +114,65 @@ Beşi de kurulu, testli ve notebook'ları çalıştırılmış:
 
 ### 3.1 Dış kalibrasyon: atropos merdivende nerede?
 
-atropos'u kendi merdivenimize karşı oynattık (0.3sn/hamle, sabit zaman kontrolü):
+atropos'u kendi merdivenimize karşı oynattık (0.3sn/hamle, sabit zaman kontrolü).
+Üç koşu yapıldı; ilk ikisi **evaluation v2** ile (kale terimi benimsenmeden önce),
+basamak başına 10-12 oyunla:
 
 ```
-atropos vs L4   %85.0     atropos vs L6   %15.0
-atropos vs L5   %50.0     atropos vs L7   %15.0
-─────────────────────────────────────────────────
-performance rating: 1538  →  Level 5'in basamağı
+1. koşu (hızlanma öncesi, eval v2, 72 oyun)   performance rating: 1514
+2. koşu (hızlanma sonrası, eval v2, 40 oyun)  performance rating: 1538
 ```
 
-**İlginç olan nerede durduğu değil, neden orada durduğu.** atropos'ta L6'nın sahip
-olduğu her şey var — quiescence, TT, killer, MVV-LVA — ve L6'ya %85 kaybediyor.
+Üçüncü koşu, kale terimi ship edildikten sonra, **bugünkü merdivene karşı** ve bu sefer
+basamak başına **10 değil 120 oyunla** — çünkü öncekilerin standart hatası ~110 Elo'ydu
+ve sayılar sanki değilmiş gibi okunuyordu:
+
+| eşleşme | oyun | skor | W-D-L | implied | %95 aralık |
+|---|---:|---:|---:|---:|---:|
+| atropos vs L4 | 120 | %74.6 | 60-59-1 | 1387 | [1321, 1468] |
+| atropos vs L5 | 120 | %61.3 | 45-57-18 | 1580 | [1518, 1647] |
+| atropos vs L6 | 120 | %11.2 | 5-17-98 | 1441 | [1309, 1523] |
+| atropos vs L7 | 120 | %11.7 | 1-26-93 | 1748 | [1620, 1830] |
+
+**Performance rating: 1518** (eval v3-rooks, 480 oyun). 1538 ve 1514'ün yanında bu
+"istikrar" gibi görünüyor — ve öyle okumak bu bölümdeki üçüncü hata olurdu.
+
+Onun yerine implied sütununa bakın. **361 Elo'ya yayılıyorlar**, ve basamak başına 120
+oyunda **aralıkları örtüşmüyor**: L4 [1321, 1468] diyor, L5 [1518, 1647] — aralarında
+hiçbir şey yok. Eski metin bu saçılmayı örnekleme gürültüsüne bağlıyordu ("12 oyunun
+standart hatası ~%14"). **On katı oyun aksini söylüyor.** Saçılma gürültü değil, yapı —
+ve anlamı şu: atropos'u bu merdivene karşı tek bir sayı tarif etmiyor.
+
+Bir rating, ancak rakiplerinin rating'i kadar iyidir. Denklemi ters çevirip atropos'u
+sabit alalım ve her basamağın ona göre nerede durduğunu soralım:
+
+| aralık | nominal | bu gauntlet (480 oyun) | merdivenin kendi SPRT'si |
+|---|---:|---:|---:|
+| L4 → L5 | 300 | **+107** [+11, +204] | +132 [+45, +240] |
+| L5 → L6 | 300 | **+438** [+319, +557] | +361 [+134, +800] |
+| L6 → L7 | 300 | **−7** [−148, +134] | +93 [+21, +174] |
+
+Ortak kod yolu olmayan iki alet birbiriyle uyuşuyor ve etiketlerle **iki yönde birden**
+uyuşmuyor. Quiescence, TT, killer ve MVV-LVA'nın hep birlikte geldiği L5 → L6 basamağı
+etiketinin bir buçuk katı. L6 → L7 basamağı ise hiç yok. **300, üç aralığın da ölçülen
+güven aralığının dışında.**
+
+Sabit derinlikli Stockfish — ikisiyle de bağlantısı olmayan bir motor — son satırı aynı
+okuyor: 4 Elo, [−47, +40] (bkz. 3.2).
+
+Yani atropos hakkında dürüst ifade bir rating değil, şu: **Level 5 ile Level 6 arasında,
+Level 5'e yakın oynuyor; ve o iki basamağın arası isimlerinin iddia ettiği 300 değil,
+yaklaşık 440 Elo.**
+
+**İlginç olan nerede durduğu değil, neden orada durduğu.** atropos'ta L6'nın sahip olduğu
+her şey var — quiescence, TT, killer, MVV-LVA — ve 120 oyunda L6'ya karşı %11.2 alıyor.
 Sahip olmadığı şey hız: **8.938 node/sn'ye karşı ~54.000**.
 
-> *Özellik paritesi, throughput'a yeniliyor.*
+> *Özellik paritesi, throughput'a yeniliyor — ve bedeli, artık etiketten değil ölçümden
+> okunduğunda, yaklaşık 440 Elo.*
 
-Bu sayılar merdivenin nominal birimlerinde; mutlak Elo için bilinen ratingli bir motor gerekir.
+Bu sayılar hâlâ merdivenin birimlerinde. Bu gauntlet merdivenin **aralıklarını** ölçtü;
+tüm ölçeğin nerede oturduğunu değil. Onun için bilinen ratingli bir motor gerekir (3.2).
 
 ### 3.2 Mutlak çıpa: Stockfish sabit derinlikte
 

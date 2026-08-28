@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-28T15:29:03+00:00",
+ "finished_at": "2026-08-28T15:29:03+00:00",
+ "commit": "d98468e",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "L2",
+  "b": "L1",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 4,
+  "movetime": 0.02,
+  "max_plies": 40,
+  "max_games": 1200,
+  "minutes_budget": 0.5,
+  "games_before": 0
+ },
+ "wall_seconds": 0.41634124994743615,
+ "cpu_seconds": 1.1387679999999998,
+ "cpu_per_wall": 2.7351793754372675,
+ "peak_rss_mb_largest_process": 28.65625,
+ "nodes": 52498,
+ "nodes_per_cpu_second": 46100.698298512085,
+ "games": 56,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 56,
+  "wins": 18,
+  "draws": 38,
+  "losses": 0,
+  "score": 0.6607142857142857,
+  "elo_estimate": 115.77924924566638,
+  "elo_interval_95": [
+   70.11347500547774,
+   165.6887329086603
+  ],
+  "llr": 3.138801210806877,
+  "verdict": "accept H1",
+  "diagnosis": "accept H1",
+  "state_file": "/private/tmp/claude-501/-Users-ercanholasoglu--cache-kagglehub-competitions-birdclef-2026/95995130-465c-49f4-881d-1dcb4e8f7cde/scratchpad/tel_smoke.json"
+ },
+ "notes": []
+}

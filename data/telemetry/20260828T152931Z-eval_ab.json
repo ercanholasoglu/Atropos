@@ -1,0 +1,45 @@
+{
+ "tool": "eval_ab",
+ "started_at": "2026-08-28T15:29:31+00:00",
+ "finished_at": "2026-08-28T15:29:33+00:00",
+ "commit": "d98468e",
+ "tree_dirty": true,
+ "parameters": {
+  "variants": [
+   "v2",
+   "current"
+  ],
+  "games_per_pairing": 2,
+  "movetime": 0.02,
+  "max_plies": 30
+ },
+ "wall_seconds": 1.9665844170376658,
+ "cpu_seconds": 1.909383,
+ "cpu_per_wall": 0.9709133172509166,
+ "peak_rss_mb_largest_process": 59.90625,
+ "nodes": 110078,
+ "nodes_per_cpu_second": 57651.084146030415,
+ "games": 2,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "rows": [
+   {
+    "a": "v2",
+    "b": "current",
+    "score": 0.5,
+    "wins": 0,
+    "draws": 2,
+    "losses": 0,
+    "elo": -0.0
+   }
+  ],
+  "standard_error": 0.35355339059327373
+ },
+ "notes": []
+}

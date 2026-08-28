@@ -309,26 +309,71 @@ by the usual rule of thumb; one standard error on a ten-game pairing is about
 the experiment could not have detected it either way, and the +24 that came
 out is a coincidence of the same size as the thing being looked for.
 
-What the second run does show is consistency: three of the four pairings imply
-1499–1501, which is Level 5's rung almost exactly.
+Both numbers above — **1514** and **1538** — were measured against the ladder
+running **evaluation v2**, before the rook-on-open-file term was adopted. They
+are kept here as the record of what was measured when.
+
+### The third run, and the explanation it killed
+
+The rook term shipped (+44 Elo, `positional_score`), so the gauntlet was run
+again against the ladder as it now stands. This time at **120 games per
+pairing instead of ten**, because the earlier runs had a standard error near
+110 Elo and were being read as though they did not.
+
+| matchup | games | score | W-D-L | implied | 95% interval |
+|---|---:|---:|---:|---:|---:|
+| atropos vs L4 | 120 | 74.6% | 60-59-1 | 1387 | [1321, 1468] |
+| atropos vs L5 | 120 | 61.3% | 45-57-18 | 1580 | [1518, 1647] |
+| atropos vs L6 | 120 | 11.2% | 5-17-98 | 1441 | [1309, 1523] |
+| atropos vs L7 | 120 | 11.7% | 1-26-93 | 1748 | [1620, 1830] |
+
+**Performance rating: 1518** (evaluation v3-rooks, 480 games). Next to 1538
+and 1514 that looks like stability, and reading it that way would be the third
+mistake in this section.
+
+Look at the implied ratings instead. They span **361 Elo**, and at 120 games
+apiece **their intervals do not overlap**: L4 says [1321, 1468] and L5 says
+[1518, 1647], with nothing in between. The earlier README explained that
+scatter as sampling noise — "twelve games per pairing has a standard error
+near 14%". **Ten times the games says otherwise.** The scatter is not noise.
+It is structure, and it means no single number describes Atropos against this
+ladder at all.
+
+A rating is only as good as its opponents' ratings. Solve the gauntlet the
+other way round — take Atropos as the fixed point and ask where each rung sits
+relative to it — and the reason comes out:
+
+| gap | nominal | this gauntlet (480 games) | the ladder's own SPRT |
+|---|---:|---:|---:|
+| L4 → L5 | 300 | **+107** [+11, +204] | +132 [+45, +240] |
+| L5 → L6 | 300 | **+438** [+319, +557] | +361 [+134, +800] |
+| L6 → L7 | 300 | **−7** [−148, +134] | +93 [+21, +174] |
+
+Two instruments that share no code path agree with each other and disagree
+with the labels — in *both directions*. The L5 → L6 step, where quiescence,
+the transposition table, killers and MVV-LVA all arrive at once, is half again
+larger than its label. The L6 → L7 step is not there at all. **300 falls
+outside the measured interval for all three gaps.**
+
+Fixed-depth Stockfish, an engine with no connection to either, reads the last
+row the same way: 4 Elo, [−47, +40] (next section).
+
+So the honest statement about Atropos is not a rating. It is this: **it plays
+between Level 5 and Level 6, closer to Level 5, and the distance between those
+two rungs is about 440 Elo rather than the 300 their names claim.**
 
 The interesting part is *why* it stops there. Atropos has everything Level 6
-has — quiescence, a transposition table, killers, MVV-LVA — and loses to it
-87.5%. What it does not have is throughput: measured on the same five
-positions at depth 4 it runs at **8,938 nodes/second against this engine's
-41,817**, so at the same clock Level 6 simply searches deeper. Feature parity,
-four and a half times the speed, three hundred Elo.
-
-Two caveats worth stating. These numbers are in *this ladder's nominal units* —
-calibrating against an absolute scale needs an engine with a known rating. And
-twelve games per pairing has a standard error near 14%, which is why the
-per-level implied ratings scatter from 1317 to 1691 while the aggregate is
-steady.
+has — quiescence, a transposition table, killers, MVV-LVA — and scores 11.2%
+against it over 120 games. What it does not have is throughput: measured on
+the same five positions at depth 4 it runs at **8,938 nodes/second against
+this engine's 41,817**, so at the same clock Level 6 simply searches deeper.
+Feature parity, four and a half times the speed, and — now that the gap has
+actually been measured rather than read off a label — **about 440 Elo.**
 
 ### An outside ruler, and what it caught
 
-Atropos moved the rating from one unmeasured scale to another — it has no
-published rating either. **Stockfish 18 at fixed depth** was the next
+Atropos measured the ladder's *spacing*, but not its offset: it has no
+published rating either, so it cannot say where the whole scale sits. **Stockfish 18 at fixed depth** was the next
 instrument (`docs/ANCHOR.md`). Fixed *depth*, not `Skill Level`: the skill
 settings make the engine blunder on purpose, and deliberate mistakes add
 variance that has nothing to do with the strength being measured.
@@ -365,7 +410,7 @@ or entering the Lichess bot pool.
 
 ## Where the time actually went
 
-Three measurements in a row pointed at throughput — Atropos losing 300 Elo to
+Three measurements in a row pointed at throughput — Atropos losing 440 Elo to
 Level 6 on speed alone, and Evaluation v3 failing because it cost too much per
 leaf. So the search got profiled instead of guessed at.
 
