@@ -61,6 +61,18 @@ than the granularity can explain, the two methods are not measuring the same
 thing and the node figures are the ones to trust — they are the reproducible
 ones.
 
+*Refinement, added before any game was played and derived from the source
+rather than from a result:* the granularity is not a small correction at the
+far end. `SearchStats.check_interval` is 2048, so inside an iteration the
+clock cannot stop a search before its 2048th node. At the 53,758 nps above, a
+B/8 movetime budget is 0.011 s, or roughly 600 nodes — under a single check
+interval. Between iterations `out_of_time()` reads the clock directly, so
+iterative deepening still stops early, and the real floor is therefore set by
+how far one iteration runs, not by the deadline. The sharpened prediction: the
+movetime arm tracks the node arm at B/2 and pulls clearly above it at B/8,
+because at B/8 the budget has fallen below the resolution of the instrument
+enforcing it.
+
 -------------------------------------------------------------------------
 
     python -m scripts.speed_elo --workers 6
