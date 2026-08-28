@@ -241,10 +241,23 @@ def main() -> int:
             for i in range(row["games"], args.games)
         ]
         try:
-            with ProcessPoolExecutor(max_workers=max(1, args.workers)) as pool:
-                pending = {pool.submit(play_calibration_job, job) for job in jobs}
-                for future in as_completed(pending):
-                    score_one, nodes = future.result()
+            workers = max(1, args.workers)
+            queue = list(jobs)
+            with ProcessPoolExecutor(max_workers=workers) as pool:
+                # Only ever `workers` jobs outstanding. Submitting all of them
+                # and cancelling on the deadline does not work: a future that
+                # the pool has already fed to a worker cannot be cancelled, so
+                # the chunk overruns its budget by however much work was
+                # queued. Feeding one job per completion keeps the deadline
+                # honest and costs nothing.
+                pending = {
+                    pool.submit(play_calibration_job, queue.pop(0))
+                    for _ in range(min(workers, len(queue)))
+                }
+                while pending:
+                    finished = next(as_completed(pending))
+                    pending.discard(finished)
+                    score_one, nodes = finished.result()
                     recorder.add_nodes(nodes)
                     recorder.add_games()
                     row["games"] += 1
@@ -257,12 +270,12 @@ def main() -> int:
                     finish(row, rating, args)
                     checkpoint()
                     if deadline is not None and time.perf_counter() > deadline:
-                        # Cancel what has not started; the games in flight are
-                        # already paid for, so they are allowed to finish.
-                        for other in pending:
-                            other.cancel()
+                        # Stop feeding. The games still in flight are already
+                        # paid for and are allowed to finish.
                         stopped_early = True
-                        break
+                        queue.clear()
+                    if queue:
+                        pending.add(pool.submit(play_calibration_job, queue.pop(0)))
         except UciEngineError as error:
             print(f"{name} vs L{level}: aborted — {error}")
             break
