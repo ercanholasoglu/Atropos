@@ -42,6 +42,19 @@ def parse_levels(spec: str) -> list[int]:
     return [level for level in levels if level in available_levels()]
 
 
+def write_partial(path: Path, payload: dict) -> None:
+    """Write what is known so far, atomically.
+
+    A gauntlet is an hour of play and anything that long gets interrupted.
+    Writing only at the end means an interruption in the last pairing throws
+    away every pairing before it — which is what happened, once.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(payload, indent=1))
+    tmp.replace(path)
+
+
 def score_interval(score: float, games: int) -> tuple[float, float]:
     """95% interval on a match score, normal approximation.
 
@@ -97,6 +110,7 @@ def main() -> int:
     parser.add_argument("--movetime", type=float, default=0.2, help="seconds per move, both sides")
     parser.add_argument("--max-plies", type=int, default=200)
     parser.add_argument("--workers", type=int, default=1, help="parallel games")
+    parser.add_argument("--restart", action="store_true", help="discard any resumable run")
     parser.add_argument("--out", default="data/calibration.json")
     args = parser.parse_args()
 
@@ -132,11 +146,40 @@ def main() -> int:
     print("-" * 66)
 
     rows: list[dict[str, Any]] = []
+    # Resume only from a file that answers the same question. A record made
+    # at a different time control or a different game count is a different
+    # experiment, and silently mixing the two would be worse than starting
+    # over.
+    if Path(args.out).exists() and not args.restart:
+        prior = json.loads(Path(args.out).read_text())
+        same = (
+            prior.get("engine") == name
+            and prior.get("movetime") == args.movetime
+            and prior.get("games_per_level") == args.games
+        )
+        if same:
+            rows = prior.get("rows", [])
+            if rows:
+                print(f"resuming: {len(rows)} pairing(s) already played", flush=True)
+        elif prior.get("rows"):
+            raise SystemExit(
+                f"{args.out} holds a run at movetime={prior.get('movetime')} "
+                f"games={prior.get('games_per_level')} engine={prior.get('engine')!r}; "
+                f"this one is movetime={args.movetime} games={args.games} engine={name!r}. "
+                f"Pass --restart to overwrite it or --out to write somewhere else."
+            )
     opponent_ratings: list[float] = []
     points = 0.0
     started = time.perf_counter()
 
+    done = {row["level"]: row for row in rows}
     for level in levels:
+        if level in done:
+            row = done[level]
+            print(f"{name + ' vs L' + str(level):<28} {row['score']:>6.1%}  (resumed)", flush=True)
+            opponent_ratings += [float(row["level_elo"])] * row["games"]
+            points += row["score"] * row["games"]
+            continue
         elapsed = time.perf_counter()
         jobs = [
             (args.engine, name, level, i, args.movetime, args.max_plies) for i in range(args.games)
@@ -184,6 +227,18 @@ def main() -> int:
                 ],
             }
         )
+        write_partial(
+            Path(args.out),
+            {
+                "engine": name,
+                "reported_name": reported_name,
+                "movetime": args.movetime,
+                "games_per_level": args.games,
+                "rows": rows,
+                "performance_rating": None,
+                "complete": False,
+            },
+        )
         print(
             f"{name + ' vs L' + str(level):<28} {score:>6.1%} "
             f"{f'{wins}-{draws}-{losses}':>10} "
@@ -212,6 +267,7 @@ def main() -> int:
                 "games_per_level": args.games,
                 "rows": rows,
                 "performance_rating": overall,
+                "complete": True,
                 "seconds": time.perf_counter() - started,
             },
             indent=1,
