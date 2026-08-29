@@ -50,7 +50,9 @@ and that is the finding.
 one slope. Curvature large enough to see at +/-45 Elo per point refutes it.
 
 **Cross-check, and why it is not a formality.** The same halvings are also
-run as *movetime* divisions (B/2 and B/8 only, to keep the cost down). Node
+run as *movetime* divisions (B/2 and B/8 at first, to keep the cost down; B/4
+added later when this arm became the primary conversion — see
+docs/SPEED_CLOCK_PREREG.md). Node
 budget and clock are meant to be two spellings of the same slowdown. They
 are not exactly: the node limit is tested at every node, the clock only
 every 2048, so a 5000-node search can overshoot its deadline by up to 40%
@@ -99,7 +101,7 @@ LEVEL = 7
 BASE_NODES = 5000
 BASE_MOVETIME = 0.09
 DIVISORS_NODES = (2, 4, 8, 16)
-DIVISORS_MOVETIME = (2, 8)
+DIVISORS_MOVETIME = (2, 4, 8)
 GAMES_PER_PAIRING = 240
 PREDICTED = {2: -60.0, 4: -120.0, 8: -180.0, 16: -240.0}
 
