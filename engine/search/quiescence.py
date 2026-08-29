@@ -22,6 +22,7 @@ import chess
 
 from engine.search.context import SearchStats
 from engine.search.move_ordering import order_loud_moves
+from engine.search.see import is_losing_capture
 from engine.utils.constants import MATE_SCORE, PIECE_VALUES
 
 EvalFn = Callable[[chess.Board], int]
@@ -58,8 +59,14 @@ def quiescence(
     stats: SearchStats,
     ply: int,
     qply: int = 0,
+    prune_losing_captures: bool = False,
 ) -> float:
-    """Search captures until the position is quiet; side-to-move relative."""
+    """Search captures until the position is quiet; side-to-move relative.
+
+    ``prune_losing_captures`` drops captures whose static exchange evaluation
+    is negative. It is off by default so the change can be measured against
+    its own absence rather than against a different engine.
+    """
     stats.tick()
 
     in_check = board.is_check()
@@ -92,9 +99,23 @@ def quiescence(
             # score short of alpha, so the line cannot matter.
             if stand_pat + _captured_value(board, move) + DELTA_MARGIN < alpha:
                 continue
+            # A capture that loses material to the recapture is not a line
+            # worth spending nodes on. Only while not in check: in check
+            # every evasion has to be searched whatever it costs.
+            if prune_losing_captures and is_losing_capture(board, move):
+                continue
 
         board.push(move)
-        score = -quiescence(board, -beta, -alpha, evaluate, stats, ply + 1, qply + 1)
+        score = -quiescence(
+            board,
+            -beta,
+            -alpha,
+            evaluate,
+            stats,
+            ply + 1,
+            qply + 1,
+            prune_losing_captures,
+        )
         board.pop()
 
         if score > best:

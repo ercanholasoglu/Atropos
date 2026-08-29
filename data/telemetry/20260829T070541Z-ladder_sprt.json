@@ -1,0 +1,71 @@
+{
+ "tool": "ladder_sprt",
+ "started_at": "2026-08-29T07:05:41+00:00",
+ "finished_at": "2026-08-29T07:05:42+00:00",
+ "commit": "31716ed",
+ "tree_dirty": true,
+ "parameters": {
+  "pairs": "5:4,2:1,3:2",
+  "elo0": 0.0,
+  "elo1": 100.0,
+  "movetime": 0.05,
+  "max_plies": 40,
+  "max_games": 600,
+  "minutes_budget": 1.0
+ },
+ "wall_seconds": 0.00043412495870143175,
+ "cpu_seconds": 0.00044700000000119644,
+ "cpu_per_wall": 1.0296574547067667,
+ "peak_rss_mb_largest_process": 553.21875,
+ "nodes": 0,
+ "nodes_per_cpu_second": 0.0,
+ "games": 0,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "pairings": {
+   "L2 vs L1": {
+    "games": 3,
+    "score": 1.0,
+    "elo_estimate": 800.0,
+    "elo_interval_95": [
+     800.0,
+     800.0
+    ],
+    "llr": 1.3097865979615009,
+    "verdict": "continue",
+    "games_this_run": 3
+   },
+   "L3 vs L2": {
+    "games": 3,
+    "score": 1.0,
+    "elo_estimate": 800.0,
+    "elo_interval_95": [
+     800.0,
+     800.0
+    ],
+    "llr": 1.3097865979615009,
+    "verdict": "continue",
+    "games_this_run": 3
+   },
+   "L5 vs L4": {
+    "games": 3,
+    "score": 1.0,
+    "elo_estimate": 800.0,
+    "elo_interval_95": [
+     800.0,
+     800.0
+    ],
+    "llr": 1.3097865979615009,
+    "verdict": "continue",
+    "games_this_run": 3
+   }
+  }
+ },
+ "notes": []
+}

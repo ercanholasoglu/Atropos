@@ -63,6 +63,9 @@ class SearchConfig:
     use_null_move: bool = False
     use_lmr: bool = False
     use_aspiration: bool = False
+    # Drop captures that lose material to the recapture. Off by default
+    # so the shipped levels are unchanged until it is measured.
+    use_see_pruning: bool = False
 
 
 class AdvancedSearch:
@@ -98,7 +101,15 @@ class AdvancedSearch:
         self, board: chess.Board, alpha: float, beta: float, stats: SearchStats, ply: int
     ) -> float:
         if self.config.use_quiescence:
-            return quiescence(board, alpha, beta, self.evaluate, stats, ply)
+            return quiescence(
+                board,
+                alpha,
+                beta,
+                self.evaluate,
+                stats,
+                ply,
+                prune_losing_captures=self.config.use_see_pruning,
+            )
         if board.is_check() and not any(board.generate_legal_moves()):
             return -(MATE_SCORE - ply)
         return self._static_eval(board)

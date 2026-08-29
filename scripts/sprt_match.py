@@ -59,13 +59,19 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
         if level not in available_levels():
             raise SystemExit(f"level {level} is not implemented; have {available_levels()}")
         engine = create_engine(level, seed=seed, time_limit=movetime)
-        if flag == "uniform":
+        if flag == "see":
+            searcher = getattr(engine, "searcher", None)
+            if searcher is None or not hasattr(searcher.config, "use_see_pruning"):
+                raise SystemExit(f"L{level} has no quiescence to prune")
+            searcher.config.use_see_pruning = True
+            engine.name = f"L{level}-see"
+        elif flag == "uniform":
             if not hasattr(engine, "adaptive_time"):
                 raise SystemExit(f"L{level} has no adaptive clock to switch off")
             engine.adaptive_time = False
             engine.name = f"L{level}-uniform"
         elif flag:
-            raise SystemExit(f"unknown engine flag {flag!r}; only 'uniform' is defined")
+            raise SystemExit(f"unknown engine flag {flag!r}; defined flags are 'see' and 'uniform'")
         return engine
 
     path = Path(name)
