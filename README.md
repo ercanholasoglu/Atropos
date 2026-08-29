@@ -468,6 +468,42 @@ against a measured gap to Level 6 of about 440. They agree inside the error on
 either, so nothing about the evaluation needs to be invoked to explain why an
 engine with feature parity loses.
 
+### Using the curve to predict a change, then testing the prediction
+
+Static exchange evaluation was the one item on Atropos's Phase 17 list with no
+counterpart here. It plays an exchange out on a square — each side recapturing
+with its cheapest attacker — so quiescence can skip captures that lose material
+to the recapture.
+
+Counted first, deterministically, at fixed depth: **24.7% fewer nodes, 23.3%
+less wall time, the same move in all 8 book positions.** SEE costs about 2% of
+throughput to compute and the saving is net of that.
+
+The speed curve turns that into a prediction rather than a hope. 23.3% less
+time to depth is 0.38 doublings, which at −207 Elo per doubling is **+79 Elo
+[+63, +96]** — pre-registered in [`docs/SEE_PREREG.md`](docs/SEE_PREREG.md)
+along with what each outcome would mean, before any game was played.
+
+| run | games | Elo | 95% interval |
+|---|---:|---:|---:|
+| sequential (SPRT) | 120 | +73 | [+20, +130] |
+| **fixed length** | **240** | **+48** | **[+11, +87]** |
+
+The pre-registration said an interval spanning both +79 and +20 is a null
+result on the magnitude question and would be reported as one. **It spans
+both.** SEE pruning is better than not having it — both intervals exclude zero
+— and how much better is unresolved between +11 and +87.
+
+The sequential run said +73 and the fixed run said +48, which is the direction
+the stopping-rule bias predicts. It does not demonstrate it: the intervals
+overlap across most of their length, and 25 Elo between two samples this size
+is ordinary noise. Worth recording precisely because it is easy to over-read.
+
+The flag is **off by default**. The effect is positive, but Level 7 is the rung
+the Stockfish anchor and the Atropos gauntlet were both measured against.
+Turning it on changes the instrument every current number was taken with —
+a decision about what the ladder is for, not one the data settles.
+
 ## Where the time actually went
 
 Three measurements in a row pointed at throughput — Atropos losing 440 Elo to

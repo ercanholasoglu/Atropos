@@ -97,3 +97,61 @@ excludes +20 supports "the pruning is free". One that excludes +63 says the
 rule costs accuracy, and the distance below +79 is the price. One that still
 spans both is a null result on the magnitude question, and I will report it as
 that rather than lean on the point estimate.
+
+---
+
+## Result
+
+| run | games | score | Elo | 95% interval | stopping |
+|---|---:|---:|---:|---:|---|
+| sequential | 120 | 60.4% | +73 | [+20, +130] | SPRT, accepted H1 |
+| **fixed** | **240** | **56.9%** | **+48** | **[+11, +87]** | none |
+
+### Against the criteria fixed in advance
+
+* *Contains +79 and excludes +20* → **no.** The interval reaches +87, so +79
+  is inside it, but it also reaches down to +11.
+* *Excludes +63* → **no.**
+* *Spans both* → **yes.**
+
+**So this is a null result on the magnitude question, and the criterion
+committed above says to report it as one rather than lean on the point
+estimate. That is what this is.**
+
+What is established, by both runs independently, is that SEE pruning is
+**better than not having it**: both intervals exclude zero. What is not
+established is how much better. +48 is the best estimate available and it
+comes with an interval running from +11 to +87 — a factor of eight. The
+prediction of +79 sits at the top edge: not refuted, not supported.
+
+### The one thing worth noticing
+
+The sequential run said +73. The fixed run said +48. That is the direction the
+stopping-rule bias predicts — a test that stops the moment it can reject H0
+stops on a favourable fluctuation, and its estimate is pushed away from zero.
+
+**It does not demonstrate the bias.** The two intervals overlap across most of
+their length, so a difference of 25 Elo between them is exactly what two
+samples of this size would produce by chance. The direction is consistent with
+the bias; the data cannot separate it from noise. Recorded because it is the
+kind of agreement that is easy to over-read.
+
+### What the throughput result does say
+
+The deterministic measurement is not in doubt and does not depend on any of
+the above: **24.7% fewer nodes, 23.3% less wall time, same move in all 8 book
+positions.** Those were counted, not sampled. The uncertainty is entirely in
+converting them to Elo.
+
+### Shipping decision: not taken here
+
+The flag stays off by default. The measurement supports switching it on — the
+effect is positive in both runs — but Level 7 is the rung the Stockfish anchor
+and the atropos gauntlet were both measured against, this week. Turning it on
+changes the instrument that every current number was taken with, and those
+numbers would then describe a ladder that no longer exists.
+
+That is a decision about what the ladder is *for*, not a question the data
+answers. If it is switched on, `docs/ANCHOR.md`, the calibration table and the
+ladder SPRTs all need re-labelling as pre-SEE, the same way 1514 and 1538 are
+labelled to evaluation v2.
