@@ -22,6 +22,22 @@
   },
   {
    "arm": "movetime",
+   "divisor": 4,
+   "doublings": 2.0,
+   "games": 240,
+   "score_for_full_speed": 0.8083333333333333,
+   "elo_for_slowed": -250.01755929946077,
+   "interval_for_slowed": [
+    -312.66806895901004,
+    -198.8481193497573
+   ],
+   "predicted_elo_for_slowed": -120.0,
+   "budget_nodes": null,
+   "budget_seconds": 0.0225,
+   "complete": true
+  },
+  {
+   "arm": "movetime",
    "divisor": 8,
    "doublings": 3.0,
    "games": 240,
@@ -38,15 +54,16 @@
   }
  ],
  "fit": {
-  "elo_per_doubling": -119.51795203732827,
-  "standard_error": 27.040019201272283,
+  "elo_per_doubling": -121.08675992658603,
+  "standard_error": 16.25441359932373,
   "interval": [
-   -172.51638967182194,
-   -66.5195144028346
+   -152.94541058126055,
+   -89.22810927191152
   ],
   "residuals": [
-   -81.12005760381685,
-   27.040019201272287
+   -79.55124971455909,
+   -7.844039446288718,
+   31.746442869045552
   ]
  },
  "complete": true

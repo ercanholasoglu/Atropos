@@ -428,8 +428,9 @@ predictions and the falsifiable claim were committed before the first game
 ±153. The propagated interval is the one to quote.
 
 That number turned out to be about the *instrument* as much as the engine —
-see the third arm below. **For converting a real speed change to Elo the
-figure is −174 [−203, −144].**
+see the third arm below. **The conversion to use is measured on the clock:
+−158 [−182, −135], and only above about 1.6 doublings**, because a third clock
+point rejected the fit that a single slope assumes.
 
 Every point missed its prediction, in the same direction, by two and a half
 times. The predictions came from published doubling curves for classical
@@ -465,7 +466,7 @@ is worth *and* what truncation costs, together.
 | enforcement | Elo per real doubling | 95% interval |
 |---|---:|---:|
 | hard node limit | −207 | [−251, −164] |
-| **clock** | **−174** | [−203, −144] |
+| **clock** (≥1.6 doublings) | **−158** | [−182, −135] |
 | soft node limit | −98 | [−126, −69] |
 
 Hard and soft do not overlap; the clock sits between and is not separable from
@@ -473,10 +474,19 @@ the hard arm. **How a budget is enforced is a first-order variable in this
 measurement** — that much is established, a precise ordering of all three is
 not. A hard node budget is an experimental instrument; nothing plays that way.
 
-Recomputed on the clock arm: the +39% speedup is **+83 Elo** [+69, +97], and
-Atropos's 2.6-doubling throughput deficit is **−451** [−375, −528] against a
-480-game measured gap of about −440. The hard arm had predicted −537 and was
-failing that check quietly.
+Recomputed on the clock arm: Atropos's 2.6-doubling throughput deficit is
+**−411** [−472, −350] against a 480-game measured gap of about −440. The hard
+arm had predicted −537 and was failing that check quietly.
+
+A later third clock point then rejected the through-origin fit itself (χ² =
+13.8 on 2 dof, p ≈ 0.001), with the entire misfit at B/2 and no explanation
+that survives contact with the data — the obvious one, spend variance, is
+contradicted by B/8 having the widest spread and sitting on the line. The
+Atropos conversion is unaffected because it sits inside the region the two
+consistent points cover. The **+39% speedup and SEE do not**: both are below
+half a doubling, where the arm is not described by anything, so their
+conversions (+75 and +61) carry that caveat. See
+[`docs/SPEED_CLOCK_PREREG.md`](docs/SPEED_CLOCK_PREREG.md).
 
 ### The cross-check that disagreed
 
@@ -499,12 +509,14 @@ Full write-up in [`docs/SPEED.md`](docs/SPEED.md).
 
 ### What it costs the rest of the project
 
-The +39% speedup is worth **+83 Elo** [+69, +97], not the +29 the rule of
-thumb suggested.
+The +39% speedup is worth **somewhere around +75 Elo**, not the +29 the rule
+of thumb suggested — but it converts in a region the clock arm does not
+describe, so "clearly more than the rule of thumb, size not pinned down" is
+the honest summary.
 
 Atropos runs 2.6 doublings slower than this engine (8,938 nps against
-~54,000). At −174 per doubling that is **−451 Elo from throughput alone**
-[−375, −528], against a measured gap to Level 6 of about 440. Nothing about
+~54,000). At −158 per doubling that is **−411 Elo from throughput alone**
+[−472, −350], against a measured gap to Level 6 of about 440. Nothing about
 the evaluation needs to be invoked to explain why an engine with feature
 parity loses.
 

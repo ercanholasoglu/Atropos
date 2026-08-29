@@ -240,8 +240,9 @@ aralık doğru olanı.
 
 > **Alıntılamadan önce niteliğini okuyun.** Üçüncü bir kol (aşağıda) bu −207'nin *sert*
 > node bütçesine özgü olduğunu gösterdi — sert bütçe kestiği iterasyonu çöpe atıyor.
-> Gerçek bir hız değişimini Elo'ya çevirmek için kullanılacak sayı **saat kolununki:
-> −174 [−203, −144]**.
+> Kullanılacak sayı saat kolununki: **−158 [−182, −135], ve yalnızca ~1.6 katlamanın
+> üstünde.** Yarım katlamanın altında saat kolunu hiçbir tek eğim tarif etmiyor
+> (`docs/SPEED_CLOCK_PREREG.md`).
 
 Her nokta tahminini **aynı yönde ve iki buçuk kat** ıskaladı. Tahminler klasik motorlar
 için yayınlanmış katlama eğrilerinden geliyordu (50-70 Elo) — ama onlar uzun zaman
@@ -294,8 +295,13 @@ bedeli. Ayırınca:
 | bütçe nasıl uygulanıyor | gerçek katlama başına Elo | %95 aralık |
 |---|---:|---:|
 | sert node limiti (4 nokta) | −207 | [−251, −164] |
-| **saat** (2 nokta, gerçekten teslim ettiği katlamalarda) | **−174** | [−203, −144] |
+| **saat** (3 nokta; ≥1.6 katlama) | **−158** | [−182, −135] |
 | yumuşak node limiti (1 nokta) | −98 | [−126, −69] |
+
+Saat koluna sonradan üçüncü bir nokta eklendi ve bu, yukarıdaki sayıların dayandığı
+**orijinden geçme varsayımını reddetti** (χ² = 13.8, 2 sd, p ≈ 0.001). Sapmanın tamamı
+B/2 noktasında; B/4 ile B/8 çizgi üzerinde. Saat satırı bu yüzden o ikisinin kapsadığı
+bölgeyle sınırlı.
 
 Sert ile yumuşak örtüşmüyor; saat ikisinin arasında ve sert koldan ayrılamıyor. Yani
 **bu ölçümde bütçenin nasıl uygulandığı birinci derecede bir değişken** — uçlar arasında
@@ -311,16 +317,25 @@ aleti kurmaya çalışmaktan çıktı. Tam yazım: `docs/SPEED.md`.
 
 Saat kolu üzerinden (gerçek oyunun durma biçimi):
 
-| iddia | katlama | saat kolu | doğrudan ölçülen |
+| iddia | katlama | dönüşüm | doğrudan ölçülen |
 |---|---:|---:|---:|
-| +%39 hızlanma | 0.48 | **+83** [+69, +97] | — |
-| atropos bu motora karşı | 2.60 | **−451** [−375, −528] | ≈ −440 |
-| SEE budaması | 0.38 | **+67** [+55, +78] | +48 [+11, +87] |
+| atropos bu motora karşı | 2.60 | **−411** [−472, −350] | ≈ −440 ✓ |
+| +%39 hızlanma | 0.48 | +75 — **bölge dışı** | — |
+| SEE budaması | 0.38 | +61 — **bölge dışı** | +48 [+11, +87] |
 
-atropos satırı işe yarayan kontrol: saat kolu −451 diyor, 480 oyunluk gauntlet ~−440
-ölçtü. Sert kol −537 demişti ve bu kontrolü sessizce kaybediyordu. Özellik paritesi
-throughput'a yeniliyor, ve bu yenilginin büyüklüğü artık bağımsız bir ölçümle hata payı
-içinde öngörülüyor.
+atropos satırı işe yarayan kontrol **ve ölçülen bölgenin içine düşen tek satır**: −411
+diyor, 480 oyunluk gauntlet ~−440 ölçtü. Sert kol −537 demişti ve bu kontrolü sessizce
+kaybediyordu.
+
+**Diğer iki satır yarım katlamanın altında** — yani hiçbir fit'in tarif etmediği, B/2'nin
+(modeli kıran noktanın) yakınındaki aralıkta. Sayıları silmek yerine bu uyarıyla birlikte
+yazıyorum, çünkü aletin kapsamadığı bir bölgeden alınan dönüşüm tam da uyarısı düşerek
+tekrarlanan sayı türü. Kapatmak için B/1.25 ya da B/1.5'te bir eşleşme daha gerekiyor.
+
+Sapmanın **açıklaması yok.** Akla ilk gelen aday — harcamanın değişkenliği — veriyle
+çelişiyor: pozisyon başına en geniş yayılım B/8'de (3.6×) ve o çizgi üzerinde; B/2'ninki
+2.0× ve sapan o. İlk kulağa hoş gelen hikâyeye oturtmak yerine açıklanamamış olarak
+kaydedildi.
 
 ### 3.5 Evaluation v3: demet düştü, içindeki bir terim ship edildi
 

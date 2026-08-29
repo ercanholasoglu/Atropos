@@ -24,9 +24,12 @@ The slowed side's Elo, negative because it lost:
 
 > **Read the qualification before quoting this.** A third arm (below, and
 > `docs/SPEED_ARM3_PREREG.md`) shows −207 is specific to a *hard* node budget,
-> which throws away the iteration it interrupts. For converting a real speed
-> change to Elo the figure is **−174 [−203, −144]**, measured on the clock —
-> which is how this engine and everything it plays actually stops.
+> which throws away the iteration it interrupts. The conversion to use is
+> measured on the clock — how this engine and everything it plays actually
+> stops — and it is **−158 [−182, −135], valid above about 1.6 doublings**.
+> Below half a doubling the clock arm is not described by any single slope;
+> `docs/SPEED_CLOCK_PREREG.md` has the rejected fit and the point that breaks
+> it.
 
 That interval is not the one the least-squares fit reports. The fit says
 ±5, which treats the four points as exact; their own sampling errors run from
@@ -139,8 +142,13 @@ costs to be truncated. Separating them:
 | enforcement | Elo per real doubling | 95% interval |
 |---|---:|---:|
 | hard node limit (4 points) | −207 | [−251, −164] |
-| **clock** (2 points, at the doublings actually delivered) | **−174** | [−203, −144] |
+| **clock** (3 points; above 1.6 doublings) | **−158** | [−182, −135] |
 | soft node limit (1 point) | −98 | [−126, −69] |
+
+A third clock point was added afterwards, and it rejected the through-origin
+fit those numbers assume (χ² = 13.8 on 2 dof, p ≈ 0.001). The whole misfit is
+the B/2 point; B/4 and B/8 lie on the line quoted above. The clock row is
+therefore restricted to the region those two cover.
 
 Hard and soft do not overlap. The clock sits between them and is not separable
 from the hard arm. What is established is that **how the budget is enforced is
@@ -155,23 +163,31 @@ out of building the apparatus, not out of the data.
 
 ## What this means for the rest of the project
 
-Converted on the **clock** arm, because stopping on a clock is what real play
-does:
+Converted on the **clock** arm, in the region where it is described by a line
+(≥1.6 doublings, −158 [−182, −135]):
 
-| claim | doublings | clock arm | measured directly |
+| claim | doublings | conversion | measured directly |
 |---|---:|---:|---:|
-| the +39% speedup | 0.48 | **+83** [+69, +97] | — |
-| atropos vs this engine | 2.60 | **−451** [−375, −528] | ≈ −440 |
-| SEE pruning | 0.38 | **+67** [+55, +78] | +48 [+11, +87] |
+| atropos vs this engine | 2.60 | **−411** [−472, −350] | ≈ −440 ✓ |
+| the +39% speedup | 0.48 | +75 — **outside that region** | — |
+| SEE pruning | 0.38 | +61 — **outside that region** | +48 [+11, +87] |
 
-The atropos row is the check worth having. The clock arm predicts −451 against
-a 480-game gauntlet measurement of about −440; the hard arm predicted −537.
-Feature parity still loses to throughput, and the size of that loss is now
-predicted by an independent measurement to within its error.
+The atropos row is the check worth having, and it is the one that lands inside
+the measured region: −411 against a 480-game gauntlet reading of about −440.
+Feature parity loses to throughput, and the size of the loss is now predicted
+by an independent measurement to within its error.
 
-The +39% speedup is worth **+83 Elo**, not the +29 an unmeasured rule of thumb
-suggested. The old note that a ten-game calibration could not have detected it
-still holds — ±110 Elo of noise swamps +83 as thoroughly as it swamped +98.
+**The other two rows sit below half a doubling, in the stretch of the clock
+arm that no fit describes** — nearer to B/2, the point that breaks the
+through-origin model, than to anything measured cleanly. They are quoted with
+that attached rather than dropped, because a conversion taken from a region
+the instrument does not cover is precisely the number that gets repeated
+without its caveat. Closing it needs one more pairing at B/1.25 or B/1.5.
+
+The +39% speedup is therefore worth **somewhere around +75 Elo** and not the
++29 an unmeasured rule of thumb suggested — but the interval on that is wider
+than the arithmetic implies, and the honest summary is "clearly worth more
+than the rule of thumb, size not pinned down".
 
 ## Reproducing
 
