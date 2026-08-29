@@ -158,6 +158,14 @@ def main() -> int:
     parser.add_argument("--max-plies", type=int, default=160)
     parser.add_argument("--minutes", type=float, default=15.0, help="budget for this chunk")
     parser.add_argument(
+        "--fixed",
+        action="store_true",
+        help="play every game; do not stop early. For measuring a size rather "
+        "than deciding a question — a sequential test stops as soon as it can "
+        "reject, which biases the estimate away from zero and leaves an "
+        "interval too wide to read a magnitude off.",
+    )
+    parser.add_argument(
         "--workers",
         type=int,
         default=1,
@@ -185,7 +193,7 @@ def main() -> int:
 
     if test.games:
         print(f"resuming: {test.summary()}", flush=True)
-    if test.finished:
+    if test.finished and not args.fixed:
         print(f"already decided: {test.verdict.value}")
         return 0
 
@@ -212,9 +220,15 @@ def main() -> int:
     deadline = time.monotonic() + args.minutes * 60
     started_at = test.games
 
+    def done() -> bool:
+        """Whether to stop playing. In fixed mode only the counter stops it."""
+        if args.fixed:
+            return test.games >= args.max_games
+        return test.finished
+
     workers = max(1, args.workers)
     if workers == 1:
-        while not test.finished and time.monotonic() < deadline:
+        while not done() and time.monotonic() < deadline:
             # Seeds move with the game index, so a resumed run does not replay
             # the games it already has.
             score, nodes = play_one((args.a, args.b, test.games, args.movetime, args.max_plies))
@@ -222,7 +236,7 @@ def main() -> int:
             recorder.add_nodes(nodes)
             recorder.add_games()
             save(state_path, test, meta)
-            if test.games % 10 == 0 or test.finished:
+            if test.games % 10 == 0 or done():
                 print(f"  {test.summary()}", flush=True)
     else:
         # Batched, because a pool cannot be asked to stop mid-flight. The cost
@@ -232,7 +246,7 @@ def main() -> int:
         # per-game speed, 6 cost 8%, 8 cost 22% — and a uniform slowdown does
         # not bias a game, since both engines in it are slowed the same.
         with ProcessPoolExecutor(max_workers=workers) as pool:
-            while not test.finished and time.monotonic() < deadline:
+            while not done() and time.monotonic() < deadline:
                 jobs = [
                     (args.a, args.b, test.games + offset, args.movetime, args.max_plies)
                     for offset in range(workers)

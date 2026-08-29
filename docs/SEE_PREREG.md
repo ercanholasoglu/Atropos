@@ -63,3 +63,37 @@ settles in a few hundred games. 0.1 s per move, both sides, the standard
 operating point. No stopping rule other than the sequential test itself.
 
 Committed before the first game.
+
+---
+
+## Addendum, written after the sequential test and before the fixed one
+
+The SPRT accepted H1 at 120 games: **+73 Elo, interval [+20, +130]**.
+
+The point estimate is close to the predicted +79, and it is tempting to stop
+there. The interval says not to. It is 110 Elo wide, and it contains both
+outcomes the pre-registration set out to tell apart — "near +79, the pruning
+is free" and "clearly under +63, the pruning is discarding something". **The
+sequential test answered the question it was built for (is this better than
+nothing) and cannot answer the one that was actually interesting.**
+
+That is not a flaw in the test; it is what a stopping rule does. It stops as
+soon as the evidence rejects H0, which leaves the estimate biased away from
+zero and the interval as wide as it is allowed to be. The same reasoning is
+already committed in `scripts/speed_elo.py`, which is why the speed curve was
+measured at fixed length.
+
+So: a **second, separate** measurement, declared here before it runs.
+
+* **240 games, fixed length, no stopping rule** (`--fixed`). 240 buys roughly
+  ±45 Elo, which does separate +79 from +20.
+* **A fresh state file.** The 120 games above were played under a stopping
+  rule; pooling them with a fixed-length block would carry that bias into the
+  result. They are reported separately and not combined.
+* Same operating point, same bracket, same engines. Nothing else changes.
+
+**What each outcome means, fixed now:** an interval that contains +79 and
+excludes +20 supports "the pruning is free". One that excludes +63 says the
+rule costs accuracy, and the distance below +79 is the price. One that still
+spans both is a null result on the magnitude question, and I will report it as
+that rather than lean on the point estimate.

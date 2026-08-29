@@ -1,0 +1,23 @@
+{
+ "a": "L7-see",
+ "b": "L7",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 57,
+ "draws": 31,
+ "losses": 32,
+ "games": 120,
+ "score": 0.6041666666666666,
+ "llr": 3.234262971879266,
+ "elo_estimate": 73.4577587784508,
+ "verdict": "accept H1",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 100.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 1200,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}
