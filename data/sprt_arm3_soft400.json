@@ -1,0 +1,23 @@
+{
+ "a": "L7-soft400",
+ "b": "L7-nodes5000",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 52,
+ "draws": 30,
+ "losses": 158,
+ "games": 240,
+ "score": 0.2791666666666667,
+ "llr": -15.480297916156776,
+ "elo_estimate": -164.7885201711876,
+ "verdict": "accept H0",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 240,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}

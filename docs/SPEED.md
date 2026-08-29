@@ -22,6 +22,12 @@ The slowed side's Elo, negative because it lost:
 **Slope: −207 Elo per doubling of the node budget, 95% interval
 [−251, −164].**
 
+> **Read the qualification before quoting this.** A third arm (below, and
+> `docs/SPEED_ARM3_PREREG.md`) shows −207 is specific to a *hard* node budget,
+> which throws away the iteration it interrupts. For converting a real speed
+> change to Elo the figure is **−174 [−203, −144]**, measured on the clock —
+> which is how this engine and everything it plays actually stops.
+
 That interval is not the one the least-squares fit reports. The fit says
 ±5, which treats the four points as exact; their own sampling errors run from
 ±25 at B/2 to ±153 at B/16. Propagating those through the fit gives [−251,
@@ -99,43 +105,73 @@ the movetime arm:
 | B/2 | 3582 | −161 | −201 | [−257, −153] — consistent |
 | B/8 | 1485 | −425 | −332 | [−409, −273] — **outside, by 16** |
 
-B/2 is explained. B/8 is not: after correcting for node cost, the movetime arm
-is still about 90 Elo stronger than the curve says it should be, and the
-prediction falls outside the measured interval — though only just, by 16 Elo
-on an interval 136 wide.
+B/2 is explained; B/8 leaves about 90 Elo unaccounted for. A third arm was
+built to find out why, and it found something better than the answer it was
+looking for.
 
-Two mechanisms could produce that and **this experiment does not separate
-them**:
+### The third arm, and what it overturned
 
-* A varying budget spent adaptively is worth more than a fixed one. The
-  movetime arm spends 569 nodes on some moves and 2048 on others; the node arm
-  spends exactly 625 on all of them. Spending unevenly across positions is the
-  whole idea behind time management, and it would show up here as free Elo.
-* A node limit truncates the search at an arbitrary point inside an iteration,
-  discarding partial work; a clock checked between iterations more often stops
-  at a boundary with a completed result.
+The arm: a node budget enforced **only between iterations** — no clock at all,
+so nothing about timing can be involved. Pre-registered in
+`docs/SPEED_ARM3_PREREG.md` with two predicted outcomes 92 Elo apart.
 
-Distinguishing them needs a third arm — a fixed node budget checked only at
-iteration boundaries — which is not run here. **Recorded as an open question
-rather than settled by picking whichever story sounds better.**
+**It landed outside both**, at −165 [−213, −122] where the predictions were
+−349 and −257. The pre-registration's falsification clause fired: re-examine
+the curve.
+
+The re-examination needed no games:
+
+| budget | enforcement | nodes spent | depth reached |
+|---|---|---:|---:|
+| 5000 | hard | 5000 | 3.00 |
+| 2000 | soft | 3422 | 3.00 |
+| 5000 | soft | 13567 | 4.00 |
+
+**A hard budget of 5000 nodes reaches a depth that a soft budget reaches on
+3422** — it spends 46% more nodes for the same search, because it is
+interrupted part-way through an iteration and that iteration is discarded.
+This is true at every rung of the original experiment, not just at the
+reference.
+
+So −207 was measuring two things at once: what a node is worth, and what it
+costs to be truncated. Separating them:
+
+| enforcement | Elo per real doubling | 95% interval |
+|---|---:|---:|
+| hard node limit (4 points) | −207 | [−251, −164] |
+| **clock** (2 points, at the doublings actually delivered) | **−174** | [−203, −144] |
+| soft node limit (1 point) | −98 | [−126, −69] |
+
+Hard and soft do not overlap. The clock sits between them and is not separable
+from the hard arm. What is established is that **how the budget is enforced is
+a first-order variable in this measurement**, demonstrated between the
+extremes — not a precise ordering of all three.
+
+The earlier "two candidate mechanisms" framing in this document was wrong and
+is corrected in the pre-registration: a budget enforced at iteration
+boundaries *necessarily* spends a variable number of nodes, so "variable
+budget" and "stops at a boundary" were one mechanism named twice. That came
+out of building the apparatus, not out of the data.
 
 ## What this means for the rest of the project
 
-The +39% speedup shipped earlier is worth **207 × log2(1.39) = +98 Elo**,
-interval [+79, +120].
+Converted on the **clock** arm, because stopping on a clock is what real play
+does:
 
-That reframes two earlier results:
+| claim | doublings | clock arm | measured directly |
+|---|---:|---:|---:|
+| the +39% speedup | 0.48 | **+83** [+69, +97] | — |
+| atropos vs this engine | 2.60 | **−451** [−375, −528] | ≈ −440 |
+| SEE pruning | 0.38 | **+67** [+55, +78] | +48 [+11, +87] |
 
-* The old note that a 1.39× speedup is "worth roughly +29 Elo by the usual
-  rule of thumb" used the 50–70 Elo figure from the literature. Measured on
-  this engine it is three times that. The conclusion drawn there — that the
-  ten-game calibration could not have detected it — still holds, because ±110
-  Elo of noise still swamps +98.
-* Atropos runs at 8,938 nodes/second against this engine's ~54,000, which is
-  2.6 doublings. At −207 per doubling that is **−537 Elo from throughput
-  alone**, against a measured gap to Level 6 of about 440. The two agree to
-  within the error on either, and no evaluation difference needs to be
-  invoked to explain why an engine with feature parity loses.
+The atropos row is the check worth having. The clock arm predicts −451 against
+a 480-game gauntlet measurement of about −440; the hard arm predicted −537.
+Feature parity still loses to throughput, and the size of that loss is now
+predicted by an independent measurement to within its error.
+
+The +39% speedup is worth **+83 Elo**, not the +29 an unmeasured rule of thumb
+suggested. The old note that a ten-game calibration could not have detected it
+still holds — ±110 Elo of noise swamps +83 as thoroughly as it swamped +98.
 
 ## Reproducing
 

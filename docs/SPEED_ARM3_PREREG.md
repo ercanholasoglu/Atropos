@@ -71,3 +71,76 @@ survives and the node curve itself is the thing to re-examine.
 240 games, fixed length, no stopping rule — the deliverable is a magnitude,
 and a sequential test biases the estimate away from zero. Same opening book,
 same colour alternation as every other pairing here.
+
+---
+
+## Result
+
+**240 games, 27.9%, −165 Elo, interval [−213, −122].**
+
+| account | predicted | inside the interval? |
+|---|---:|---|
+| clock-specific | −349 | no |
+| boundary-stopping | −257 | no |
+| measured | **−165** | — |
+
+**Both pre-registered predictions failed, in the same direction.** The
+falsification criterion committed above fires: neither account survives, and
+the thing to re-examine is the node curve.
+
+## Re-examining it
+
+The soft arm plays 184 Elo better than the curve says its node count is worth.
+The reason is measurable without playing anything:
+
+| budget | enforcement | nodes spent | depth reached |
+|---|---|---:|---:|
+| 5000 | hard | 5000 | 3.00 |
+| 2000 | soft | 3422 | 3.00 |
+| 3000 | soft | 5419 | 3.38 |
+| 5000 | soft | 13567 | 4.00 |
+
+**The hard-limited reference burns 5000 nodes to reach a depth a soft budget
+reaches on 3422** — 46% more nodes for the same search. A hard limit stops
+part-way through an iteration and throws that iteration away, so a fixed
+fraction of every hard budget is spent on work that is discarded.
+
+That is true at every rung of the original experiment, not only at the
+reference. So the −207 Elo per doubling was measuring two things at once: what
+a node is worth, and what it costs to be truncated mid-iteration.
+
+## What this does to the headline number
+
+| how the budget is enforced | Elo per real doubling | 95% interval |
+|---|---:|---:|
+| hard node limit (4 points) | −207 | [−251, −164] |
+| clock (2 points, at the doublings it actually delivered) | **−174** | [−203, −144] |
+| soft node limit (1 point) | −98 | [−126, −69] |
+
+The soft and hard intervals do not overlap; the clock sits between them and is
+not separable from the hard arm. So what is established is that **enforcement
+is a first-order variable in this measurement** — demonstrated between the
+extremes — not a precise ordering of all three. The soft row is a single
+pairing and its interval is that point's own error, not a fit.
+
+**For converting a real speed change to Elo, the clock arm is the one to use**,
+because stopping on a clock is what this engine and every engine it plays
+actually does. A hard node budget is an experimental instrument, not a mode
+anything runs in.
+
+## The downstream numbers, recomputed
+
+| claim | on the hard arm | on the clock arm | measured directly |
+|---|---:|---:|---:|
+| +39% speedup | +98 | **+83** [+69, +97] | — |
+| atropos vs this engine (2.6 doublings) | −537 | **−451** [−375, −528] | ≈ −440 |
+| SEE pruning (0.38 doublings) | +79 | **+67** [+55, +78] | +48 [+11, +87] |
+
+The atropos row is the useful one: the clock arm predicts −451 against a
+gauntlet measurement of about −440, where the hard arm predicted −537. An
+independent check the hard arm was failing quietly.
+
+The SEE row moves from +79 to +67, which is now comfortably inside the +48
+[+11, +87] that was measured. The pre-registered SEE prediction was drawn from
+the wrong arm; the conclusion recorded there — a null result on the magnitude
+question — does not change, because +67 sits inside that interval too.

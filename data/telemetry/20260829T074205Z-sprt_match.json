@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-29T07:42:05+00:00",
+ "finished_at": "2026-08-29T07:47:25+00:00",
+ "commit": "c6c3b5b",
+ "tree_dirty": false,
+ "parameters": {
+  "a": "L7-soft400",
+  "b": "L7-nodes5000",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 240,
+  "minutes_budget": 9.0,
+  "games_before": 0
+ },
+ "wall_seconds": 319.21954312489834,
+ "cpu_seconds": 1333.666839,
+ "cpu_per_wall": 4.177898464312341,
+ "peak_rss_mb_largest_process": 209.625,
+ "nodes": 79088401,
+ "nodes_per_cpu_second": 59301.46771835571,
+ "games": 240,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 240,
+  "wins": 52,
+  "draws": 30,
+  "losses": 158,
+  "score": 0.2791666666666667,
+  "elo_estimate": -164.7885201711876,
+  "elo_interval_95": [
+   -212.85665623899507,
+   -121.98161817773168
+  ],
+  "llr": -15.480297916156776,
+  "verdict": "accept H0",
+  "diagnosis": "accept H0",
+  "state_file": "data/sprt_arm3_soft400.json"
+ },
+ "notes": []
+}

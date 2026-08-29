@@ -427,6 +427,10 @@ predictions and the falsifiable claim were committed before the first game
 ±5; that treats the four points as exact when their own errors run ±25 to
 ±153. The propagated interval is the one to quote.
 
+That number turned out to be about the *instrument* as much as the engine —
+see the third arm below. **For converting a real speed change to Elo the
+figure is −174 [−203, −144].**
+
 Every point missed its prediction, in the same direction, by two and a half
 times. The predictions came from published doubling curves for classical
 engines (50–70 Elo), measured at long time controls where a doubling adds a
@@ -437,6 +441,42 @@ an engine; it is a property of the part of the curve you measure in.**
 
 The pre-registered claim — linearity in log2(budget) — survives: residuals
 +48, −2, −14, −1 against per-point errors of ±25 to ±153.
+
+### The third arm, and the number it overturned
+
+The cross-check left ~90 Elo unexplained at B/8, so a third arm was built: a
+node budget enforced **only between iterations**, no clock involved.
+Pre-registered with two outcomes 92 Elo apart. **It landed outside both** — at
+−165 [−213, −122] against predictions of −349 and −257 — which fired the
+falsification clause and sent the curve itself back for examination.
+
+That took no games at all:
+
+| budget | enforcement | nodes spent | depth reached |
+|---|---|---:|---:|
+| 5000 | hard | 5000 | 3.00 |
+| 2000 | soft | 3422 | 3.00 |
+
+**A hard budget spends 46% more nodes to reach the same depth**, because it is
+interrupted mid-iteration and that iteration is thrown away. Every rung of the
+original experiment carried that overhead, so −207 was measuring what a node
+is worth *and* what truncation costs, together.
+
+| enforcement | Elo per real doubling | 95% interval |
+|---|---:|---:|
+| hard node limit | −207 | [−251, −164] |
+| **clock** | **−174** | [−203, −144] |
+| soft node limit | −98 | [−126, −69] |
+
+Hard and soft do not overlap; the clock sits between and is not separable from
+the hard arm. **How a budget is enforced is a first-order variable in this
+measurement** — that much is established, a precise ordering of all three is
+not. A hard node budget is an experimental instrument; nothing plays that way.
+
+Recomputed on the clock arm: the +39% speedup is **+83 Elo** [+69, +97], and
+Atropos's 2.6-doubling throughput deficit is **−451** [−375, −528] against a
+480-game measured gap of about −440. The hard arm had predicted −537 and was
+failing that check quietly.
 
 ### The cross-check that disagreed
 
@@ -459,14 +499,14 @@ Full write-up in [`docs/SPEED.md`](docs/SPEED.md).
 
 ### What it costs the rest of the project
 
-The +39% speedup is worth **+98 Elo** [+79, +120], not the +29 the rule of
+The +39% speedup is worth **+83 Elo** [+69, +97], not the +29 the rule of
 thumb suggested.
 
 Atropos runs 2.6 doublings slower than this engine (8,938 nps against
-~54,000). At −207 per doubling that is **−537 Elo from throughput alone**,
-against a measured gap to Level 6 of about 440. They agree inside the error on
-either, so nothing about the evaluation needs to be invoked to explain why an
-engine with feature parity loses.
+~54,000). At −174 per doubling that is **−451 Elo from throughput alone**
+[−375, −528], against a measured gap to Level 6 of about 440. Nothing about
+the evaluation needs to be invoked to explain why an engine with feature
+parity loses.
 
 ### Using the curve to predict a change, then testing the prediction
 
@@ -480,8 +520,9 @@ less wall time, the same move in all 8 book positions.** SEE costs about 2% of
 throughput to compute and the saving is net of that.
 
 The speed curve turns that into a prediction rather than a hope. 23.3% less
-time to depth is 0.38 doublings, which at −207 Elo per doubling is **+79 Elo
-[+63, +96]** — pre-registered in [`docs/SEE_PREREG.md`](docs/SEE_PREREG.md)
+time to depth is 0.38 doublings, which on the clock arm is **+67 Elo
+[+55, +78]** — pre-registered at +79 from the hard arm, before that arm was
+known to be the wrong one; the conclusion below is unaffected either way — in [`docs/SEE_PREREG.md`](docs/SEE_PREREG.md)
 along with what each outcome would mean, before any game was played.
 
 | run | games | Elo | 95% interval |

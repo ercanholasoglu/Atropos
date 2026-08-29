@@ -238,6 +238,11 @@ kez yarılandı, eşleşme başına 240 oyun, toplam 960. **Parantezler, tahminl
 dört noktayı kesin sayıyor; noktaların kendi hataları ±25 ile ±153 arasında. Yayılmış
 aralık doğru olanı.
 
+> **Alıntılamadan önce niteliğini okuyun.** Üçüncü bir kol (aşağıda) bu −207'nin *sert*
+> node bütçesine özgü olduğunu gösterdi — sert bütçe kestiği iterasyonu çöpe atıyor.
+> Gerçek bir hız değişimini Elo'ya çevirmek için kullanılacak sayı **saat kolununki:
+> −174 [−203, −144]**.
+
 Her nokta tahminini **aynı yönde ve iki buçuk kat** ıskaladı. Tahminler klasik motorlar
 için yayınlanmış katlama eğrilerinden geliyordu (50-70 Elo) — ama onlar uzun zaman
 kontrollerinde, zaten on beş plilik bir aramaya bir pli eklendiğinde ölçülüyor. Burada
@@ -260,20 +265,62 @@ node'un dörde bölmesi:** 0.09 sn 6144 node alıyor (node kolunun başladığı
 11 ms'de harcama 569 ile 2048 node arasında geziniyor — üst ucu tam olarak bir
 `check_interval`. Saat, deneyin değiştirdiği büyüklüğü hiç bölmüyormuş.
 
-Bunu düzeltmek B/2'yi kapatıyor, B/8'de ~90 Elo açıkta kalıyor — aralığın hemen dışında.
-İki mekanizma bunu üretebilir (düzensiz harcanan bütçe sabit olandan değerlidir; ya da
-node limiti iterasyon ortasında kesip kısmi işi çöpe atarken saat sınırda duruyor) ve
-**bu tasarım ikisini ayırmıyor.** Kulağa daha hoş geleni seçmek yerine açık soru olarak
-kaydedildi. Tam yazım: `docs/SPEED.md`.
+Bunu düzeltmek B/2'yi kapatıyor, B/8'de ~90 Elo açıkta kalıyor. Sebebini bulmak için
+üçüncü bir kol kuruldu — ve aradığı cevaptan iyisini buldu.
+
+#### Üçüncü kol: aradığı cevabı değil, aletin kendisini buldu
+
+Kol: **yalnızca iterasyonlar arasında** uygulanan node bütçesi; saat hiç yok, yani
+zamanlamayla ilgili hiçbir şey işin içinde olamaz. Ön-kayıtta 92 Elo arayla iki sonuç
+ilan edildi (`docs/SPEED_ARM3_PREREG.md`). **İkisinin de dışına düştü:** −349 ve −257
+tahminlerine karşı **−165 [−213, −122]**. Ön-kaydın çürütme şartı işledi: incelenecek
+şey eğrinin kendisi.
+
+İnceleme tek bir oyun gerektirmedi:
+
+| bütçe | uygulama | harcanan node | ulaşılan derinlik |
+|---|---|---:|---:|
+| 5000 | sert | 5000 | 3.00 |
+| 2000 | yumuşak | 3422 | 3.00 |
+| 5000 | yumuşak | 13567 | 4.00 |
+
+**Sert 5000'lik bütçe, yumuşak bütçenin 3422 node'da ulaştığı derinliğe ulaşmak için
+%46 fazla node harcıyor** — çünkü iterasyonun ortasında kesiliyor ve o iterasyon çöpe
+gidiyor. Bu, deneyin yalnızca referansında değil her basamağında geçerli.
+
+Yani −207 aynı anda iki şeyi ölçüyormuş: bir node'un değeri, ve ortasından kesilmenin
+bedeli. Ayırınca:
+
+| bütçe nasıl uygulanıyor | gerçek katlama başına Elo | %95 aralık |
+|---|---:|---:|
+| sert node limiti (4 nokta) | −207 | [−251, −164] |
+| **saat** (2 nokta, gerçekten teslim ettiği katlamalarda) | **−174** | [−203, −144] |
+| yumuşak node limiti (1 nokta) | −98 | [−126, −69] |
+
+Sert ile yumuşak örtüşmüyor; saat ikisinin arasında ve sert koldan ayrılamıyor. Yani
+**bu ölçümde bütçenin nasıl uygulandığı birinci derecede bir değişken** — uçlar arasında
+gösterildi; üçünün kesin sıralaması değil. Sert node bütçesi bir deney aleti; hiçbir şey
+öyle oynamıyor.
+
+Bu belgedeki eski "iki aday mekanizma" çerçevesi yanlıştı ve ön-kayıtta düzeltildi:
+iterasyon sınırında uygulanan bir bütçe **zorunlu olarak** değişken node harcar, yani
+"değişken bütçe" ile "sınırda duruyor" tek mekanizmanın iki adıydı. Bu, veriden değil
+aleti kurmaya çalışmaktan çıktı. Tam yazım: `docs/SPEED.md`.
 
 #### Projenin geri kalanına faturası
 
-+%39 hızlanma **+98 Elo** değerinde [+79, +120] — parmak hesabının dediği +29 değil.
+Saat kolu üzerinden (gerçek oyunun durma biçimi):
 
-atropos bu motordan 2.6 katlama yavaş (8.938 nps'ye karşı ~54.000). Katlama başına −207
-ile bu **yalnızca throughput'tan −537 Elo** eder; L6'ya ölçülen fark ise ~440. İkisi
-birbirinin hata payı içinde uyuşuyor — yani özellik paritesi olan bir motorun neden
-kaybettiğini açıklamak için değerlendirmeye hiç başvurmak gerekmiyor.
+| iddia | katlama | saat kolu | doğrudan ölçülen |
+|---|---:|---:|---:|
+| +%39 hızlanma | 0.48 | **+83** [+69, +97] | — |
+| atropos bu motora karşı | 2.60 | **−451** [−375, −528] | ≈ −440 |
+| SEE budaması | 0.38 | **+67** [+55, +78] | +48 [+11, +87] |
+
+atropos satırı işe yarayan kontrol: saat kolu −451 diyor, 480 oyunluk gauntlet ~−440
+ölçtü. Sert kol −537 demişti ve bu kontrolü sessizce kaybediyordu. Özellik paritesi
+throughput'a yeniliyor, ve bu yenilginin büyüklüğü artık bağımsız bir ölçümle hata payı
+içinde öngörülüyor.
 
 ### 3.5 Evaluation v3: demet düştü, içindeki bir terim ship edildi
 
@@ -484,8 +531,12 @@ seçildi çünkü skill ayarları kasten hata yaptırıp ölçülen güçle ilgi
   ölçüm aleti. Açılırsa mevcut bütün sayıların "SEE öncesi" diye etiketlenmesi gerekir.
 - **v3-passers** — 714 oyunda çözülmedi, [−12, +34]; ~+10'luk etki için dar bracket gerek
 - **L8'in uyarlanabilir saati** — çözülmedi, dar bracket ile yeniden denenmeli
-- **Hız → Elo'nun açık ucu** — movetime kolu B/8'de node eğrisinden ~90 Elo sapıyor;
-  iki mekanizma var, bu tasarım ayırmıyor (`docs/SPEED.md`)
+- **Hız → Elo'nun açık ucu** ✅ kapandı — üçüncü kol sapmanın saatte değil, bütçenin
+  *nasıl uygulandığında* olduğunu gösterdi. Sert node limiti kestiği iterasyonu çöpe
+  atıyor ve %46 fazla node harcıyor; −207 bunu da ölçüyormuş. Gerçek dönüşüm sayısı
+  **−174 [−203, −144]** (`docs/SPEED_ARM3_PREREG.md`).
+- **Üç kolun kesin sıralaması** — sert ile yumuşak ayrıştı, saat ikisinden de
+  ayrılamadı. Saat kolu iki noktadan geliyor; daha çok nokta aralığı daraltır.
 
 ---
 
