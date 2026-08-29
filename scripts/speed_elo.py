@@ -101,12 +101,12 @@ LEVEL = 7
 BASE_NODES = 5000
 BASE_MOVETIME = 0.09
 DIVISORS_NODES = (2, 4, 8, 16)
-DIVISORS_MOVETIME = (2, 4, 8)
+DIVISORS_MOVETIME = (1.5, 2, 4, 8)
 GAMES_PER_PAIRING = 240
-PREDICTED = {2: -60.0, 4: -120.0, 8: -180.0, 16: -240.0}
+PREDICTED: dict[float, float] = {2: -60.0, 4: -120.0, 8: -180.0, 16: -240.0}
 
 
-def build(arm: str, divisor: int, seed: int) -> BaseEngine:
+def build(arm: str, divisor: float, seed: int) -> BaseEngine:
     """Level 7 slowed by ``divisor``, by one method or the other.
 
     The unused budget is left at ``None`` on purpose. Setting both would make
@@ -115,14 +115,17 @@ def build(arm: str, divisor: int, seed: int) -> BaseEngine:
     """
     if arm == "nodes":
         engine = create_engine(LEVEL, seed=seed, time_limit=None)
-        engine.node_limit = BASE_NODES // divisor
+        # int() rather than // because divisors may be fractional on the clock
+        # arm; the node arm only ever uses whole halvings, so this is exact
+        # there.
+        engine.node_limit = int(BASE_NODES / divisor)
     else:
         engine = create_engine(LEVEL, seed=seed, time_limit=BASE_MOVETIME / divisor)
-    engine.name = f"L{LEVEL}-{arm}-div{divisor}"
+    engine.name = f"L{LEVEL}-{arm}-div{divisor:g}"
     return engine
 
 
-def play_one(job: tuple[str, int, int, int]) -> tuple[float, int]:
+def play_one(job: tuple[str, float, int, int]) -> tuple[float, int]:
     """One game, scored for the *full-speed* side. Module level so it pickles."""
     arm, divisor, index, max_plies = job
 
@@ -154,7 +157,7 @@ def interval(score: float, games: int) -> tuple[float, float]:
 
 
 def run_pairing(
-    arm: str, divisor: int, args, recorder: TelemetryRecorder, state: dict, save
+    arm: str, divisor: float, args, recorder: TelemetryRecorder, state: dict, save
 ) -> bool:
     """Play a pairing, resuming and stopping on the chunk deadline.
 
@@ -166,7 +169,7 @@ def run_pairing(
     played = state["games"]
     if played >= args.games:
         return False
-    print(f"full speed vs 1/{divisor} ({arm}), from game {played}", flush=True)
+    print(f"full speed vs 1/{divisor:g} ({arm}), from game {played}", flush=True)
     queue = [(arm, divisor, i, args.max_plies) for i in range(played, args.games)]
     workers = max(1, args.workers)
     hit_deadline = False
@@ -198,7 +201,7 @@ def run_pairing(
     return hit_deadline
 
 
-def summarise(arm: str, divisor: int, state: dict) -> dict:
+def summarise(arm: str, divisor: float, state: dict) -> dict:
     played, total = state["games"], state["points"]
     score = total / played
     lo, hi = interval(score, played)
@@ -212,7 +215,7 @@ def summarise(arm: str, divisor: int, state: dict) -> dict:
         "score_for_full_speed": score,
         "elo_for_slowed": -elo_diff_from_score(score),
         "interval_for_slowed": [-hi, -lo],
-        "predicted_elo_for_slowed": PREDICTED[divisor],
+        "predicted_elo_for_slowed": PREDICTED.get(divisor),
         "budget_nodes": BASE_NODES // divisor if arm == "nodes" else None,
         "budget_seconds": None if arm == "nodes" else BASE_MOVETIME / divisor,
         "complete": played >= state["target"],
@@ -258,7 +261,7 @@ def main() -> int:
     # One tally per pairing, written after every game. These runs are long
     # enough to be interrupted, and a pairing that has to restart from zero
     # after 200 games is a pairing that never finishes.
-    states: dict[int, dict] = {
+    states: dict[float, dict] = {
         d: {"games": 0, "points": 0.0, "target": args.games} for d in divisors
     }
     if out.exists() and not args.restart:
@@ -327,9 +330,14 @@ def main() -> int:
     for row in rows:
         lo, hi = row["interval_for_slowed"]
         print(
-            f"{'1/' + str(row['divisor']):>10}  {row['games']:6d}  "
+            f"{'1/' + format(row['divisor'], 'g'):>10}  {row['games']:6d}  "
             f"{row['elo_for_slowed']:+7.1f} [{lo:+.0f},{hi:+.0f}]  "
-            f"{row['predicted_elo_for_slowed']:+10.0f}" + ("" if row["complete"] else "  (partial)")
+            + (
+                f"{row['predicted_elo_for_slowed']:+10.0f}"
+                if row["predicted_elo_for_slowed"] is not None
+                else f"{'—':>10}"
+            )
+            + ("" if row["complete"] else "  (partial)")
         )
     print("-" * 52)
     if fit is None:
