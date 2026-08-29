@@ -94,6 +94,34 @@ construction as targets. They are what each level was *aiming at*. Read the
 the only claim being made: **the ladder is ordered, and the ordering is
 verified. The spacing is not.**
 
+### Fitting all of it at once
+
+Every number above came from one pairing at a time. Fitting all 2,730 games at
+0.1s simultaneously ([`docs/RATING_FIT.md`](docs/RATING_FIT.md)) uses something
+the chain of adjacent pairs throws away: **Stockfish at fixed depth played both
+Level 6 and Level 7**, and what it says about the gap between them is
+independent of the ladder match that also measures it.
+
+| how the L7-over-L6 gap is computed | Elo |
+|---|---:|
+| score only, draws ignored — the method used above | +93 |
+| the same 65 games with a draw model | +100 |
+| every 0.1s game jointly, Stockfish included | **+50** [−3, +103] |
+
+The outsider scores 47.5% against L7 and 46.9% against L6 — **4 Elo apart**,
+where the direct match says 93. Pooled, the interval **includes zero**.
+
+So the top rung transition is not settled either. It was settled against one
+opponent; a second opponent that played both sides disagrees by more than
+either measurement's error bar. And the fit refuses to place Levels 1 and 2 at
+all: their only link to the rest is a 7-0-0 result, whose maximum likelihood is
+at infinity, so the gap is reported as "+109 Elo or more" and nothing further.
+
+The fit does **not** reopen Level 8. It reports −143 [−290, +3], but the shift
+from the −85 measured directly comes from imposing a pooled draw parameter on a
+pairing whose own draw rate is a fifth of the pool's. The interval contains zero
+either way, and the correction below stands.
+
 ### A correction, and the mistake behind it
 
 This section first reported the last row as *"Level 8 is a regression"*. That

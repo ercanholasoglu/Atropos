@@ -67,6 +67,32 @@ karşı −17 Elo, Level 6'ya karşı −21 Elo. Yani iki basamak **4 Elo arayla
 [−47, +40]** — etiketlerin 300 dediği yerde. Biri içeriden biri dışarıdan iki alet, ve
 hiçbiri isimlerin iddia ettiği aralığı bulmuyor.
 
+#### Hepsini birden uydurmak
+
+Yukarıdaki her sayı tek bir eşleşmeden geldi. 0,1 sn'deki 2.730 oyunun tamamını birden
+uydurmak (`docs/RATING_FIT.md`) komşu-çift zincirinin attığı bir şeyi kullanıyor:
+**sabit derinlikli Stockfish hem Level 6'ya hem Level 7'ye karşı oynadı**, ve aradaki
+farka dair söyledikleri, aynı farkı ölçen merdiven maçından bağımsız.
+
+| L7'nin L6 üstünlüğü nasıl hesaplanırsa | Elo |
+|---|---:|
+| yalnızca skor, beraberlikler yok sayılır — yukarıdaki yöntem | +93 |
+| aynı 65 oyun, beraberlik modeliyle | +100 |
+| 0,1 sn'deki her oyun birlikte, Stockfish dahil | **+50** [−3, +103] |
+
+Dışarıdaki L7'ye karşı %47,5, L6'ya karşı %46,9 alıyor — **4 Elo arayla**, doğrudan
+maçın 93 dediği yerde. Havuzlanınca aralık **sıfırı kapsıyor.** Yani en üst basamak
+geçişi de çözülmüş değil: tek bir rakibe karşı çözülmüştü, iki tarafla da oynayan ikinci
+bir rakip her iki ölçümün hata payından fazlasıyla itiraz ediyor.
+
+Uyum, Level 1 ve 2'yi hiç yerleştirmiyor: geri kalana tek bağlantıları 7-0-0'lık bir
+sonuç ve onun olabilirliği sonsuzda maksimum. Söylenebilecek tek şey tek yönlü:
+**+109 Elo ya da daha fazla**, üst sınır yok.
+
+Uyum **Level 8'i yeniden açmıyor.** −143 [−290, +3] diyor ama −85'ten kayma, kendi
+beraberlik oranı havuzun beşte biri olan bir eşleşmeye havuzlanmış bir beraberlik
+parametresi dayatmaktan geliyor. Aralık her iki halde de sıfırı kapsıyor.
+
 Sayılar `INITIAL_ELO`'dan geliyor; kuruluşta **hedef** olarak atanmışlar. Her seviyenin
 *nişan aldığı* şey onlar. "Hedef Elo" sütununu olduğu gibi — bir şartname olarak — okuyun;
 "Ölçülen" sütunu ise ortaya atılan tek iddia: **merdiven sıralı, ve sıralama doğrulandı.
