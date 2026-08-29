@@ -37,26 +37,76 @@ Sekiz seviye, her biri bir öncekine tek bir teknik ekliyor:
 | 7 | Null-move, LMR, history, aspiration | 2100 | %63.1, SPRT ile kabul |
 | 8 | Uyarlanabilir zaman + opsiyonel LLM danışman | 2400 | ölçülebilir üstünlük yok |
 
-Merdivenin tamamı sekans testinden geçirildi (`H1: en az 100 Elo`, 0.1sn/hamle):
+Merdivenin tamamı sekans testinden geçirildi (`H1: en az 100 Elo`, 0,1sn/hamle) — ve
+sonra o testin ürettiği sayıları atmak gerekti.
 
-| eşleşme | oyun | skor | Elo † | %95 aralık | hüküm |
-|---|---:|---:|---:|---:|---|
-| L2 vs L1 | 9 | %88.9 | +361 | [+194, +800] | kabul |
-| L3 vs L2 | 7 | %100 | +800 | [+800, +800] | kabul |
-| L4 vs L3 | 9 | %88.9 | +361 | [+194, +800] | kabul |
-| L5 vs L4 | 33 | %68.2 | +132 | [+45, +240] | kabul |
-| L6 vs L5 | 9 | %88.9 | +361 | [+134, +800] | kabul |
-| L7 vs L6 | 65 | %63.1 | +93 | [+21, +174] | kabul |
-| L8 vs L7 | 25 | %38.0 | −85 | [−238, +40] | red |
+| eşleşme | oyun | skor | Elo † | hüküm |
+|---|---:|---:|---:|---|
+| L2 vs L1 | 9 | %88,9 | +361 | kabul |
+| L3 vs L2 | 7 | %100 | +800 | kabul |
+| L4 vs L3 | 9 | %88,9 | +361 | kabul |
+| L5 vs L4 | 33 | %68,2 | +132 | kabul |
+| L6 vs L5 | 9 | %88,9 | +361 | kabul |
+| L7 vs L6 | 65 | %63,1 | +93 | kabul |
+| L8 vs L7 | 25 | %38,0 | −85 | red |
 
-**† Elo sütunu hiçbir şeyin tahmini değil.** Bu durma kuralı bilinen gerçeklere karşı
-simüle edildiğinde (`docs/SPRT_BIAS.md`), H1'i kabul edip erken duran bir koşu **gerçek
-fark ne olursa olsun ~+110 raporluyor** — gerçek sıfırken +113, yüzken +118. Sayı, yüz
-Elo'luk bir aralık boyunca beş Elo oynuyor. Bilgi taşıyan şey **hüküm**: kural gerçek
-sıfırda %3, gerçek yüzde %97 kabul ediyor.
+**† Elo sütunu atıldı.** Bu durma kuralı bilinen gerçeklere karşı simüle edildiğinde
+(`docs/SPRT_BIAS.md`), erken kabul eden bir koşu **gerçek fark ne olursa olsun ~+110**
+raporluyor. Küçük farkta yanlılık koşular arası saçılmanın 1,5 katı — sayı güvenilir
+biçimde yanlış. Büyük farkta yanlılık neredeyse yok ama saçılma 130-170 Elo, çünkü test
+bir düzine oyunda duruyor. **Hükümler ayakta; büyüklükler hiç ölçülmemişti.**
 
-**Merdiven Level 7'ye kadar sıralı.** Alt üç basamak toplam 25 oyunda çözüldü —
-sabit gauntlet aynı üçü için 48 oyun harcamış ve daha zayıf bir iddia üretmişti.
+#### Büyüklükleri ölçmek
+
+Her eşleşme sabit uzunlukta, durma kuralı olmadan yeniden oynandı — 1.960 oyun
+(`docs/LADDER_FIXED_PREREG.md`, ön-kayıtlı):
+
+| eşleşme | oyun | sekans dedi | **ölçülen** | %95 aralık |
+|---|---:|---:|---:|---:|
+| L2 vs L1 | 600 | +361 | **+420** | [+375, +479] |
+| L3 vs L2 | 600 | +800 | **+684** | [+603, +833] |
+| L4 vs L3 | 240 | +361 | **+390** | [+326, +482] |
+| L5 vs L4 | 240 | +132 | **+149** | [+103, +200] |
+| L6 vs L5 | 240 | +361 | **+527** | [+443, +682] |
+| **L7 vs L6** | **240** | **+93** | **+22** | **[−22, +66]** |
+| L8 vs L7 | 240 | −85 | **−25** | [−69, +19] |
+
+**Level 7, 0,1sn/hamlede Level 6'dan ayırt edilemiyor.** Aynı cevaba dördüncü bağımsız
+yol: ortak uyum +50 [−3, +103] diyor, iki basamağa da oynayan dış motor 4 Elo arayla
+diyor, yanlılık simülasyonu +66'lık kayma öngörmüştü ve gözlenen +71.
+
+Bu, README'nin baştan beri söylediğiyle tutarlı: L7'nin üstünlüğü saate bağlı ve 0,1sn'de
+iki seviye de aynı derinliğe ulaşıyor, yani derinlik satın alan budama hiçbir şey satın
+almıyor. Yeni ölçüm bunu keskinleştiriyor — bu zaman kontrolünde fark yalnızca küçük
+değil, sıfırdan ayrışmıyor.
+
+**Level 8 düzeltmenin bıraktığı yerde:** −25 [−69, +19], aralık hâlâ sıfırı kapsıyor,
+artık 25 değil 240 oyunla.
+
+Bu koşu için ön-kayıtlı tahminim — *her* eşleşmenin sekans sayısından düşük çıkacağı —
+**yanlıştı**; altısının dördü daha yüksek çıktı. Yanlılık gerçek fark ~100'ün üstünde
+tersine dönüyor; bunu `docs/SPRT_BIAS.md` raporlamıştı ve tahmini yazarken kendi tablomu
+taşımamışım.
+
+#### Ölçülmüş merdiven
+
+0,1sn'deki 5.375 oyunun tamamı birlikte uydurulunca (sekans kayıtları, sabit uzunluklu
+karşılıkları olan her eşleşmede onlarla değiştirilerek) sekiz basamağın hepsi ilk kez
+yerleşti:
+
+| aralık | ölçülen | %95 aralık | nominal |
+|---|---:|---:|---:|
+| L1 → L2 | +444 | [+229, +660] | 300 |
+| L2 → L3 | +703 | [+505, +902] | 300 — dışarıda |
+| L3 → L4 | +427 | [+251, +604] | 300 |
+| L4 → L5 | +193 | [+33, +352] | 300 |
+| L5 → L6 | +660 | [+546, +773] | 300 — dışarıda |
+| L6 → L7 | **+19** | **[−17, +55]** | 300 — dışarıda |
+| L7 → L8 | −35 | [−79, +9] | 300 — dışarıda |
+
+**Yedi aralığın dördünde 300, güven aralığının dışında.** Gerçek merdiven altta dik
+çıkıyor, Level 4'te düzleşiyor, quiescence ve TT'nin geldiği yerde tekrar sıçrıyor —
+ve sonra **duruyor**.
 
 #### "Hedef Elo" sütunu bir isim listesi
 

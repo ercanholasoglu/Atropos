@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-29T14:51:04+00:00",
+ "finished_at": "2026-08-29T15:52:22+00:00",
+ "commit": "459446f",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "L4",
+  "b": "L3",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 240,
+  "minutes_budget": 7.0,
+  "games_before": 0
+ },
+ "wall_seconds": 399.14726537500974,
+ "cpu_seconds": 1546.291845,
+ "cpu_per_wall": 3.8739883224483993,
+ "peak_rss_mb_largest_process": 28.640625,
+ "nodes": 205703101,
+ "nodes_per_cpu_second": 133029.93329826428,
+ "games": 240,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "Ercan-MacBook-Pro.local"
+ },
+ "result": {
+  "games_total": 240,
+  "wins": 200,
+  "draws": 34,
+  "losses": 6,
+  "score": 0.9041666666666667,
+  "elo_estimate": 389.8927591323745,
+  "elo_interval_95": [
+   338.88239506554254,
+   456.97719025031375
+  ],
+  "llr": 23.709808358947882,
+  "verdict": "accept H1",
+  "diagnosis": "accept H1",
+  "state_file": "data/fixed_L4_vs_L3.json"
+ },
+ "notes": []
+}

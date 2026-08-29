@@ -24,8 +24,22 @@ NOT_RUNGS = {"L7-see", "L8-uniform", "L7-soft400", "L7-nodes5000"}
 
 
 def collect(movetime: float = MOVETIME) -> list[Pairing]:
-    """Every head-to-head record at this time control."""
+    """Every head-to-head record at this time control.
+
+    Where a pairing was played both sequentially and at fixed length, only the
+    fixed-length record is used. A sequential run stops on a favourable swing,
+    so its games are not a fair sample of the matchup — pooling them with an
+    unbiased set would carry the bias into the fit rather than cancel it. See
+    ``docs/SPRT_BIAS.md``.
+    """
     found: list[Pairing] = []
+    superseded: set[tuple[str, str]] = set()
+    for path in sorted(glob.glob("data/fixed_*.json")):
+        d = json.load(open(path))
+        if d.get("movetime") != movetime or "a" not in d:
+            continue
+        superseded.add((d["a"], d["b"]))
+        found.append(Pairing(d["a"], d["b"], d["wins"], d["draws"], d["losses"], Path(path).name))
     for path in sorted(glob.glob("data/sprt_*.json")):
         d = json.load(open(path))
         if d.get("movetime") != movetime or "a" not in d:
@@ -34,6 +48,8 @@ def collect(movetime: float = MOVETIME) -> list[Pairing]:
         # pairing; only the fixed one is pooled, because a run stopped by a
         # sequential rule is biased away from zero.
         if path.endswith("sprt_L7-see_vs_L7.json"):
+            continue
+        if (d["a"], d["b"]) in superseded:
             continue
         found.append(Pairing(d["a"], d["b"], d["wins"], d["draws"], d["losses"], Path(path).name))
     for path in sorted(glob.glob("data/anchor_sf-d*.json")):

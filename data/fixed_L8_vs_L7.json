@@ -1,0 +1,23 @@
+{
+ "a": "L8",
+ "b": "L7",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 86,
+ "draws": 51,
+ "losses": 103,
+ "games": 240,
+ "score": 0.46458333333333335,
+ "llr": -4.209327197762917,
+ "elo_estimate": -24.651304113253545,
+ "verdict": "accept H0",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 240,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}

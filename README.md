@@ -44,39 +44,66 @@ withdrawn. Source: [`docs/showcase.html`](docs/showcase.html).
 Measured over 16 games per pairing from the opening book, 300-ply limit, at a
 fixed 0.3s per move (`make ladder`, 2026-08-23).
 
-### The same claim, tested sequentially
+### The same claim, tested sequentially — and what that cost
 
-Those numbers came from fixed sixteen-game matches — the method that, tested
-against itself elsewhere in this project, called an evaluation change +60 Elo
-at 64 games and −2 at 359. The claim deserved the better instrument, so every
-adjacent pairing was re-run as an SPRT against `H1: at least 100 Elo`
-(`make ladder-sprt`, 0.1s per move):
+Those numbers came from fixed sixteen-game matches, so every adjacent pairing
+was re-run as an SPRT against `H1: at least 100 Elo` (`make ladder-sprt`, 0.1s
+per move):
 
-| pairing | games | score | Elo † | 95% interval | verdict |
-|---|---:|---:|---:|---:|---|
-| L2 vs L1 | 9 | 88.9% | +361 | [+194, +800] | accepted |
-| L3 vs L2 | 7 | 100.0% | +800 | [+800, +800] | accepted |
-| L4 vs L3 | 9 | 88.9% | +361 | [+194, +800] | accepted |
-| L5 vs L4 | 33 | 68.2% | +132 | [+45, +240] | accepted |
-| L6 vs L5 | 9 | 88.9% | +361 | [+134, +800] | accepted |
-| L7 vs L6 | 65 | 63.1% | +93 | [+21, +174] | accepted |
-| **L8 vs L7** | **25** | **38.0%** | **−85** | **[−238, +40]** | **rejected** |
+| pairing | games | score | Elo † | verdict |
+|---|---:|---:|---:|---|
+| L2 vs L1 | 9 | 88.9% | +361 | accepted |
+| L3 vs L2 | 7 | 100.0% | +800 | accepted |
+| L4 vs L3 | 9 | 88.9% | +361 | accepted |
+| L5 vs L4 | 33 | 68.2% | +132 | accepted |
+| L6 vs L5 | 9 | 88.9% | +361 | accepted |
+| L7 vs L6 | 65 | 63.1% | +93 | accepted |
+| **L8 vs L7** | **25** | **38.0%** | **−85** | **rejected** |
 
-**The ladder is ordered up to Level 7. Level 8 adds nothing measurable.**
+The bottom three rungs were settled in **25 games between them**, where the
+fixed gauntlet spent 48 and proved less. That is what sequential testing buys.
 
-**† The Elo column is not an estimate of anything.** Simulating this exact
+**† And then the Elo column had to be thrown away.** Simulating this exact
 stopping rule against known truths ([`docs/SPRT_BIAS.md`](docs/SPRT_BIAS.md))
-shows that a run which accepts H1 and stops early reports **about +110
-whatever the true difference is** — +113 when the truth is zero, +118 when it
-is a hundred. The number moves by five Elo across a range of a hundred. What
-carries information is the *verdict*: this rule accepts 3% of the time at a
-true zero and 97% at a true hundred. Read the column as "the test stopped
-here", and the verdict as the claim.
+shows it reports about **+110 whatever the true difference is** when it accepts
+early — +113 at a true zero, +118 at a true hundred. For a small gap the bias
+is 1.5× the run-to-run spread, so the number is reliably wrong; for a large gap
+the bias nearly vanishes but the spread is 130–170 Elo, because the test stops
+after a dozen games. **The verdicts survive. The magnitudes were never
+measured.**
 
-The first thing that table shows is what sequential testing buys: the bottom
-three rungs were settled in **25 games between them**, where the fixed gauntlet
-spent 48 and proved less. Budget goes where the question is hard — L7 vs L6
-needed 65 games.
+### Measuring them
+
+Every pairing replayed at fixed length, no stopping rule, 1,960 games
+([`docs/LADDER_FIXED_PREREG.md`](docs/LADDER_FIXED_PREREG.md), pre-registered):
+
+| pairing | games | sequential said | **measured** | 95% interval |
+|---|---:|---:|---:|---:|
+| L2 vs L1 | 600 | +361 | **+420** | [+375, +479] |
+| L3 vs L2 | 600 | +800 | **+684** | [+603, +833] |
+| L4 vs L3 | 240 | +361 | **+390** | [+326, +482] |
+| L5 vs L4 | 240 | +132 | **+149** | [+103, +200] |
+| L6 vs L5 | 240 | +361 | **+527** | [+443, +682] |
+| **L7 vs L6** | **240** | **+93** | **+22** | **[−22, +66]** |
+| L8 vs L7 | 240 | −85 | **−25** | [−69, +19] |
+
+**Level 7 is not distinguishable from Level 6 at 0.1s per move.** That is the
+fourth independent route to the same answer — the joint fit says +50 [−3,
++103], an outside engine that played both rungs puts them 4 Elo apart, and the
+bias simulation predicted a shift of +66 against the +71 observed.
+
+It fits what the footnote below has always said about Level 7: its advantage is
+clock-dependent, and at 0.1s both levels reach the same depth, so pruning that
+buys depth buys nothing. The gap at this time control is not merely small — it
+is not resolved from zero.
+
+**Level 8 stays where the correction put it:** −25 [−69, +19], an interval
+containing zero, now on 240 games instead of 25.
+
+The pre-registered prediction for this run — that *every* pairing would measure
+lower than its sequential figure — was **wrong**, and four of six measured
+higher. The bias reverses above a true difference of about 100, which
+`docs/SPRT_BIAS.md` reported and which I failed to carry into the prediction.
 
 ### The Target Elo column is a column of names
 
@@ -105,7 +132,7 @@ verified. The spacing is not.**
 
 ### Fitting all of it at once
 
-Every number above came from one pairing at a time. Fitting all 2,730 games at
+Every number above came from one pairing at a time. Fitting all 5,375 games at
 0.1s simultaneously ([`docs/RATING_FIT.md`](docs/RATING_FIT.md)) uses something
 the chain of adjacent pairs throws away: **Stockfish at fixed depth played both
 Level 6 and Level 7**, and what it says about the gap between them is
@@ -113,9 +140,9 @@ independent of the ladder match that also measures it.
 
 | how the L7-over-L6 gap is computed | Elo |
 |---|---:|
-| score only, draws ignored — the method used above | +93 |
-| the same 65 games with a draw model | +100 |
-| every 0.1s game jointly, Stockfish included | **+50** [−3, +103] |
+| the sequential run's own number | +93 |
+| every 0.1s game jointly, Stockfish included | +50 [−3, +103] |
+| 240 games at fixed length | **+22** [−22, +66] |
 
 The outsider scores 47.5% against L7 and 46.9% against L6 — **4 Elo apart**,
 where the direct match says 93. Pooled, the interval **includes zero**.
@@ -124,14 +151,25 @@ That disagreement then resolved itself. A true difference near 50, passed
 through the ladder's stopping rule and stopped early, reports about 108 — so
 **the direct match and the cross-link were never in conflict.** One is a
 measurement; the other is the output of a rule that returns roughly the same
-number regardless of the truth. And the fit refuses to place Levels 1 and 2 at
-all: their only link to the rest is a 7-0-0 result, whose maximum likelihood is
-at infinity, so the gap is reported as "+109 Elo or more" and nothing further.
+number regardless of the truth. The fit now places all eight rungs. It could not before: Levels 1 and 2 hung
+off a 7-0-0 sweep whose maximum likelihood is at infinity. Six hundred
+fixed-length games produce losses, and a finite gap can be fit.
 
-The fit does **not** reopen Level 8. It reports −143 [−290, +3], but the shift
-from the −85 measured directly comes from imposing a pooled draw parameter on a
-pairing whose own draw rate is a fifth of the pool's. The interval contains zero
-either way, and the correction below stands.
+The measured ladder, all seven gaps against a nominal 300 for each:
+
+| gap | measured | 95% interval |
+|---|---:|---:|
+| L1 → L2 | +444 | [+229, +660] |
+| L2 → L3 | +703 | [+505, +902] |
+| L3 → L4 | +427 | [+251, +604] |
+| L4 → L5 | +193 | [+33, +352] |
+| L5 → L6 | +660 | [+546, +773] |
+| L6 → L7 | **+19** | **[−17, +55]** |
+| L7 → L8 | −35 | [−79, +9] |
+
+**Four of seven have 300 outside their interval.** The real ladder rises
+steeply at the bottom, flattens at Level 4, jumps again where quiescence and
+the transposition table arrive, and then stops.
 
 ### A correction, and the mistake behind it
 

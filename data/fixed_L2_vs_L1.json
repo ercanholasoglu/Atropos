@@ -1,0 +1,23 @@
+{
+ "a": "L2",
+ "b": "L1",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "wins": 502,
+ "draws": 98,
+ "losses": 0,
+ "games": 600,
+ "score": 0.9183333333333333,
+ "llr": 62.700952999152314,
+ "elo_estimate": 420.3822075293087,
+ "verdict": "accept H1",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 600,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}
