@@ -126,6 +126,10 @@ h2 {
   font-size: clamp(1.9rem, 3.6vw, 2.7rem); line-height: 1.12;
   letter-spacing: -.01em; margin: 0 0 .5rem; text-wrap: balance;
 }
+.sub-h {
+  font-family: "Instrument Serif", Georgia, serif; font-weight: 400;
+  font-size: 1.5rem; margin: 3rem 0 .35rem; line-height: 1.2;
+}
 .sec-sub {
   font-family: "IBM Plex Mono", monospace; font-size: .72rem;
   letter-spacing: .12em; text-transform: uppercase; color: var(--accent-soft);
@@ -267,7 +271,7 @@ hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }
     her sayının nereden geldiğinin, hangi tahminin tutmadığının ve neyin hâlâ
     bilinmediğinin kaydı.</p>
   <div class="stats">
-    <div class="stat"><div class="v">4.087</div><div class="k">telemetrili oyun</div></div>
+    <div class="stat"><div class="v">6.900+</div><div class="k">telemetrili oyun</div></div>
     <div class="stat"><div class="v">7</div><div class="k">ön-kayıtlı tahmin</div></div>
     <div class="stat"><div class="v">3</div><div class="k">tutmadı</div></div>
     <div class="stat"><div class="v">4</div><div class="k">geri alınan iddia</div></div>
@@ -307,6 +311,43 @@ hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }
       Level 6'ya karşı −21 Elo. Yani iki basamak <strong>4 Elo arayla, [−47, +40]</strong> —
       etiketlerin 300 dediği yerde. Sayılar <code>INITIAL_ELO</code>'da kuruluşta
       <em>hedef</em> olarak atanmış.</p>
+  </div>
+
+  <h3 class="sub-h">Hepsini birden uydurunca sıralama da çatladı</h3>
+  <p>Yukarıdaki her sayı <em>tek bir eşleşmeden</em> geliyor. 0,1 sn'deki 2.730 oyunun
+    hepsini birlikte uydurmak, komşu-çift zincirinin attığı bir şeyi kullanıyor: aynı
+    dış motor hem L6'ya hem L7'ye karşı oynadı, yani aradaki farkı merdiven maçından
+    <strong>bağımsız</strong> ölçüyor.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>L7'nin L6 üstünlüğü nasıl hesaplanırsa</th><th class="num">Elo</th>
+        <th>%95 aralık</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>yalnızca skor, beraberlikler yok sayılır <span class="sub">projenin
+          kullandığı yöntem</span></td><td class="mono num">+93</td>
+          <td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:21.43%"></span><span class="ivl-range" style="left:28.93%;width:54.64%"></span><span class="ivl-est" style="left:54.64%"></span></span></td>
+          <td class="mono small">[+21, +174]</td></tr>
+        <tr><td>aynı 65 oyun, beraberlik modeliyle</td><td class="mono num">+100</td>
+          <td class="ivl-cell"></td><td class="mono small">—</td></tr>
+        <tr class="row-key"><td>0,1 sn'deki <em>her</em> oyun birlikte</td>
+          <td class="mono num">+50</td>
+          <td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:21.43%"></span><span class="ivl-range" style="left:20.36%;width:37.86%"></span><span class="ivl-est" style="left:39.29%"></span></span></td>
+          <td class="mono small">[−3, +103]</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Model değişimi neredeyse hiçbir şey yapmıyor — <strong>hareketi çapraz bağ
+    yapıyor.</strong> Dış motor L7'ye karşı %47,5, L6'ya karşı %46,9 alıyor: iki basamak
+    4 Elo arayla. Havuzlanınca aralık <strong>sıfırı kapsıyor.</strong></p>
+  <blockquote>Merdivenin en zor kazanılan eşleşmesi tek bir rakibe karşı çözülmüştü.
+    İki tarafla da oynayan ikinci bir rakip itiraz ediyor.</blockquote>
+  <div class="panel">
+    <p><strong>Uyumun yapmayı reddettiği iki şey.</strong> Level 1 ve 2'yi hiç
+      yerleştirmiyor: geri kalana tek bağlantıları 7-0-0'lık bir sonuç, olabilirliği
+      sonsuzda maksimum. Söylenebilecek tek şey tek yönlü: <em>+109 Elo ya da daha
+      fazla</em>, üst sınır yok. Ve Level 8'i yeniden açmıyor — havuzlanmış beraberlik
+      parametresi −143 gösteriyor ama o eşleşmenin kendi beraberlik oranı havuzun beşte
+      biri; kendi oyunlarına uydurunca −86, ve aralık her halükârda sıfırı kapsıyor.</p>
   </div>
 </section>
 
@@ -381,8 +422,7 @@ hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }
   <blockquote>Katlama başına Elo motorun sabiti değil; eğrinin hangi bölgesinde
     ölçtüğünün özelliği.</blockquote>
 
-  <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.5rem;margin:3rem 0 .35rem">
-    Ve eğri, aletin kendisini ölçüyormuş</h3>
+  <h3 class="sub-h">Ve eğri, aletin kendisini ölçüyormuş</h3>
   <p>Bütçenin <em>nasıl uygulandığı</em> birinci derecede bir değişken çıktı. Sert node
     limiti kestiği iterasyonu çöpe atıyor: aynı derinliğe ulaşmak için %46 fazla node
     harcıyor.</p>
