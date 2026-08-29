@@ -433,60 +433,66 @@ bilinçli seçim; bilmeden 700 oyun harcamak değil.
 
 ## 6. Sırada ne var
 
-### 6.1 Acil (teknik olmayan)
+### 6.1 Acil (teknik olmayan) ✅ kapandı
 
-**Her iki repo da commit'siz.** chess-bot 124 dosya, atropos 16 fazlık iş — ve atropos'un
-kendi `.git`'i yok, ev dizinindeki kaza repo'sunda untracked duruyor. Geçmiş yok, bisect
-yok, geri dönüş yok. Ben o kod tabanına dokundum (flush düzeltmesi). Bu, şimdi bir
-dakikalık iş, sonra imkânsız.
+Her iki repo da artık versiyon kontrolünde. chess-bot `Atropos` adıyla
+`github.com/ercanholasoglu/Atropos` üzerinde (private), C++ ağacı `cpp/` altında
+`cpp/PORTING.md` eşlemesiyle. Her koşu artık commit hash'i ile kaydediliyor
+(`data/telemetry/`); telemetriden önceki 16 kayıt `commit unknown` olarak damgalandı —
+uydurulmadı, çünkü çalışma ağacı proje boyunca kirliydi.
 
-### 6.2 Merdiven ✅ tamamlandı
+### 6.2 Merdiven ✅ sıralı, ⚠️ aralıkları değil
 
-Yedi eşleşmenin hepsi karara bağlandı (yukarıdaki tablo). Merdiven L7'ye kadar sıralı.
-
-Beklenmedik bulgu: L7'nin avantajı derinlikse ve 0.1sn'de her ikisi de depth 3'te
-takılıyorsa, test o avantajı kapalıyken ölçüyordu — **yine de kabul edildi.** Yani
-null-move/LMR aynı derinlikte de daha iyi hamle sıralaması sağlıyor.
+Yedi eşleşmenin hepsi karara bağlandı; merdiven L7'ye kadar **sıralı**. Ama 2.1'de
+yazıldığı gibi **aralıkları hiç ölçülmemiş** — üç bağımsız alet (merdivenin kendi
+SPRT'leri, atropos gauntlet'i, sabit derinlikli Stockfish) nominal 300'ün üç basamakta da
+güven aralığının dışında kaldığını söylüyor.
 
 **Level 8 açık kalıyor.** Ölçülebilir üstünlüğü yok ve olması da beklenmez: L7'nin
-araması artı bir zaman heuristiği. Etrafında tasarlandığı öğrenilmiş değerlendirici
-eğitilmemiş. Seçenekler:
+araması artı bir zaman heuristiği. Uyarlanabilir saatin yardım mı zarar mı ettiği hâlâ
+açık (54 oyun, [−99, +72]).
 
-- `research/minimal_nnue`'nin bulgusu: **doğrusal model bedava** (tabloya katlanıyor),
-  ama ortalamayı tahmin etmekten zar zor iyi. Gizli katmanlı her ağ 2-4× pahalı.
-- Uyarlanabilir saatin yardım mı zarar mı ettiği hâlâ açık (54 oyun, [−99, +72]).
-  Daha dar bir bracket ile (`[0, 20]`) ve daha çok oyunla çözülebilir.
-
-### 6.3 atropos'un kalan fazları (Python'da)
+### 6.3 atropos'un fazları (Python'da)
 
 | Faz | Konu | Durum |
 |---|---|---|
-| 17 | Evaluation v3 | ✅ ölçüldü, reddedildi |
-| 18 | Search v2 | ✅ L7'de zaten var (null-move, LMR, aspiration) |
+| 17 | Evaluation v3 | ✅ ölçüldü; demet reddedildi, **v3-rooks +44 ile ship edildi** |
+| 17 | Static exchange evaluation | ✅ yazıldı + ölçüldü; **bayrak kapalı**, bkz. `docs/SEE_PREREG.md` |
+| 18 | Search v2 | ✅ L7'de zaten var (null-move, LMR, aspiration, check extension) |
 | 19 | Turnuva zaman yönetimi | ✅ `uci/time_manager.py` |
-| 20 | Profilleme + NPS | ✅ +%39, devam edilebilir |
-| 21-23 | Taktik suite genişletme, benchmark baseline, kalibre release | kısmen |
-| 24-31 | NNUE hattı | `research/minimal_nnue` çekirdek soruyu cevapladı |
+| 20 | Profilleme + NPS | ✅ +%39; artık Elo'ya çevrilebiliyor (−207/katlama) |
+| 21 | Taktik suite | ⚠️ 8 pozisyon — atropos'un "larger tactical suite" maddesi açık |
+| 22 | Benchmark baseline | ⚠️ telemetri var, ayrı bir `bench` komutu yok |
+| 23 | Kalibre Elo hattı | ✅ `elo/sprt.py` + `scripts/calibrate.py` + `scripts/anchor.py` |
+| 24-31 | NNUE hattı | `research/minimal_nnue` çekirdek soruyu cevapladı: bu ölçekte ödemiyor |
 
-NNUE hattı için dürüst durum: ölçüm, bu ölçekte Python'da bir NNUE'nin aramanın içinde
-kendini ödemediğini söylüyor. Devam edilecekse ya batch'li yaprak değerlendirmesi
-(MCTS gibi) ya da inference'ı tabloya katlayan doğrusal modeller mantıklı.
+atropos'un kendi durum belgesi ölçüm için **cutechess-cli + Stockfish skill level**
+öneriyor. İkisini de kullanmadık, ikisi de gerekçeli: cutechess yerine protokolü doğrudan
+konuşmak bir kurulum adımını kaldırdı (2.3), ve skill level yerine **sabit derinlik**
+seçildi çünkü skill ayarları kasten hata yaptırıp ölçülen güçle ilgisiz varyans ekliyor
+(3.2).
 
 ### 6.4 Açık sorular
 
 - **Athena entegrasyonu** — ayrı repo + showcase mı, Athena içinde bir surface mi?
-- **Mutlak Elo** — bilinen ratingli bir dış motor (Stockfish skill level) gerekir
+- **Mutlak Elo** — hâlâ açık. Sabit derinlikli Stockfish merdivenin *aralıklarını* ölçtü
+  ama ölçeğin nerede oturduğunu değil; onun için CCRL listesindeki bir motora karşı
+  gerçek zaman kontrolü ya da Lichess bot havuzu gerekir (`docs/ANCHOR.md`).
+- **SEE'nin büyüklüğü** — çözülmedi, [+11, +87]. Pozitif olduğu iki koşuda da kesin;
+  ne kadar olduğu değil.
+- **SEE ship edilsin mi** — veri sorusu değil: L7, bu haftaki çıpanın ve gauntlet'in
+  ölçüm aleti. Açılırsa mevcut bütün sayıların "SEE öncesi" diye etiketlenmesi gerekir.
 - **v3-passers** — 714 oyunda çözülmedi, [−12, +34]; ~+10'luk etki için dar bracket gerek
 - **L8'in uyarlanabilir saati** — çözülmedi, dar bracket ile yeniden denenmeli
-- **Level 8'e ne koyacağız** — ölçüm, bu ölçekte Python'da NNUE'nin aramanın içinde
-  kendini ödemediğini söylüyor
+- **Hız → Elo'nun açık ucu** — movetime kolu B/8'de node eğrisinden ~90 Elo sapıyor;
+  iki mekanizma var, bu tasarım ayırmıyor (`docs/SPEED.md`)
 
 ---
 
 ## 7. Hızlı referans
 
 ```bash
-make test           # 712 test, ~45sn
+make test           # 724 test, ~45sn
 make perft          # hamle üretimini kanıtla (10.7M node)
 make run            # Streamlit arayüzü
 make uci            # motoru stdin/stdout'ta
