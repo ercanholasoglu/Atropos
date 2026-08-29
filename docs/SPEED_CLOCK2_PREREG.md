@@ -71,3 +71,66 @@ it.
 with `DIVISORS_MOVETIME = (1.5, 2, 4, 8)`. The three existing pairings resume
 untouched; only B/1.5 is played. 240 games, fixed length, no stopping rule,
 same operating point and opening book as every other pairing here.
+
+---
+
+## Result
+
+**B/1.5: 240 games, −82.6 Elo, interval [−129, −38].**
+
+| reading | predicted | inside the interval? |
+|---|---:|---|
+| line through the origin | −58 | **yes** |
+| offset model | −174 | no |
+
+**The offset model is rejected.** Dividing the clock does not cost a fixed
+penalty on top of the nodes it removes, and the caveat currently attached to
+every sub-doubling conversion is not justified by an offset.
+
+### Refitting with four points
+
+Spends re-measured in one pass so all four x-values come from the same
+machine state:
+
+| divisor | nodes | doublings | Elo | ± | residual vs the 4-point line |
+|---|---:|---:|---:|---:|---:|
+| B/1.5 | 4809 | 0.341 | −82.6 | 23 | −1.0σ |
+| **B/2** | 4005 | 0.605 | −200.6 | 26 | **−3.6σ** |
+| B/4 | 1999 | 1.608 | −250.0 | 29 | +1.0σ |
+| B/8 | 1485 | 2.037 | −331.5 | 34 | +0.7σ |
+
+A line through the origin is still rejected on all four (χ² = 15.6 on 3 dof)
+and **the entire misfit is still B/2**, now flanked on both sides by points
+that fit. Dropping it: **−162 Elo per doubling [−185, −139], χ² = 1.5 on 2
+dof** — an unremarkable fit.
+
+### What is not settled
+
+**Three points make a clean line and one point is 3.6σ away, and I do not know
+why.** The reading that the arm is linear through the origin now rests on
+calling B/2 anomalous, and "it is the point that does not fit" is not a reason
+to drop a measurement. A 3.6σ outlier in four points is also too improbable to
+wave through as chance.
+
+So the conversion below is stated **conditional on B/2 being anomalous**, and
+the next run tests exactly that rather than assuming it.
+
+## Follow-up, declared before it runs
+
+**Replay B/2 with 240 games the first run did not play.** Game indices choose
+the opening and both seeds, so a re-run from zero would replay the same games
+and prove only that the code is deterministic; the replication is offset by
+1000.
+
+* **Near −98** (the line's value at 0.605 doublings) → the first B/2 was a
+  fluke, the arm is linear through the origin at −162, and every conversion
+  can be quoted without qualification.
+* **Near −201** → it reproduces, it is a real feature of that operating point,
+  and the arm is *not* a single line. What lives at B/2 then becomes the
+  question, and no conversion near 0.6 doublings can be trusted until it is
+  answered.
+
+103 Elo apart, ±45 at 240 games.
+
+    python -m scripts.speed_elo --arm movetime --only 2 --index-offset 1000 \
+        --out data/speed_elo_movetime_b2_replication.json

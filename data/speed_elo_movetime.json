@@ -6,6 +6,22 @@
  "pairings": [
   {
    "arm": "movetime",
+   "divisor": 1.5,
+   "doublings": 0.5849625007211562,
+   "games": 240,
+   "score_for_full_speed": 0.6166666666666667,
+   "elo_for_slowed": -82.58955521976088,
+   "interval_for_slowed": [
+    -129.49218358177728,
+    -38.481570665765
+   ],
+   "predicted_elo_for_slowed": null,
+   "budget_nodes": null,
+   "budget_seconds": 0.06,
+   "complete": true
+  },
+  {
+   "arm": "movetime",
    "divisor": 2,
    "doublings": 1.0,
    "games": 240,
@@ -54,16 +70,17 @@
   }
  ],
  "fit": {
-  "elo_per_doubling": -121.08675992658603,
-  "standard_error": 16.25441359932373,
+  "elo_per_doubling": -121.56633752270268,
+  "standard_error": 13.231463465098717,
   "interval": [
-   -152.94541058126055,
-   -89.22810927191152
+   -147.50000591429617,
+   -95.6326691311092
   ],
   "residuals": [
-   -79.55124971455909,
-   -7.844039446288718,
-   31.746442869045552
+   -11.477806418968598,
+   -79.07167211844244,
+   -6.884884254055407,
+   33.18517565739552
   ]
  },
  "complete": true

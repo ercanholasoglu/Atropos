@@ -170,7 +170,9 @@ def run_pairing(
     if played >= args.games:
         return False
     print(f"full speed vs 1/{divisor:g} ({arm}), from game {played}", flush=True)
-    queue = [(arm, divisor, i, args.max_plies) for i in range(played, args.games)]
+    queue = [
+        (arm, divisor, i + args.index_offset, args.max_plies) for i in range(played, args.games)
+    ]
     workers = max(1, args.workers)
     hit_deadline = False
 
@@ -252,11 +254,29 @@ def main() -> int:
     parser.add_argument("--max-plies", type=int, default=200)
     parser.add_argument("--minutes", type=float, default=0.0, help="budget for this chunk")
     parser.add_argument("--restart", action="store_true")
+    parser.add_argument(
+        "--only",
+        type=float,
+        default=None,
+        help="play just this divisor, ignoring the rest of the arm",
+    )
+    parser.add_argument(
+        "--index-offset",
+        type=int,
+        default=0,
+        help="shift every game index by this much. A replication needs games "
+        "the first run did not play: indices choose the opening and both "
+        "seeds, so re-running from zero would replay the same games and "
+        "prove only that the code is deterministic.",
+    )
+    parser.add_argument("--out", default=None, help="write somewhere other than the default")
     args = parser.parse_args()
     args.deadline = time.monotonic() + args.minutes * 60
 
-    divisors = DIVISORS_NODES if args.arm == "nodes" else DIVISORS_MOVETIME
-    out = Path(f"data/speed_elo_{args.arm}.json")
+    divisors: tuple[float, ...] = DIVISORS_NODES if args.arm == "nodes" else DIVISORS_MOVETIME
+    if args.only is not None:
+        divisors = (args.only,)
+    out = Path(args.out or f"data/speed_elo_{args.arm}.json")
 
     # One tally per pairing, written after every game. These runs are long
     # enough to be interrupted, and a pairing that has to restart from zero
