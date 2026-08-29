@@ -57,6 +57,9 @@ class BaseEngine(ABC):
         # UCI `stop` takes to reach a search already in flight.
         self.stop_event: threading.Event | None = None
         self.node_limit: int | None = None
+        # Whether that budget may stop a search mid-iteration. See
+        # SearchStats.node_limit_hard.
+        self.node_limit_hard: bool = True
         # Called with (RootResult, SearchStats, board) after every completed
         # iteration, so a caller can stream `info` lines while thinking.
         self.on_iteration: Callable[..., None] | None = None

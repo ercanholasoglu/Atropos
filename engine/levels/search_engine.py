@@ -70,6 +70,7 @@ class SearchEngine(BaseEngine):
         stats = SearchStats(
             time_limit=self.time_limit,
             node_limit=self.node_limit,
+            node_limit_hard=self.node_limit_hard,
             stop_event=self.stop_event,
         )
         result = self._root_search(board, stats, moves)

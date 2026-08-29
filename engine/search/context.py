@@ -38,11 +38,18 @@ class SearchStats:
     # Reading the clock at every node is measurable overhead; every 2048 is
     # far more often than a millisecond-scale budget needs.
     check_interval: int = 2048
+    # Whether the node budget may stop a search part-way through an iteration.
+    # A hard limit stops on the node that exceeds it and throws away whatever
+    # that iteration had found so far; a soft one lets the iteration finish
+    # and only declines to start the next. Exists so the two can be told
+    # apart — see docs/SPEED.md, where a node budget and a clock produced
+    # different strength at the same node count.
+    node_limit_hard: bool = True
 
     def tick(self) -> None:
         """Count a node and abort the search if it should not continue."""
         self.nodes += 1
-        if self.node_limit is not None and self.nodes >= self.node_limit:
+        if self.node_limit_hard and self.node_limit is not None and self.nodes >= self.node_limit:
             raise SearchTimeout
         if self.nodes % self.check_interval:
             return

@@ -59,7 +59,19 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
         if level not in available_levels():
             raise SystemExit(f"level {level} is not implemented; have {available_levels()}")
         engine = create_engine(level, seed=seed, time_limit=movetime)
-        if flag == "see":
+        if flag.startswith("nodes") or flag.startswith("soft"):
+            # Fixed node budgets, for the speed experiment's third arm. A
+            # `soft` budget only declines to start the next iteration; a
+            # `nodes` budget stops on the node that exceeds it. Both drop the
+            # clock entirely, so the two are compared with no timing in play.
+            digits = flag[5:] if flag.startswith("nodes") else flag[4:]
+            if not digits.isdigit():
+                raise SystemExit(f"{flag!r} needs a node count, e.g. L7-soft400")
+            engine.time_limit = None
+            engine.node_limit = int(digits)
+            engine.node_limit_hard = flag.startswith("nodes")
+            engine.name = f"L{level}-{flag}"
+        elif flag == "see":
             searcher = getattr(engine, "searcher", None)
             if searcher is None or not hasattr(searcher.config, "use_see_pruning"):
                 raise SystemExit(f"L{level} has no quiescence to prune")
