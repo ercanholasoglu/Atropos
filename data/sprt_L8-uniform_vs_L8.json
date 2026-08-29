@@ -19,5 +19,9 @@
   "max_games": 600,
   "initial_draw_elo": 250.0,
   "min_games_for_draw_estimate": 20
- }
+ },
+ "commit": null,
+ "provenance": "commit unknown",
+ "provenance_note": "Recorded before run telemetry existed. The commit is not recoverable and has been left null rather than guessed.",
+ "audited_at": "2026-08-28T15:30:38+00:00"
 }

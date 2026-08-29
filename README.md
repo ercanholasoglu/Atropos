@@ -408,6 +408,66 @@ games would shrink them. R(d) is the part that no amount of play here can
 reduce, and getting it means playing a rated engine at a rated time control,
 or entering the Lichess bot pool.
 
+## What a doubling of speed is worth
+
+Every optimisation here was reported in nodes per second, which is not a unit
+anyone cares about. Level 7 against a deliberately slowed copy of itself, node
+budget halved four times, 240 games per pairing, 960 games. Brackets,
+predictions and the falsifiable claim were committed before the first game
+(`b84fd6e`).
+
+| budget | measured | 95% interval | predicted |
+|---|---:|---:|---:|
+| B/2 | **−159** | [−212, −113] | −60 |
+| B/4 | **−417** | [−518, −349] | −120 |
+| B/8 | **−636** | [−911, −532] | −180 |
+| B/16 | **−830** | [−2400, −678] | −240 |
+
+**−207 Elo per doubling, interval [−251, −164].** The least-squares fit reports
+±5; that treats the four points as exact when their own errors run ±25 to
+±153. The propagated interval is the one to quote.
+
+Every point missed its prediction, in the same direction, by two and a half
+times. The predictions came from published doubling curves for classical
+engines (50–70 Elo), measured at long time controls where a doubling adds a
+ply to a search that already has fifteen. Here the reference budget reaches
+depth 3.0 and B/2 reaches 2.0 — a doubling is the difference between seeing a
+three-move tactic and not seeing it. **Elo per doubling is not a constant of
+an engine; it is a property of the part of the curve you measure in.**
+
+The pre-registered claim — linearity in log2(budget) — survives: residuals
++48, −2, −14, −1 against per-point errors of ±25 to ±153.
+
+### The cross-check that disagreed
+
+The same halvings were also run as *movetime* divisions, on the assumption
+that the two are the same slowdown spelled differently. At B/2 they agree. At
+B/8 they do not overlap: −636 [−911, −532] against **−332 [−409, −273]**.
+
+Measuring what each budget actually spends shows why. A movetime division by
+eight is a node division by **four** — 0.09 s buys 6144 nodes rather than the
+5000 the node arm starts from, and at 11 ms the spend runs from 569 to 2048
+nodes, the top of that range being exactly one `check_interval`. The clock was
+never dividing the quantity the experiment was varying.
+
+Correcting for that closes B/2 and leaves B/8 about 90 Elo unexplained, just
+outside its interval. Two mechanisms could do it — an unevenly spent budget is
+worth more than a fixed one, or a node limit truncates mid-iteration where a
+clock stops at a boundary — and **this design does not separate them**. It is
+recorded as open rather than resolved by picking the better-sounding story.
+Full write-up in [`docs/SPEED.md`](docs/SPEED.md).
+
+### What it costs the rest of the project
+
+The +39% speedup is worth **+98 Elo** [+79, +120], not the +29 the rule of
+thumb suggested.
+
+Atropos runs 2.6 doublings slower than this engine (8,938 nps against
+~54,000). At −207 per doubling that is **−537 Elo from throughput alone**,
+against a measured gap to Level 6 of about 440. They agree inside the error on
+either, so nothing about the evaluation needs to be invoked to explain why an
+engine with feature parity loses.
+
 ## Where the time actually went
 
 Three measurements in a row pointed at throughput — Atropos losing 440 Elo to

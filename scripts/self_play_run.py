@@ -27,6 +27,7 @@ from engine.search.alphabeta import search_alphabeta
 from engine.search.context import RootResult, SearchStats
 from research.self_play.value_learner import PieceSquareEvaluator, TDConfig, ValueLearner
 from tournament.match import play_match
+from scripts.telemetry import TelemetryRecorder
 from tournament.openings import book
 
 CENTRE = (chess.D4, chess.E4, chess.D5, chess.E5)
@@ -111,10 +112,26 @@ def main() -> int:
         ),
     )
 
+    recorder = TelemetryRecorder(
+        "self_play_run",
+        {
+            "games": args.games,
+            "depth": args.depth,
+            "max_plies": args.max_plies,
+            "learning_rate": args.learning_rate,
+            "lam": args.lam,
+            "epsilon": args.epsilon,
+            "seed": args.seed,
+            "match_games": args.match_games,
+        },
+    )
+
     trace: list[dict] = []
     started = time.perf_counter()
 
     def track(index: int, game, error: float) -> None:
+        recorder.add_games()
+        recorder.add_nodes(game.nodes)
         if index % 100 == 0 or index == 1:
             snapshot = {
                 "game": index,
@@ -199,7 +216,21 @@ def main() -> int:
             indent=1,
         )
     )
+    recorder.write(
+        {
+            "games": args.games,
+            "outcomes": {
+                "white": result.outcomes.count(1.0),
+                "black": result.outcomes.count(-1.0),
+                "draw": result.outcomes.count(0.0),
+            },
+            "shapes": shapes,
+            "match_scores": match_scores,
+        }
+    )
     print(f"\nwritten to {output}")
+    print(f"telemetry: {recorder.summary()}")
+    print(f"           {recorder.path}")
     return 0
 
 

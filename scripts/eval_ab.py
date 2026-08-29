@@ -32,6 +32,7 @@ from engine.evaluation.tapered import (
     positional_eval_v3,
 )
 from engine.levels.level6_tactical import Level6Tactical
+from scripts.telemetry import TelemetryRecorder
 from tournament.match import play_match
 from tournament.openings import book
 
@@ -73,6 +74,16 @@ def main() -> int:
     if len(names) < 2:
         raise SystemExit(f"need at least two known variants; got {names}")
 
+    recorder = TelemetryRecorder(
+        "eval_ab",
+        {
+            "variants": names,
+            "games_per_pairing": args.games,
+            "movetime": args.movetime,
+            "max_plies": args.max_plies,
+        },
+    )
+
     print(f"{'matchup':<28} {'score':>7} {'W-D-L':>10} {'elo':>7} {'time':>7}", flush=True)
     print("-" * 64, flush=True)
 
@@ -87,6 +98,9 @@ def main() -> int:
             games=args.games,
             max_plies=args.max_plies,
         )
+        for game in match.games:
+            recorder.add_nodes(game.nodes)
+            recorder.add_games()
         elo = elo_diff_from_score(match.score)
         rows.append(
             {
@@ -117,7 +131,10 @@ def main() -> int:
             print(f"  {row['a']} vs {row['b']}: inside the noise — no verdict", flush=True)
 
     _write(args.out, args, rows, time.perf_counter() - started)
+    recorder.write({"rows": rows, "standard_error": 0.5 / (args.games**0.5)})
     print(f"written to {args.out}")
+    print(f"telemetry: {recorder.summary()}")
+    print(f"           {recorder.path}")
     return 0
 
 

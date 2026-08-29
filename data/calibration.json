@@ -60,5 +60,9 @@
   }
  ],
  "performance_rating": 1514.374754675578,
- "seconds": 1161.9600109579042
+ "seconds": 1161.9600109579042,
+ "commit": null,
+ "provenance": "commit unknown",
+ "provenance_note": "Recorded before run telemetry existed. The commit is not recoverable and has been left null rather than guessed.",
+ "audited_at": "2026-08-28T15:30:38+00:00"
 }

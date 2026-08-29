@@ -151,6 +151,7 @@ class GameTrace:
     outcome: float  # +1 White won, 0 draw, -1 Black won
     plies: int
     reason: str
+    nodes: int = 0
 
 
 @dataclass
@@ -188,7 +189,7 @@ class ValueLearner:
 
     # --- playing ----------------------------------------------------------
 
-    def _pv_leaf(self, board: chess.Board) -> tuple[chess.Move | None, chess.Board]:
+    def _pv_leaf(self, board: chess.Board) -> tuple[chess.Move | None, chess.Board, int]:
         """Search, then return the move and the board at the end of the PV.
 
         The leaf is the position the score actually describes, so it is the
@@ -200,19 +201,21 @@ class ValueLearner:
         for move in result.pv:
             if move in leaf.legal_moves:
                 leaf.push(move)
-        return result.move, leaf
+        return result.move, leaf, stats.nodes
 
     def play_game(self) -> GameTrace:
         board = chess.Board()
         features: list[np.ndarray] = []
         values: list[float] = []
         reason = "in progress"
+        nodes = 0
 
         while (
             not board.is_game_over(claim_draw=True)
             and len(board.move_stack) < self.config.max_plies
         ):
-            move, leaf = self._pv_leaf(board)
+            move, leaf, searched = self._pv_leaf(board)
+            nodes += searched
             if move is None:
                 break
             features.append(piece_square_vector(leaf).astype(np.float64))
@@ -240,6 +243,7 @@ class ValueLearner:
             outcome=outcome,
             plies=len(board.move_stack),
             reason=reason,
+            nodes=nodes,
         )
 
     # --- learning ---------------------------------------------------------

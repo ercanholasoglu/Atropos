@@ -37,6 +37,7 @@ from elo.calculator import elo_diff_from_score
 from elo.sprt import Sprt, SprtConfig, Verdict
 from engine.levels import available_levels
 from scripts.sprt_match import build, save
+from scripts.telemetry import TelemetryRecorder
 from tournament.match import play_game
 from tournament.openings import OPENING_BOOK
 
@@ -70,7 +71,7 @@ def load_state(high: int, low: int, config: SprtConfig) -> Sprt | None:
     return test
 
 
-def play_pairing(high: int, low: int, test: Sprt, args, deadline: float) -> int:
+def play_pairing(high: int, low: int, test: Sprt, args, deadline: float, recorder=None) -> int:
     """Play games for one pairing until it decides or the clock runs out."""
     played = 0
     while not test.finished and time.time() < deadline:
@@ -108,6 +109,19 @@ def run_pairings(args, config: SprtConfig) -> int:
     """
     deadline = time.time() + args.minutes_total * 60
     pairs = parse_pairs(args.pairs)
+    recorder = TelemetryRecorder(
+        "ladder_sprt",
+        {
+            "pairs": args.pairs,
+            "elo0": args.elo0,
+            "elo1": args.elo1,
+            "movetime": args.movetime,
+            "max_plies": args.max_plies,
+            "max_games": args.max_games,
+            "minutes_budget": args.minutes_total,
+        },
+    )
+    verdicts: dict[str, dict] = {}
 
     for high, low in sorted(pairs, key=lambda pair: pair[0]):
         test = load_state(high, low, config) or Sprt(config)
@@ -118,9 +132,23 @@ def run_pairings(args, config: SprtConfig) -> int:
             print(f"L{high} vs L{low}: out of budget, not started", flush=True)
             continue
 
-        played = play_pairing(high, low, test, args, deadline)
+        played = play_pairing(high, low, test, args, deadline, recorder)
+        interval = test.elo_interval()
+        verdicts[f"L{high} vs L{low}"] = {
+            "games": test.games,
+            "score": test.score,
+            "elo_estimate": elo_diff_from_score(test.score),
+            "elo_interval_95": list(interval),
+            "llr": test.llr,
+            "verdict": test.verdict.value,
+            "games_this_run": played,
+        }
         print(f"L{high} vs L{low}: {test.summary()}  (+{played} games this run)", flush=True)
 
+    recorder.write({"pairings": verdicts})
+    print()
+    print(f"telemetry: {recorder.summary()}")
+    print(f"           {recorder.path}")
     print()
     return report(args, config)
 

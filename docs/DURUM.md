@@ -220,7 +220,62 @@ filtreliyordu, ve quiescence node'ların %69'u.
 
 Aynı ağaç, aynı node sayısı (108.966). Hamle üretimi node başına 6.6'dan 2.1'e düştü.
 
-### 3.4 Evaluation v3: demet düştü, içindeki bir terim ship edildi
+### 3.4 Hız → Elo: bir katlama kaç Elo?
+
+Bu projedeki her optimizasyon node/sn cinsinden raporlandı — kimsenin umursadığı bir
+birim değil. Level 7'yi kasten yavaşlatılmış kopyasına karşı oynattık; node bütçesi dört
+kez yarılandı, eşleşme başına 240 oyun, toplam 960. **Parantezler, tahminler ve
+çürütülebilir iddia ilk oyundan önce commit'lendi** (`b84fd6e`).
+
+| bütçe | ölçülen | %95 aralık | tahmin |
+|---|---:|---:|---:|
+| B/2 | **−159** | [−212, −113] | −60 |
+| B/4 | **−417** | [−518, −349] | −120 |
+| B/8 | **−636** | [−911, −532] | −180 |
+| B/16 | **−830** | [−2400, −678] | −240 |
+
+**Katlama başına −207 Elo, aralık [−251, −164].** En küçük kareler fit'i ±5 diyor ama o,
+dört noktayı kesin sayıyor; noktaların kendi hataları ±25 ile ±153 arasında. Yayılmış
+aralık doğru olanı.
+
+Her nokta tahminini **aynı yönde ve iki buçuk kat** ıskaladı. Tahminler klasik motorlar
+için yayınlanmış katlama eğrilerinden geliyordu (50-70 Elo) — ama onlar uzun zaman
+kontrollerinde, zaten on beş plilik bir aramaya bir pli eklendiğinde ölçülüyor. Burada
+referans bütçe derinlik 3.0'a, B/2 ise 2.0'a ulaşıyor: bir katlama, üç hamlelik taktiği
+görmekle görmemek arasındaki fark.
+
+> *Katlama başına Elo motorun sabiti değil; eğrinin hangi bölgesinde ölçtüğünün özelliği.*
+
+Ön-kayıtlı iddia — log2(bütçe)'de doğrusallık — ayakta: artıklar +48, −2, −14, −1, nokta
+hataları ±25-±153 iken.
+
+#### Çapraz kontrol uyuşmadı
+
+Aynı yarılanmalar **movetime** bölmesi olarak da koşuldu; ikisinin aynı yavaşlatmanın iki
+yazılışı olduğu varsayımıyla. B/2'de uyuşuyorlar. B/8'de hiç örtüşmüyor:
+−636 [−911, −532] karşısında **−332 [−409, −273]**.
+
+Her bütçenin gerçekte ne harcadığını ölçünce sebep çıkıyor. **Movetime'ın sekize bölmesi,
+node'un dörde bölmesi:** 0.09 sn 6144 node alıyor (node kolunun başladığı 5000 değil), ve
+11 ms'de harcama 569 ile 2048 node arasında geziniyor — üst ucu tam olarak bir
+`check_interval`. Saat, deneyin değiştirdiği büyüklüğü hiç bölmüyormuş.
+
+Bunu düzeltmek B/2'yi kapatıyor, B/8'de ~90 Elo açıkta kalıyor — aralığın hemen dışında.
+İki mekanizma bunu üretebilir (düzensiz harcanan bütçe sabit olandan değerlidir; ya da
+node limiti iterasyon ortasında kesip kısmi işi çöpe atarken saat sınırda duruyor) ve
+**bu tasarım ikisini ayırmıyor.** Kulağa daha hoş geleni seçmek yerine açık soru olarak
+kaydedildi. Tam yazım: `docs/SPEED.md`.
+
+#### Projenin geri kalanına faturası
+
++%39 hızlanma **+98 Elo** değerinde [+79, +120] — parmak hesabının dediği +29 değil.
+
+atropos bu motordan 2.6 katlama yavaş (8.938 nps'ye karşı ~54.000). Katlama başına −207
+ile bu **yalnızca throughput'tan −537 Elo** eder; L6'ya ölçülen fark ise ~440. İkisi
+birbirinin hata payı içinde uyuşuyor — yani özellik paritesi olan bir motorun neden
+kaybettiğini açıklamak için değerlendirmeye hiç başvurmak gerekmiyor.
+
+### 3.5 Evaluation v3: demet düştü, içindeki bir terim ship edildi
 
 Passed pawn, açık hat, kral güvenliği. **Demet olarak iki kez reddedildi** —
 sonra terimler tek tek test edildi ve biri kabul edildi.
@@ -262,7 +317,7 @@ v3-shelter'ın yolculuğu öğretici:
 
 198. oyunda kabul etmeye **0.63 kalmıştı**. Orada duran sabit bir maç onu ship ederdi.
 
-### 3.5 TDLeaf(λ): 10.000 oyun
+### 3.6 TDLeaf(λ): 10.000 oyun
 
 ```
 öğrenilen tablo vs material-only başlangıç:  %59.4  →  +66 Elo
@@ -278,7 +333,7 @@ Soğuk başlangıç bulgusu: sıfır ağırlıktan öğrenme çalışmıyor. Her
 eval rastgele oynar, rastgele oyunlar kesin bitmez, beraberlik serisi gradyan taşımaz.
 İlk koşuda ortalama TD farkı **tam olarak 0.0000** çıktı.
 
-### 3.6 Minimal NNUE: gecikme sütunu tartışmayı bitiriyor
+### 3.7 Minimal NNUE: gecikme sütunu tartışmayı bitiriyor
 
 ```
 architecture      params   MAE cp   1-pos µs
@@ -296,7 +351,7 @@ yerine geçeceğinin 2-4 katı. **Bu ölçekte, bu dilde bir NNUE aramanın içi
 Ablasyon sürprizi: **katlanmış 384'lük kodlama, yarı parametreyle 768'liği yeniyor**
 (157.7 vs 180.9 cp). Renk simetrisi, onu kırma özgürlüğünden değerli.
 
-### 3.7 AlphaZero-lite: hamle kodlaması tasarımın %96'sı
+### 3.8 AlphaZero-lite: hamle kodlaması tasarımın %96'sı
 
 | | düz `from × to` | AlphaZero 8×8×73 |
 |---|---:|---:|

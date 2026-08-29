@@ -36,6 +36,7 @@ from engine.levels import available_levels, create_engine
 from scripts.eval_ab import VARIANTS, VariantEngine
 from tournament.match import play_game
 from tournament.openings import OPENING_BOOK
+from scripts.telemetry import TelemetryRecorder
 from tournament.uci_engine import UciEngineProcess, UciLimits
 
 
@@ -78,11 +79,12 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
     )
 
 
-def play_one(job: tuple[str, str, int, float, int]) -> float:
-    """One game, from the point of view of ``a``. Runs in its own process.
+def play_one(job: tuple[str, str, int, float, int]) -> tuple[float, int]:
+    """One game as ``(score for a, nodes searched)``. Runs in its own process.
 
     Module-level and taking only plain data because process pools have to
-    pickle what they are handed.
+    pickle what they are handed. Nodes come back with the score so a run can
+    report what its answer cost, which is not reconstructable afterwards.
     """
     a_spec, b_spec, index, movetime, max_plies = job
 
@@ -102,7 +104,7 @@ def play_one(job: tuple[str, str, int, float, int]) -> float:
                 engine.close()
 
     white_score = {"1-0": 1.0, "0-1": 0.0, "1/2-1/2": 0.5}[record.result]
-    return white_score if a_is_white else 1 - white_score
+    return (white_score if a_is_white else 1 - white_score), record.nodes
 
 
 def load(path: Path, config: SprtConfig) -> Sprt:
@@ -181,6 +183,24 @@ def main() -> int:
         print(f"already decided: {test.verdict.value}")
         return 0
 
+    recorder = TelemetryRecorder(
+        "sprt_match",
+        {
+            "a": args.a,
+            "b": args.b,
+            "elo0": args.elo0,
+            "elo1": args.elo1,
+            "alpha": args.alpha,
+            "beta": args.beta,
+            "workers": args.workers,
+            "movetime": args.movetime,
+            "max_plies": args.max_plies,
+            "max_games": args.max_games,
+            "minutes_budget": args.minutes,
+            "games_before": test.games,
+        },
+    )
+
     # These are time-controlled games: two of them running at once share the
     # machine and both results are wrong. One at a time, on purpose.
     deadline = time.monotonic() + args.minutes * 60
@@ -191,7 +211,10 @@ def main() -> int:
         while not test.finished and time.monotonic() < deadline:
             # Seeds move with the game index, so a resumed run does not replay
             # the games it already has.
-            test.record(play_one((args.a, args.b, test.games, args.movetime, args.max_plies)))
+            score, nodes = play_one((args.a, args.b, test.games, args.movetime, args.max_plies))
+            test.record(score)
+            recorder.add_nodes(nodes)
+            recorder.add_games()
             save(state_path, test, meta)
             if test.games % 10 == 0 or test.finished:
                 print(f"  {test.summary()}", flush=True)
@@ -208,15 +231,36 @@ def main() -> int:
                     (args.a, args.b, test.games + offset, args.movetime, args.max_plies)
                     for offset in range(workers)
                 ]
-                for score in pool.map(play_one, jobs):
+                for score, nodes in pool.map(play_one, jobs):
                     test.record(score)
+                    recorder.add_nodes(nodes)
+                    recorder.add_games()
                 save(state_path, test, meta)
                 print(f"  {test.summary()}", flush=True)
+
+    low, high = test.elo_interval()
+    recorder.write(
+        {
+            "games_total": test.games,
+            "wins": test.wins,
+            "draws": test.draws,
+            "losses": test.losses,
+            "score": test.score,
+            "elo_estimate": elo_diff_from_score(test.score),
+            "elo_interval_95": [low, high],
+            "llr": test.llr,
+            "verdict": test.verdict.value,
+            "diagnosis": test.diagnosis(),
+            "state_file": str(state_path),
+        }
+    )
 
     print()
     print(f"{args.a} vs {args.b}: {test.summary()}")
     print(f"estimate: {elo_diff_from_score(test.score):+.0f} Elo")
     print(f"this chunk played {test.games - started_at} games; state in {state_path}")
+    print(f"telemetry: {recorder.summary()}")
+    print(f"           {recorder.path}")
     if not test.finished:
         print("not decided yet — run again to continue")
     return 0

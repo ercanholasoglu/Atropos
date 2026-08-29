@@ -379,7 +379,7 @@ def test_the_driver_walks_pairings_cheapest_first(monkeypatch, tmp_path):
     monkeypatch.setattr(module, "state_path", lambda h, l: tmp_path / f"L{h}_{l}.json")
     order: list[tuple[int, int]] = []
 
-    def fake_play(high, low, test, args, deadline):
+    def fake_play(high, low, test, args, deadline, recorder=None):
         order.append((high, low))
         for _ in range(3):
             test.record(WIN)
@@ -428,11 +428,16 @@ def test_a_decided_pairing_is_not_replayed(monkeypatch, tmp_path, capsys):
 
 
 def test_a_game_can_be_played_from_plain_data():
-    """The pool has to pickle what it is handed, so a job is a tuple."""
+    """The pool has to pickle what it is handed, so a job is a tuple.
+
+    Nodes come back with the score because a run has to report what its answer
+    cost, and that is not reconstructable once the run is over.
+    """
     from scripts.sprt_match import play_one
 
-    score = play_one(("L1", "L1", 0, 0.02, 20))
+    score, nodes = play_one(("L1", "L1", 0, 0.02, 20))
     assert score in (0.0, 0.5, 1.0)
+    assert nodes >= 0
 
 
 def test_the_same_job_index_replays_the_same_game():
@@ -454,3 +459,79 @@ def test_parallel_and_serial_cover_the_same_game_indices():
         indices.extend(played + offset for offset in range(workers))
         played += workers
     assert indices == list(range(18))
+
+
+# --- what a run cost, recorded while it happens --------------------------
+
+
+def test_telemetry_records_cost_and_provenance(tmp_path):
+    """It cannot be reconstructed afterwards, which is the whole point."""
+    from scripts.telemetry import TelemetryRecorder
+
+    with TelemetryRecorder("probe", {"a": "x"}, tmp_path) as recorder:
+        recorder.add_nodes(1000)
+        recorder.add_games(2)
+        sum(i * i for i in range(200_000))
+
+    import json
+
+    saved = json.loads(recorder.path.read_text())
+    assert saved["tool"] == "probe"
+    assert saved["nodes"] == 1000 and saved["games"] == 2
+    assert saved["wall_seconds"] > 0 and saved["cpu_seconds"] > 0
+    assert saved["peak_rss_mb_largest_process"] > 0
+    assert saved["parameters"] == {"a": "x"}
+    assert "cpu_count" in saved["machine"]
+
+
+def test_telemetry_writes_even_when_the_run_fails():
+    """An interrupted experiment costs the same CPU as one that finished."""
+    import json
+    import tempfile
+    from pathlib import Path
+
+    from scripts.telemetry import TelemetryRecorder
+
+    with tempfile.TemporaryDirectory() as directory:
+        recorder = TelemetryRecorder("probe", {}, Path(directory))
+        try:
+            with recorder:
+                recorder.add_games(1)
+                raise RuntimeError("interrupted")
+        except RuntimeError:
+            pass
+        saved = json.loads(recorder.path.read_text())
+        assert saved["games"] == 1
+        assert any("interrupted" in note for note in saved["notes"])
+
+
+def test_an_unknown_commit_is_null_not_a_guess():
+    """A record that cannot name its commit must not appear to name one."""
+    from scripts.audit_records import commit_of
+
+    assert commit_of({"commit": "abc1234"}) == "abc1234"
+    assert commit_of({"commit": None}) is None
+    assert commit_of({"commit": "   "}) is None
+    assert commit_of({}) is None
+
+
+def test_the_audit_separates_traced_records_from_untraced(tmp_path):
+    import json
+    import sys
+
+    from scripts.audit_records import main
+
+    (tmp_path / "traced.json").write_text(json.dumps({"commit": "deadbee", "games": 1}))
+    (tmp_path / "untraced.json").write_text(json.dumps({"games": 2}))
+
+    argv = sys.argv
+    sys.argv = ["audit_records", "--data", str(tmp_path), "--write"]
+    try:
+        assert main() == 0
+    finally:
+        sys.argv = argv
+
+    stamped = json.loads((tmp_path / "untraced.json").read_text())
+    assert stamped["commit"] is None
+    assert stamped["provenance"] == "commit unknown"
+    assert json.loads((tmp_path / "traced.json").read_text())["commit"] == "deadbee"

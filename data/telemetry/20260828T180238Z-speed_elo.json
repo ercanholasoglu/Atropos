@@ -1,0 +1,119 @@
+{
+ "tool": "speed_elo",
+ "started_at": "2026-08-28T18:02:38+00:00",
+ "finished_at": "2026-08-28T18:03:15+00:00",
+ "commit": "b0d3f67",
+ "tree_dirty": true,
+ "parameters": {
+  "arm": "nodes",
+  "level": 7,
+  "base_nodes": 5000,
+  "base_movetime": 0.09,
+  "divisors": [
+   2,
+   4,
+   8,
+   16
+  ],
+  "games_per_pairing": 16,
+  "workers": 6,
+  "max_plies": 200
+ },
+ "wall_seconds": 37.102623541955836,
+ "cpu_seconds": 174.653337,
+ "cpu_per_wall": 4.70730423692279,
+ "peak_rss_mb_largest_process": 138.359375,
+ "nodes": 10187648,
+ "nodes_per_cpu_second": 58330.68050683739,
+ "games": 48,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "pairings": [
+   {
+    "arm": "nodes",
+    "divisor": 2,
+    "doublings": 1.0,
+    "games": 16,
+    "score_for_full_speed": 0.6875,
+    "elo_for_slowed": -136.96907232888248,
+    "interval_for_slowed": [
+     -411.95621695235474,
+     27.58938987964482
+    ],
+    "predicted_elo_for_slowed": -60.0,
+    "budget_nodes": 2500,
+    "budget_seconds": null,
+    "complete": true
+   },
+   {
+    "arm": "nodes",
+    "divisor": 4,
+    "doublings": 2.0,
+    "games": 16,
+    "score_for_full_speed": 0.9375,
+    "elo_for_slowed": -470.43650362227254,
+    "interval_for_slowed": [
+     -2399.999826281142,
+     -262.11312017206626
+    ],
+    "predicted_elo_for_slowed": -120.0,
+    "budget_nodes": 1250,
+    "budget_seconds": null,
+    "complete": true
+   },
+   {
+    "arm": "nodes",
+    "divisor": 8,
+    "doublings": 3.0,
+    "games": 16,
+    "score_for_full_speed": 0.9375,
+    "elo_for_slowed": -470.43650362227254,
+    "interval_for_slowed": [
+     -2399.999826281142,
+     -262.11312017206626
+    ],
+    "predicted_elo_for_slowed": -180.0,
+    "budget_nodes": 625,
+    "budget_seconds": null,
+    "complete": true
+   },
+   {
+    "arm": "nodes",
+    "divisor": 16,
+    "doublings": 4.0,
+    "games": 16,
+    "score_for_full_speed": 1.0,
+    "elo_for_slowed": -800.0,
+    "interval_for_slowed": [
+     -2399.999826281142,
+     -1923.918876181931
+    ],
+    "predicted_elo_for_slowed": -240.0,
+    "budget_nodes": 312,
+    "budget_seconds": null,
+    "complete": true
+   }
+  ],
+  "fit": {
+   "elo_per_doubling": -189.63838634800817,
+   "standard_error": 15.811390885139017,
+   "interval": [
+    -220.62871248288064,
+    -158.6480602131357
+   ],
+   "residuals": [
+    52.66931401912569,
+    -91.1597309262562,
+    98.47865542175191,
+    -41.446454607967326
+   ]
+  }
+ },
+ "notes": []
+}
