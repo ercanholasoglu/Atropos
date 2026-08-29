@@ -4,9 +4,15 @@ A level-based chess engine: **8 difficulty levels** from random mover to a
 neural/LLM-assisted searcher, each one tracked with a live Elo rating earned
 in self-play tournaments.
 
-Built as an extension of the [Athena](https://github.com/) platform — the
-engine ladder doubles as a controlled testbed for evaluating search,
-evaluation and LLM-assisted reasoning against a measurable score.
+A companion to the Athena platform rather than a component of it: the engine
+ladder is a controlled testbed for evaluating search, evaluation and
+LLM-assisted reasoning against a measurable score, and it is kept in its own
+repository so its measurements stand on their own.
+
+**[Measurement record →](https://claude.ai/code/artifact/4f9ebb66-e882-451a-a152-470a9632e0b3)**
+— the ladder, the external anchor, the speed curve, every pre-registered
+prediction including the three that failed, and the four claims that were
+withdrawn. Source: [`docs/showcase.html`](docs/showcase.html).
 
 ## Status
 

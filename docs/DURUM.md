@@ -534,7 +534,11 @@ seçildi çünkü skill ayarları kasten hata yaptırıp ölçülen güçle ilgi
 
 ### 6.4 Açık sorular
 
-- **Athena entegrasyonu** — ayrı repo + showcase mı, Athena içinde bir surface mi?
+- **Athena entegrasyonu** ✅ karara bağlandı (2026-08-29): **ayrı repo + showcase**.
+  Atropos bağımsız kalıyor; ölçüm kaydı tek sayfalık bir showcase olarak yayınlandı
+  (`docs/showcase.html`, Artifact:
+  `https://claude.ai/code/artifact/4f9ebb66-e882-451a-a152-470a9632e0b3`).
+  README'deki desteksiz «extension of Athena» iddiası da bu linkle karşılandı.
 - **Mutlak Elo** — hâlâ açık. Sabit derinlikli Stockfish merdivenin *aralıklarını* ölçtü
   ama ölçeğin nerede oturduğunu değil; onun için CCRL listesindeki bir motora karşı
   gerçek zaman kontrolü ya da Lichess bot havuzu gerekir (`docs/ANCHOR.md`).

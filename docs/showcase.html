@@ -1,0 +1,451 @@
+<title>Atropos Ölçüm Kaydı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --ground: #F2F3F7;
+  --panel: #FBFBFD;
+  --rule: #D6D9E4;
+  --rule-soft: #E4E7F0;
+  --ink: #171A26;
+  --ink-soft: #4A5068;
+  --ink-faint: #767D96;
+  --accent: #2C3A6B;
+  --accent-soft: #6D7CB8;
+  --grid: rgba(44, 58, 107, 0.055);
+  --yes: #2F6B4F;
+  --no: #9C3B2E;
+  --null: #7A6320;
+  --yes-bg: rgba(47, 107, 79, 0.10);
+  --no-bg: rgba(156, 59, 46, 0.10);
+  --null-bg: rgba(122, 99, 32, 0.12);
+  --range: rgba(44, 58, 107, 0.22);
+  --shadow: 0 1px 2px rgba(23, 26, 38, .05), 0 8px 24px -16px rgba(23, 26, 38, .28);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0F111A;
+    --panel: #161926;
+    --rule: #2B3044;
+    --rule-soft: #232838;
+    --ink: #E8EAF2;
+    --ink-soft: #A8AEC4;
+    --ink-faint: #767D96;
+    --accent: #A9B6EA;
+    --accent-soft: #6D7CB8;
+    --grid: rgba(169, 182, 234, 0.06);
+    --yes: #7FC9A2;
+    --no: #E4907F;
+    --null: #D6BC6A;
+    --yes-bg: rgba(127, 201, 162, 0.13);
+    --no-bg: rgba(228, 144, 127, 0.13);
+    --null-bg: rgba(214, 188, 106, 0.13);
+    --range: rgba(169, 182, 234, 0.26);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .7);
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0F111A;
+  --panel: #161926;
+  --rule: #2B3044;
+  --rule-soft: #232838;
+  --ink: #E8EAF2;
+  --ink-soft: #A8AEC4;
+  --ink-faint: #767D96;
+  --accent: #A9B6EA;
+  --accent-soft: #6D7CB8;
+  --grid: rgba(169, 182, 234, 0.06);
+  --yes: #7FC9A2;
+  --no: #E4907F;
+  --null: #D6BC6A;
+  --yes-bg: rgba(127, 201, 162, 0.13);
+  --no-bg: rgba(228, 144, 127, 0.13);
+  --null-bg: rgba(214, 188, 106, 0.13);
+  --range: rgba(169, 182, 234, 0.26);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .7);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background-color: var(--ground);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--ink);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem 6rem; }
+.mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.small { font-size: .8125rem; }
+.strong { font-weight: 600; }
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .875em; background: var(--rule-soft);
+  padding: .1em .35em; border-radius: 3px;
+}
+
+/* ---- hero ---- */
+header.hero { padding: 5.5rem 0 3rem; border-bottom: 1px solid var(--rule); }
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace; font-size: .75rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--accent-soft);
+  margin: 0 0 1.5rem;
+}
+h1 {
+  font-family: "Instrument Serif", Georgia, serif; font-weight: 400;
+  font-size: clamp(2.9rem, 7vw, 5rem); line-height: 1.02;
+  letter-spacing: -.015em; margin: 0 0 1.5rem; text-wrap: balance;
+}
+h1 em { font-style: italic; color: var(--accent); }
+.lede {
+  font-size: clamp(1.075rem, 1.8vw, 1.3rem); color: var(--ink-soft);
+  max-width: 40ch; margin: 0 0 3rem;
+}
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1.75rem; }
+.stat .v {
+  font-family: "Instrument Serif", Georgia, serif; font-size: 2.4rem;
+  line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums;
+}
+.stat .k {
+  font-family: "IBM Plex Mono", monospace; font-size: .7rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint);
+  margin-top: .55rem;
+}
+
+/* ---- sections ---- */
+section { padding-top: 4.5rem; }
+h2 {
+  font-family: "Instrument Serif", Georgia, serif; font-weight: 400;
+  font-size: clamp(1.9rem, 3.6vw, 2.7rem); line-height: 1.12;
+  letter-spacing: -.01em; margin: 0 0 .5rem; text-wrap: balance;
+}
+.sec-sub {
+  font-family: "IBM Plex Mono", monospace; font-size: .72rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--accent-soft);
+  margin: 0 0 1.5rem;
+}
+p { max-width: 68ch; }
+section > p { color: var(--ink-soft); }
+section > p strong, .panel p strong { color: var(--ink); font-weight: 600; }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--rule);
+  border-radius: 10px; padding: 1.5rem; margin: 2rem 0;
+  box-shadow: var(--shadow);
+}
+.panel > :first-child { margin-top: 0; }
+.panel > :last-child { margin-bottom: 0; }
+.panel.flag { border-left: 3px solid var(--accent); }
+
+.scroll { overflow-x: auto; margin: 1.75rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; min-width: 34rem; }
+th {
+  font-family: "IBM Plex Mono", monospace; font-size: .68rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint);
+  font-weight: 500; text-align: left; padding: 0 .85rem .6rem 0;
+  border-bottom: 1px solid var(--rule); white-space: nowrap;
+}
+th.num { text-align: right; }
+td { padding: .6rem .85rem .6rem 0; border-bottom: 1px solid var(--rule-soft); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr.row-key td { background: var(--rule-soft); font-weight: 500; }
+td .sub { display: block; font-family: "IBM Plex Mono", monospace;
+  font-size: .7rem; color: var(--ink-faint); }
+td.note { font-size: .8125rem; color: var(--ink-soft); min-width: 15rem; }
+td.pred { color: var(--ink-faint); }
+
+/* ---- interval bars ---- */
+.ivl-cell { width: 40%; min-width: 9rem; padding-right: .85rem; }
+.ivl { position: relative; display: block; height: 1.5rem; }
+.ivl::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%;
+  height: 1px; background: var(--rule); transform: translateY(-50%);
+}
+.ivl-range {
+  position: absolute; top: 50%; height: 7px; background: var(--range);
+  border-radius: 4px; transform: translateY(-50%); min-width: 2px;
+}
+.ivl-est {
+  position: absolute; top: 50%; width: 3px; height: 15px;
+  background: var(--accent); border-radius: 2px;
+  transform: translate(-50%, -50%);
+}
+.ivl-zero {
+  position: absolute; top: 50%; width: 1px; height: 20px;
+  background: var(--ink-faint); opacity: .55;
+  transform: translate(-50%, -50%);
+}
+.ivl-pred {
+  position: absolute; top: 50%; width: 0; height: 17px;
+  border-left: 2px dashed var(--no);
+  transform: translate(-50%, -50%);
+}
+.legend {
+  display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 1rem 0 0;
+  font-family: "IBM Plex Mono", monospace; font-size: .72rem; color: var(--ink-faint);
+}
+.legend span { display: inline-flex; align-items: center; gap: .45rem; }
+.key { display: inline-block; width: 16px; height: 7px; border-radius: 4px; }
+.key.range { background: var(--range); }
+.key.est { width: 3px; height: 14px; background: var(--accent); border-radius: 2px; }
+.key.pred { width: 0; height: 14px; border-left: 2px dashed var(--no); }
+
+/* ---- pre-registration cards ---- */
+.pr-grid { display: grid; gap: 1rem; margin: 2rem 0; }
+@media (min-width: 52rem) { .pr-grid { grid-template-columns: 1fr 1fr; } }
+.pr {
+  background: var(--panel); border: 1px solid var(--rule);
+  border-radius: 10px; padding: 1.25rem; box-shadow: var(--shadow);
+}
+.pr header { display: flex; gap: .75rem; align-items: flex-start;
+  justify-content: space-between; margin-bottom: .9rem; }
+.pr h3 { font-size: .975rem; font-weight: 600; margin: 0; line-height: 1.35; }
+.badge {
+  font-family: "IBM Plex Mono", monospace; font-size: .66rem;
+  letter-spacing: .09em; text-transform: uppercase; padding: .2rem .5rem;
+  border-radius: 999px; white-space: nowrap; font-weight: 500;
+}
+.b-pass { background: var(--yes-bg); color: var(--yes); }
+.b-fail { background: var(--no-bg); color: var(--no); }
+.b-null { background: var(--null-bg); color: var(--null); }
+.pr dl { margin: 0 0 .9rem; display: grid; gap: .35rem; }
+.pr dl div { display: grid; grid-template-columns: 5.5rem 1fr; gap: .5rem; align-items: baseline; }
+.pr dt {
+  font-family: "IBM Plex Mono", monospace; font-size: .68rem;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint);
+}
+.pr dd { margin: 0; font-size: .875rem; }
+.pr p { margin: 0; font-size: .8375rem; color: var(--ink-soft); }
+
+/* ---- corrections ---- */
+ol.corr { list-style: none; counter-reset: c; padding: 0; margin: 2rem 0 0; }
+ol.corr li {
+  counter-increment: c; position: relative;
+  padding: 1.25rem 0 1.25rem 3.25rem; border-top: 1px solid var(--rule-soft);
+}
+ol.corr li::before {
+  content: counter(c, decimal-leading-zero); position: absolute; left: 0; top: 1.3rem;
+  font-family: "IBM Plex Mono", monospace; font-size: .75rem;
+  color: var(--no); font-weight: 500;
+}
+ol.corr h3 { margin: 0 0 .4rem; font-size: 1rem; font-weight: 600; }
+ol.corr p { margin: 0; color: var(--ink-soft); font-size: .9rem; }
+
+/* ---- not measured ---- */
+.nm-grid { display: grid; gap: 1rem; margin-top: 2rem; }
+@media (min-width: 52rem) { .nm-grid { grid-template-columns: 1fr 1fr; } }
+.nm { border-top: 2px solid var(--rule); padding-top: .9rem; }
+.nm h3 { margin: 0 0 .4rem; font-size: .95rem; font-weight: 600; }
+.nm p { margin: 0; font-size: .8625rem; color: var(--ink-soft); }
+
+blockquote {
+  margin: 2rem 0; padding-left: 1.25rem; border-left: 2px solid var(--accent);
+  font-family: "Instrument Serif", Georgia, serif; font-style: italic;
+  font-size: 1.3rem; line-height: 1.4; color: var(--ink); max-width: 42ch;
+}
+footer {
+  margin-top: 5rem; padding-top: 2rem; border-top: 1px solid var(--rule);
+  font-size: .8125rem; color: var(--ink-faint);
+}
+footer p { max-width: 60ch; }
+hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Atropos · satranç motoru · ölçüm kaydı</p>
+  <h1>Ölçülen ne,<br><em>varsayılan</em> ne</h1>
+  <p class="lede">Sekiz seviyeli bir satranç motoru. Asıl ürün motor değil:
+    her sayının nereden geldiğinin, hangi tahminin tutmadığının ve neyin hâlâ
+    bilinmediğinin kaydı.</p>
+  <div class="stats">
+    <div class="stat"><div class="v">4.087</div><div class="k">telemetrili oyun</div></div>
+    <div class="stat"><div class="v">7</div><div class="k">ön-kayıtlı tahmin</div></div>
+    <div class="stat"><div class="v">3</div><div class="k">tutmadı</div></div>
+    <div class="stat"><div class="v">4</div><div class="k">geri alınan iddia</div></div>
+    <div class="stat"><div class="v">724</div><div class="k">test</div></div>
+  </div>
+</header>
+
+<section>
+  <h2>Merdiven sıralı. Aralıkları değil.</h2>
+  <p class="sec-sub">Her eşleşme sekans testiyle · 0,1 sn/hamle</p>
+  <p>Yedi eşleşmenin hepsi karara bağlandı ve merdiven Level 7'ye kadar
+    <strong>sıralı</strong>. Level 8'in ölçülebilir üstünlüğü yok.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>eşleşme</th><th class="num">oyun</th><th class="num">Elo</th>
+        <th>%95 güven aralığı</th><th></th></tr></thead>
+      <tbody><tr><td class="mono">L2 vs L1</td><td class="mono num">9</td><td class="mono num">+361</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:26.09%"></span><span class="ivl-range" style="left:42.96%;width:52.70%"></span><span class="ivl-est" style="left:57.48%"></span></span></td><td class="mono small">[+194, +800]</td></tr>
+<tr><td class="mono">L3 vs L2</td><td class="mono num">7</td><td class="mono num">+800</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:26.09%"></span><span class="ivl-range" style="left:95.65%;width:0.00%"></span><span class="ivl-est" style="left:95.65%"></span></span></td><td class="mono small">[+800, +800]</td></tr>
+<tr><td class="mono">L4 vs L3</td><td class="mono num">9</td><td class="mono num">+361</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:26.09%"></span><span class="ivl-range" style="left:42.96%;width:52.70%"></span><span class="ivl-est" style="left:57.48%"></span></span></td><td class="mono small">[+194, +800]</td></tr>
+<tr><td class="mono">L5 vs L4</td><td class="mono num">33</td><td class="mono num">+132</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:26.09%"></span><span class="ivl-range" style="left:30.00%;width:16.96%"></span><span class="ivl-est" style="left:37.57%"></span></span></td><td class="mono small">[+45, +240]</td></tr>
+<tr><td class="mono">L6 vs L5</td><td class="mono num">9</td><td class="mono num">+361</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:26.09%"></span><span class="ivl-range" style="left:37.74%;width:57.91%"></span><span class="ivl-est" style="left:57.48%"></span></span></td><td class="mono small">[+134, +800]</td></tr>
+<tr><td class="mono">L7 vs L6</td><td class="mono num">65</td><td class="mono num">+93</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:26.09%"></span><span class="ivl-range" style="left:27.91%;width:13.30%"></span><span class="ivl-est" style="left:34.17%"></span></span></td><td class="mono small">[+21, +174]</td></tr>
+<tr><td class="mono">L8 vs L7</td><td class="mono num">25</td><td class="mono num">-85</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:26.09%"></span><span class="ivl-range" style="left:5.39%;width:24.17%"></span><span class="ivl-est" style="left:18.70%"></span></span></td><td class="mono small">[-238, +40]</td></tr></tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><i class="key range"></i>%95 aralık</span>
+    <span><i class="key est"></i>nokta tahmini</span>
+    <span>ince dikey çizgi: sıfır</span>
+  </div>
+  <div class="panel flag">
+    <p><strong>Basamaklar 300 Elo arayla etiketli ve bunu hiçbir ölçüm doğrulamadı.</strong>
+      Yukarıdaki testlerin hepsi <code>elo0=0, elo1=100</code> parantezinde koştu — yani
+      «kabul», <em>fark 0'dan çok 100'e benziyor</em> demek. Bir sıralama testi;
+      300'ün testi değil.</p>
+    <p>Sabit derinlikli Stockfish aynı şeyi dışarıdan söylüyor: Level 7'ye karşı −17,
+      Level 6'ya karşı −21 Elo. Yani iki basamak <strong>4 Elo arayla, [−47, +40]</strong> —
+      etiketlerin 300 dediği yerde. Sayılar <code>INITIAL_ELO</code>'da kuruluşta
+      <em>hedef</em> olarak atanmış.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Dış çıpa</h2>
+  <p class="sec-sub">Stockfish 18, sabit derinlik · Level 7'ye karşı · 162 oyun</p>
+  <p>Sabit <strong>derinlik</strong>, <code>SkillLevel</code> değil: skill ayarları
+    motoru bilerek hata yaptırır ve ölçülen güçle ilgisi olmayan varyans ekler.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>rakip</th><th class="num">oyun</th><th class="num">skor</th>
+        <th>L7'ye karşı Elo</th><th></th><th>SPRT</th></tr></thead>
+      <tbody><tr><td>Stockfish depth 1</td><td class="mono num">162</td><td class="mono num">%47,5</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:35.00%"></span><span class="ivl-range" style="left:11.00%;width:30.50%"></span><span class="ivl-est" style="left:26.50%"></span></span></td><td class="mono small">[-48, +13]</td><td class="verdict v-null">hüküm yok</td></tr>
+<tr><td>Stockfish depth 2</td><td class="mono num">162</td><td class="mono num">%58,6</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:35.00%"></span><span class="ivl-range" style="left:46.50%;width:38.50%"></span><span class="ivl-est" style="left:65.50%"></span></span></td><td class="mono small">[+23, +100]</td><td class="verdict v-yes">kabul</td></tr>
+<tr><td>Stockfish depth 3</td><td class="mono num">162</td><td class="mono num">%60,2</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:35.00%"></span><span class="ivl-range" style="left:55.50%;width:31.50%"></span><span class="ivl-est" style="left:71.00%"></span></span></td><td class="mono small">[+41, +104]</td><td class="verdict v-yes">kabul</td></tr></tbody>
+    </table>
+  </div>
+  <p>Üçü de 90 Elo'luk bir bantta toplanıyor, çünkü Stockfish'in «depth 1»i zaten
+    quiescence ve NNUE taşıyor.</p>
+  <blockquote>Bir motorun derinlik sayısı, başka bir motorun aynı sayısıyla aynı işi
+    adlandırmıyor.</blockquote>
+</section>
+
+<section>
+  <h2>Tek sayı yetmediğinde</h2>
+  <p class="sec-sub">atropos, güncel merdivene karşı · 480 oyun</p>
+  <p>Performance rating <strong>1518</strong>. Önceki iki koşunun 1514 ve 1538'i
+    yanında bu istikrar gibi görünüyor — ve öyle okumak hata olurdu.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>rakip</th><th class="num">oyun</th><th class="num">skor</th>
+        <th class="num">W-D-L</th><th class="num">implied</th>
+        <th>%95 aralık</th><th></th></tr></thead>
+      <tbody><tr><td class="mono">L4</td><td class="mono num">120</td><td class="mono num">%74,6</td><td class="mono num small">60-59-1</td><td class="mono num">1387</td><td class="ivl-cell"><span class="ivl"><span class="ivl-range" style="left:10.92%;width:22.62%"></span><span class="ivl-est" style="left:21.08%"></span></span></td><td class="mono small">[1321, 1468]</td></tr>
+<tr><td class="mono">L5</td><td class="mono num">120</td><td class="mono num">%61,3</td><td class="mono num small">45-57-18</td><td class="mono num">1580</td><td class="ivl-cell"><span class="ivl"><span class="ivl-range" style="left:41.23%;width:19.85%"></span><span class="ivl-est" style="left:50.77%"></span></span></td><td class="mono small">[1518, 1647]</td></tr>
+<tr><td class="mono">L6</td><td class="mono num">120</td><td class="mono num">%11,2</td><td class="mono num small">5-17-98</td><td class="mono num">1441</td><td class="ivl-cell"><span class="ivl"><span class="ivl-range" style="left:9.08%;width:32.92%"></span><span class="ivl-est" style="left:29.38%"></span></span></td><td class="mono small">[1309, 1523]</td></tr>
+<tr><td class="mono">L7</td><td class="mono num">120</td><td class="mono num">%11,7</td><td class="mono num small">1-26-93</td><td class="mono num">1748</td><td class="ivl-cell"><span class="ivl"><span class="ivl-range" style="left:56.92%;width:32.31%"></span><span class="ivl-est" style="left:76.62%"></span></span></td><td class="mono small">[1620, 1830]</td></tr></tbody>
+    </table>
+  </div>
+  <p>Implied reytingler <strong>361 Elo'ya yayılıyor ve aralıkları örtüşmüyor.</strong>
+    Eski metin bu saçılmayı örnekleme gürültüsüne bağlıyordu; on katı oyun aksini
+    söyledi. Saçılma gürültü değil, yapı — ve anlamı şu: atropos'u bu merdivene karşı
+    tek bir sayı tarif etmiyor.</p>
+</section>
+
+<section>
+  <h2>Bir katlama kaç Elo?</h2>
+  <p class="sec-sub">Level 7, yavaşlatılmış kopyasına karşı · eşleşme başına 240 oyun</p>
+  <p>Bu projedeki her optimizasyon node/sn cinsinden raporlandı — kimsenin umursadığı
+    bir birim değil. Parantezler, tahminler ve çürütülebilir iddia <strong>ilk oyundan
+    önce commit'lendi.</strong></p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>bütçe</th><th class="num">oyun</th><th class="num">ölçülen</th>
+        <th>aralık ve tahmin</th><th class="num">tahmin</th></tr></thead>
+      <tbody><tr><td class="mono">B/2</td><td class="mono num">240</td><td class="mono num">-159</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:94.34%"></span><span class="ivl-range" style="left:74.34%;width:9.34%"></span><span class="ivl-est" style="left:79.34%"></span><span class="ivl-pred" style="left:88.68%"></span></span></td><td class="mono num small pred">-60</td></tr>
+<tr><td class="mono">B/4</td><td class="mono num">240</td><td class="mono num">-417</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:94.34%"></span><span class="ivl-range" style="left:45.47%;width:15.94%"></span><span class="ivl-est" style="left:55.00%"></span><span class="ivl-pred" style="left:83.02%"></span></span></td><td class="mono num small pred">-120</td></tr>
+<tr><td class="mono">B/8</td><td class="mono num">240</td><td class="mono num">-636</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:94.34%"></span><span class="ivl-range" style="left:8.40%;width:35.75%"></span><span class="ivl-est" style="left:34.34%"></span><span class="ivl-pred" style="left:77.36%"></span></span></td><td class="mono num small pred">-180</td></tr>
+<tr><td class="mono">B/16</td><td class="mono num">240</td><td class="mono num">-830</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:94.34%"></span><span class="ivl-range" style="left:0.00%;width:30.38%"></span><span class="ivl-est" style="left:16.04%"></span><span class="ivl-pred" style="left:71.70%"></span></span></td><td class="mono num small pred">-240</td></tr></tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><i class="key range"></i>%95 aralık</span>
+    <span><i class="key est"></i>ölçülen</span>
+    <span><i class="key pred"></i>ön-kayıtlı tahmin</span>
+  </div>
+  <p>Dört tahminin dördü de <strong>aynı yönde ve iki buçuk kat</strong> ıskalandı.
+    Tahminler klasik motorlar için yayınlanmış eğrilerden geliyordu — ama onlar uzun
+    zaman kontrollerinde, zaten on beş plilik bir aramaya bir pli eklendiğinde ölçülür.
+    Burada referans bütçe derinlik 3,0'a ulaşıyor: bir katlama, üç hamlelik taktiği
+    görmekle görmemek arasındaki fark.</p>
+  <blockquote>Katlama başına Elo motorun sabiti değil; eğrinin hangi bölgesinde
+    ölçtüğünün özelliği.</blockquote>
+
+  <h3 style="font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:1.5rem;margin:3rem 0 .35rem">
+    Ve eğri, aletin kendisini ölçüyormuş</h3>
+  <p>Bütçenin <em>nasıl uygulandığı</em> birinci derecede bir değişken çıktı. Sert node
+    limiti kestiği iterasyonu çöpe atıyor: aynı derinliğe ulaşmak için %46 fazla node
+    harcıyor.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>uygulama</th><th class="num">Elo/katlama</th><th></th>
+        <th>%95 aralık</th><th></th></tr></thead>
+      <tbody><tr class=""><td>sert node limiti<span class="sub">4 nokta</span></td><td class="mono num">-207</td><td class="ivl-cell"><span class="ivl"><span class="ivl-range" style="left:10.36%;width:31.07%"></span><span class="ivl-est" style="left:26.07%"></span></span></td><td class="mono small">[-251, -164]</td><td class="note">Kestiği iterasyonu çöpe atar. Deney aleti; hiçbir motor böyle durmaz.</td></tr>
+<tr class="row-key"><td>saat<span class="sub">4 nokta</span></td><td class="mono num">-171</td><td class="ivl-cell"><span class="ivl"><span class="ivl-range" style="left:30.71%;width:16.07%"></span><span class="ivl-est" style="left:38.93%"></span></span></td><td class="mono small">[-194, -149]</td><td class="note">Gerçek oyunun durma biçimi. Dönüşüm için kullanılan sayı.</td></tr>
+<tr class=""><td>yumuşak node limiti<span class="sub">1 nokta</span></td><td class="mono num">-98</td><td class="ivl-cell"><span class="ivl"><span class="ivl-range" style="left:55.00%;width:20.36%"></span><span class="ivl-est" style="left:65.00%"></span></span></td><td class="mono small">[-126, -69]</td><td class="note">Yalnızca iterasyon sınırında durur; saat yok.</td></tr></tbody>
+    </table>
+  </div>
+  <div class="panel">
+    <p><strong>Dönüşümün sınandığı yer.</strong> atropos bu motordan 2,6 katlama yavaş.
+      Saat kolu bundan <strong>−445 Elo</strong> [−504, −386] öngörüyor; 480 oyunluk
+      bağımsız gauntlet <strong>≈ −440</strong> ölçtü. Tamamen başka oyunlardan kurulmuş
+      iki sayı. Özellik paritesi throughput'a yeniliyor, ve büyüklüğü artık iddia değil
+      öngörü.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Ön-kayıt sicili</h2>
+  <p class="sec-sub">Her tahmin, ilk oyundan önce commit'lendi</p>
+  <p>Veriye bakıldıktan sonra seçilen parantez, parantez değildir. Tahminlerin
+    tutmadığı üç durum da burada — çıkarıldıkları için değil, kayıtlı oldukları için.</p>
+  <div class="pr-grid"><article class="pr"><header><h3>Hız eğrisi: dört yarılanma</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">−60 / −120 / −180 / −240</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−159 / −417 / −636 / −830</dd></div></dl><p>Dördü de aynı yönde, 2,5 kat ıskalandı. Tahminler uzun zaman kontrollerinde ölçülmüş literatürden geliyordu; burada referans bütçe derinlik 3,0'da. Ön-kayıtlı <em>doğrusallık</em> iddiası ayakta kaldı.</p></article>
+<article class="pr"><header><h3>Movetime çapraz kontrolü</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">B/2'de örtüşür, B/8'de ayrışır</dd></div><div><dt>ölçülen</dt><dd class="mono strong">B/2 örtüştü, B/8 ayrıştı</dd></div></dl><p>Kaynak koddan türetilmişti: <code>check_interval</code> 2048, yani B/8 bütçesi onu uygulayan aletin çözünürlüğünün altında.</p></article>
+<article class="pr"><header><h3>Üçüncü kol: saat mi, sınırda durma mı?</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">−349 ya da −257</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−165</dd></div></dl><p>İkisinin de dışında. Ön-kaydın çürütme şartı işledi ve incelenecek şeyin eğrinin kendisi olduğunu söyledi — öyle de çıktı.</p></article>
+<article class="pr"><header><h3>B/1,5: ofset var mı?</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">−58 (çizgi) ya da −174 (ofset)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−83</dd></div></dl><p>Çizgi okuması desteklendi, ofset modeli reddedildi.</p></article>
+<article class="pr"><header><h3>B/2 tekrarı: fluke mu?</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">−98 (fluke) ya da −201 (tekrarlanır)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−116</dd></div></dl><p>Aynı eşleşmenin iki koşusu p = 0,015 ile ayrıştı. Asıl bulgu buydu.</p></article>
+<article class="pr"><header><h3>SEE budaması</h3><span class="badge b-null">null</span></header><dl><div><dt>tahmin</dt><dd class="mono">+79, sonra +66'ya düzeltildi</dd></div><div><dt>ölçülen</dt><dd class="mono strong">+48 [+11, +87]</dd></div></dl><p>Ön-kayıt, aralığın hem +79'u hem +20'yi kapsaması durumunu <em>büyüklük sorusunda null</em> ilan edip nokta tahminine yaslanmamayı şart koşmuştu. Öyle raporlandı.</p></article>
+<article class="pr"><header><h3>x'i yeniden örneklemek aralığı genişletir</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">genişler</dd></div><div><dt>ölçülen</dt><dd class="mono strong">46 → 47 Elo</dd></div></dl><p>Genişlemedi. Yazılı olduğu için raporlandı.</p></article></div>
+</section>
+
+<section>
+  <h2>Geri alınan iddialar</h2>
+  <p class="sec-sub">Sonradan düzeltildi, silinmedi</p>
+  <ol class="corr"><li><h3>«Level 8 bir gerileme»</h3><p>−85'lik nokta tahmininden söylenmişti; %95 aralığı [−238, +40] <em>sıfırı içeriyordu.</em> Asıl hata parantezteydi: tek bir zaman heuristiğiyle ayrışan iki motora «en az 100 Elo mu?» diye sormak baştan bilgi taşımıyordu.</p></li>
+<li><h3>«Terimler PST'yi tekrarlıyor, o yüzden işe yaramıyor»</h3><p>−3 Elo'luk bir okumadan çıkarılmıştı; yüz oyun sonra +21'e taşındı. Tablo örtüşmesine dair yapısal gözlem ölçülmüş ve doğru; ondan çıkarılan sonuç desteklenmiyordu.</p></li>
+<li><h3>«İki aday mekanizma var, bu tasarım ayırmıyor»</h3><p>İkisi bağımsız değilmiş: iterasyon sınırında uygulanan bir bütçe <em>zorunlu olarak</em> değişken node harcar. Tek mekanizmanın iki adıydı. Bu, veriden değil aleti kurmaya çalışmaktan çıktı.</p></li>
+<li><h3>«B/2 3,6σ aykırı bir nokta»</h3><p>Kusur noktada değil hata çubuklarındaydı. Her nokta yalnızca binom gürültüsü taşıyordu; saat kolunun harcaması koşudan koşuya %5,3 kayıyor — ±13 Elo daha. Kayma bir belge önce ölçülmüştü ama yanlış büyüklüğe uygulanmıştı. Dahil edilince χ² = 7,4 (3 sd): hiçbir nokta atılmadan fit oturdu.</p></li></ol>
+</section>
+
+<section>
+  <h2>Ölçülmeyen ne</h2>
+  <p class="sec-sub">«Çözülmedi» ≠ «reddedildi»</p>
+  <div class="nm-grid"><div class="nm"><h3>Mutlak Elo</h3><p>Sabit derinlikli Stockfish hiçbir yayınlanmış listede yok. Eşleme koşullu yazıldı: R(d) varsayılan reyting olmak üzere Level 7 = R(1) + 17 ± 30. Bu belirsizlik istatistiksel değil — oyun sayısıyla küçülmez.</p></div>
+<div class="nm"><h3>Merdivenin aralıkları</h3><p>Sıralama doğrulandı, aralıklar değil. Nominal 300, üç aralığın da güven aralığının dışında. Sayılar <code>INITIAL_ELO</code>'da kuruluşta <em>hedef</em> olarak atanmış.</p></div>
+<div class="nm"><h3>SEE'nin büyüklüğü</h3><p>İki koşuda da pozitif olduğu kesin (aralıklar sıfırı dışlıyor). Ne kadar olduğu değil: [+11, +87], sekiz kat.</p></div>
+<div class="nm"><h3>v3-passers ve L8'in saati</h3><p>714 ve 54 oyunda çözülmedi. «Çözülmedi» ≠ «reddedildi».</p></div></div>
+  <hr class="rule">
+</section>
+
+<footer>
+  <p><strong>Atropos</strong> — Python 3.11, python-chess, Streamlit. Negamax +
+    alpha-beta, quiescence, transposition table, null-move, LMR, aspiration windows,
+    static exchange evaluation. UCI protokolü, perft doğrulaması, SPRT tabanlı Elo hattı.
+    724 test, mypy temiz.</p>
+  <p>Her koşu duvar saati, CPU-saniye, node sayısı, tepe RAM ve commit hash'i ile
+    kaydedilir. Telemetriden önceki kayıtlar <code>commit unknown</code> olarak
+    damgalandı — çalışma ağacı proje boyunca kirliydi, dolayısıyla bir dosyayı tarihe
+    bakıp commit'e bağlamak koşunun kullanmadığı bir commit'i adlandırmak olurdu.</p>
+</footer>
+
+</div>
