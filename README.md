@@ -52,7 +52,7 @@ at 64 games and −2 at 359. The claim deserved the better instrument, so every
 adjacent pairing was re-run as an SPRT against `H1: at least 100 Elo`
 (`make ladder-sprt`, 0.1s per move):
 
-| pairing | games | score | Elo | 95% interval | verdict |
+| pairing | games | score | Elo † | 95% interval | verdict |
 |---|---:|---:|---:|---:|---|
 | L2 vs L1 | 9 | 88.9% | +361 | [+194, +800] | accepted |
 | L3 vs L2 | 7 | 100.0% | +800 | [+800, +800] | accepted |
@@ -63,6 +63,15 @@ adjacent pairing was re-run as an SPRT against `H1: at least 100 Elo`
 | **L8 vs L7** | **25** | **38.0%** | **−85** | **[−238, +40]** | **rejected** |
 
 **The ladder is ordered up to Level 7. Level 8 adds nothing measurable.**
+
+**† The Elo column is not an estimate of anything.** Simulating this exact
+stopping rule against known truths ([`docs/SPRT_BIAS.md`](docs/SPRT_BIAS.md))
+shows that a run which accepts H1 and stops early reports **about +110
+whatever the true difference is** — +113 when the truth is zero, +118 when it
+is a hundred. The number moves by five Elo across a range of a hundred. What
+carries information is the *verdict*: this rule accepts 3% of the time at a
+true zero and 97% at a true hundred. Read the column as "the test stopped
+here", and the verdict as the claim.
 
 The first thing that table shows is what sequential testing buys: the bottom
 three rungs were settled in **25 games between them**, where the fixed gauntlet
@@ -111,9 +120,11 @@ independent of the ladder match that also measures it.
 The outsider scores 47.5% against L7 and 46.9% against L6 — **4 Elo apart**,
 where the direct match says 93. Pooled, the interval **includes zero**.
 
-So the top rung transition is not settled either. It was settled against one
-opponent; a second opponent that played both sides disagrees by more than
-either measurement's error bar. And the fit refuses to place Levels 1 and 2 at
+That disagreement then resolved itself. A true difference near 50, passed
+through the ladder's stopping rule and stopped early, reports about 108 — so
+**the direct match and the cross-link were never in conflict.** One is a
+measurement; the other is the output of a rule that returns roughly the same
+number regardless of the truth. And the fit refuses to place Levels 1 and 2 at
 all: their only link to the rest is a 7-0-0 result, whose maximum likelihood is
 at infinity, so the gap is reported as "+109 Elo or more" and nothing further.
 

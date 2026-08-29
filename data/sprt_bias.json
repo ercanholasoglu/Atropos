@@ -1,0 +1,137 @@
+{
+ "trials": 3000,
+ "draw_elo": 188.0,
+ "config": {
+  "elo0": 0.0,
+  "elo1": 100.0,
+  "max_games": 600
+ },
+ "rows": [
+  {
+   "true_elo": 0.0,
+   "batch": 1,
+   "p_accept_h1": 0.03933333333333333,
+   "mean_games": 62.111,
+   "estimate_given_h1": 103.75453701497918,
+   "bias": 103.75453701497918,
+   "monte_carlo_se": 5.057746978303498
+  },
+  {
+   "true_elo": 25.0,
+   "batch": 1,
+   "p_accept_h1": 0.171,
+   "mean_games": 89.483,
+   "estimate_given_h1": 89.68802458912967,
+   "bias": 64.68802458912967,
+   "monte_carlo_se": 2.075080804923404
+  },
+  {
+   "true_elo": 50.0,
+   "batch": 1,
+   "p_accept_h1": 0.48833333333333334,
+   "mean_games": 108.006,
+   "estimate_given_h1": 84.80077169533278,
+   "bias": 34.800771695332784,
+   "monte_carlo_se": 1.2846575598509178
+  },
+  {
+   "true_elo": 75.0,
+   "batch": 1,
+   "p_accept_h1": 0.8263333333333334,
+   "mean_games": 93.376,
+   "estimate_given_h1": 88.57910248242595,
+   "bias": 13.579102482425952,
+   "monte_carlo_se": 0.8959230570777768
+  },
+  {
+   "true_elo": 100.0,
+   "batch": 1,
+   "p_accept_h1": 0.9543333333333334,
+   "mean_games": 66.382,
+   "estimate_given_h1": 103.03735670293209,
+   "bias": 3.0373567029320867,
+   "monte_carlo_se": 0.9751833011629882
+  },
+  {
+   "true_elo": 150.0,
+   "batch": 1,
+   "p_accept_h1": 0.999,
+   "mean_games": 36.269333333333336,
+   "estimate_given_h1": 146.6944178978528,
+   "bias": -3.3055821021472127,
+   "monte_carlo_se": 1.3447337271379087
+  },
+  {
+   "true_elo": 200.0,
+   "batch": 1,
+   "p_accept_h1": 1.0,
+   "mean_games": 24.812666666666665,
+   "estimate_given_h1": 190.51771071220585,
+   "bias": -9.482289287794146,
+   "monte_carlo_se": 1.6579876298134908
+  },
+  {
+   "true_elo": 0.0,
+   "batch": 6,
+   "p_accept_h1": 0.03,
+   "mean_games": 69.972,
+   "estimate_given_h1": 92.27035767310188,
+   "bias": 92.27035767310188,
+   "monte_carlo_se": 4.018964876836302
+  },
+  {
+   "true_elo": 25.0,
+   "batch": 6,
+   "p_accept_h1": 0.13933333333333334,
+   "mean_games": 100.412,
+   "estimate_given_h1": 87.6760387532765,
+   "bias": 62.6760387532765,
+   "monte_carlo_se": 2.384976361285224
+  },
+  {
+   "true_elo": 50.0,
+   "batch": 6,
+   "p_accept_h1": 0.4856666666666667,
+   "mean_games": 128.726,
+   "estimate_given_h1": 77.8649802659961,
+   "bias": 27.864980265996095,
+   "monte_carlo_se": 0.936129513544234
+  },
+  {
+   "true_elo": 75.0,
+   "batch": 6,
+   "p_accept_h1": 0.8416666666666667,
+   "mean_games": 106.424,
+   "estimate_given_h1": 85.40388178102148,
+   "bias": 10.403881781021482,
+   "monte_carlo_se": 0.7868160218212508
+  },
+  {
+   "true_elo": 100.0,
+   "batch": 6,
+   "p_accept_h1": 0.9686666666666667,
+   "mean_games": 71.956,
+   "estimate_given_h1": 101.64858664617178,
+   "bias": 1.648586646171779,
+   "monte_carlo_se": 0.8473514157429952
+  },
+  {
+   "true_elo": 150.0,
+   "batch": 6,
+   "p_accept_h1": 0.9993333333333333,
+   "mean_games": 40.722,
+   "estimate_given_h1": 138.58347274774457,
+   "bias": -11.416527252255435,
+   "monte_carlo_se": 0.9903931587650248
+  },
+  {
+   "true_elo": 200.0,
+   "batch": 6,
+   "p_accept_h1": 1.0,
+   "mean_games": 27.772,
+   "estimate_given_h1": 182.96868768504112,
+   "bias": -17.031312314958882,
+   "monte_carlo_se": 1.2409098103425849
+  }
+ ]
+}

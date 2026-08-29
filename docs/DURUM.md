@@ -39,7 +39,7 @@ Sekiz seviye, her biri bir öncekine tek bir teknik ekliyor:
 
 Merdivenin tamamı sekans testinden geçirildi (`H1: en az 100 Elo`, 0.1sn/hamle):
 
-| eşleşme | oyun | skor | Elo | %95 aralık | hüküm |
+| eşleşme | oyun | skor | Elo † | %95 aralık | hüküm |
 |---|---:|---:|---:|---:|---|
 | L2 vs L1 | 9 | %88.9 | +361 | [+194, +800] | kabul |
 | L3 vs L2 | 7 | %100 | +800 | [+800, +800] | kabul |
@@ -48,6 +48,12 @@ Merdivenin tamamı sekans testinden geçirildi (`H1: en az 100 Elo`, 0.1sn/hamle
 | L6 vs L5 | 9 | %88.9 | +361 | [+134, +800] | kabul |
 | L7 vs L6 | 65 | %63.1 | +93 | [+21, +174] | kabul |
 | L8 vs L7 | 25 | %38.0 | −85 | [−238, +40] | red |
+
+**† Elo sütunu hiçbir şeyin tahmini değil.** Bu durma kuralı bilinen gerçeklere karşı
+simüle edildiğinde (`docs/SPRT_BIAS.md`), H1'i kabul edip erken duran bir koşu **gerçek
+fark ne olursa olsun ~+110 raporluyor** — gerçek sıfırken +113, yüzken +118. Sayı, yüz
+Elo'luk bir aralık boyunca beş Elo oynuyor. Bilgi taşıyan şey **hüküm**: kural gerçek
+sıfırda %3, gerçek yüzde %97 kabul ediyor.
 
 **Merdiven Level 7'ye kadar sıralı.** Alt üç basamak toplam 25 oyunda çözüldü —
 sabit gauntlet aynı üçü için 48 oyun harcamış ve daha zayıf bir iddia üretmişti.
@@ -81,9 +87,13 @@ farka dair söyledikleri, aynı farkı ölçen merdiven maçından bağımsız.
 | 0,1 sn'deki her oyun birlikte, Stockfish dahil | **+50** [−3, +103] |
 
 Dışarıdaki L7'ye karşı %47,5, L6'ya karşı %46,9 alıyor — **4 Elo arayla**, doğrudan
-maçın 93 dediği yerde. Havuzlanınca aralık **sıfırı kapsıyor.** Yani en üst basamak
-geçişi de çözülmüş değil: tek bir rakibe karşı çözülmüştü, iki tarafla da oynayan ikinci
-bir rakip her iki ölçümün hata payından fazlasıyla itiraz ediyor.
+maçın 93 dediği yerde. Havuzlanınca aralık **sıfırı kapsıyor.**
+
+Bu çelişki sonradan kendiliğinden çözüldü. Merdivenin durma kuralını bilinen gerçeklere
+karşı simüle edince (`docs/SPRT_BIAS.md`) şu çıkıyor: gerçek fark 50 civarıysa ve kural
+H1'i kabul edip **erken durduysa**, raporladığı sayı ~108. **Yani doğrudan maç ile çapraz
+bağ hiç çelişmiyormuş.** Biri ölçüm, diğeri gerçekten bağımsız olarak aşağı yukarı aynı
+sayıyı döndüren bir kuralın çıktısı.
 
 Uyum, Level 1 ve 2'yi hiç yerleştirmiyor: geri kalana tek bağlantıları 7-0-0'lık bir
 sonuç ve onun olabilirliği sonsuzda maksimum. Söylenebilecek tek şey tek yönlü:
