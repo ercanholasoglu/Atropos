@@ -429,8 +429,7 @@ predictions and the falsifiable claim were committed before the first game
 
 That number turned out to be about the *instrument* as much as the engine —
 see the third arm below. **The conversion to use is measured on the clock:
-−158 [−182, −135], and only above about 1.6 doublings**, because a third clock
-point rejected the fit that a single slope assumes.
+−171 [−194, −149]**, across four points from 0.34 to 2.04 doublings.
 
 Every point missed its prediction, in the same direction, by two and a half
 times. The predictions came from published doubling curves for classical
@@ -466,7 +465,7 @@ is worth *and* what truncation costs, together.
 | enforcement | Elo per real doubling | 95% interval |
 |---|---:|---:|
 | hard node limit | −207 | [−251, −164] |
-| **clock** (≥1.6 doublings) | **−158** | [−182, −135] |
+| **clock** (4 points) | **−171** | [−194, −149] |
 | soft node limit | −98 | [−126, −69] |
 
 Hard and soft do not overlap; the clock sits between and is not separable from
@@ -475,18 +474,23 @@ measurement** — that much is established, a precise ordering of all three is
 not. A hard node budget is an experimental instrument; nothing plays that way.
 
 Recomputed on the clock arm: Atropos's 2.6-doubling throughput deficit is
-**−411** [−472, −350] against a 480-game measured gap of about −440. The hard
+**−445** [−504, −386] against a 480-game measured gap of about −440. The hard
 arm had predicted −537 and was failing that check quietly.
 
-A later third clock point then rejected the through-origin fit itself (χ² =
-13.8 on 2 dof, p ≈ 0.001), with the entire misfit at B/2 and no explanation
-that survives contact with the data — the obvious one, spend variance, is
-contradicted by B/8 having the widest spread and sitting on the line. The
-Atropos conversion is unaffected because it sits inside the region the two
-consistent points cover. The **+39% speedup and SEE do not**: both are below
-half a doubling, where the arm is not described by anything, so their
-conversions (+75 and +61) carry that caveat. See
-[`docs/SPEED_CLOCK_PREREG.md`](docs/SPEED_CLOCK_PREREG.md).
+Getting the clock arm to four points was the longest thread in the project and
+it is worth the two paragraphs. A third point rejected the through-origin fit
+(χ² = 13.8 on 2 dof); a fourth localised the whole misfit to B/2; replaying
+B/2 with fresh games moved it from −201 to −116, **two runs of the same
+pairing differing at p = 0.015**.
+
+The fault was not the point but the error bars. Each carried only binomial
+noise, while the clock arm's node spend drifts run to run by up to 5.3% —
+another ±13 Elo that no binomial interval contains. That drift had already
+been measured and written down one document earlier; it was applied to the
+slope estimate, where it changed nothing, and not to the per-point errors,
+where a goodness-of-fit test lives. With it included: **χ² = 7.4 on 3 dof,
+nothing rejected, nothing discarded.** See
+[`docs/SPEED_CLOCK2_PREREG.md`](docs/SPEED_CLOCK2_PREREG.md).
 
 ### The cross-check that disagreed
 
@@ -509,14 +513,12 @@ Full write-up in [`docs/SPEED.md`](docs/SPEED.md).
 
 ### What it costs the rest of the project
 
-The +39% speedup is worth **somewhere around +75 Elo**, not the +29 the rule
-of thumb suggested — but it converts in a region the clock arm does not
-describe, so "clearly more than the rule of thumb, size not pinned down" is
-the honest summary.
+The +39% speedup is worth **+81 Elo** [+71, +92], not the +29 the rule of
+thumb suggested.
 
 Atropos runs 2.6 doublings slower than this engine (8,938 nps against
-~54,000). At −158 per doubling that is **−411 Elo from throughput alone**
-[−472, −350], against a measured gap to Level 6 of about 440. Nothing about
+~54,000). At −171 per doubling that is **−445 Elo from throughput alone**
+[−504, −386], against a measured gap to Level 6 of about 440. Nothing about
 the evaluation needs to be invoked to explain why an engine with feature
 parity loses.
 
@@ -532,8 +534,8 @@ less wall time, the same move in all 8 book positions.** SEE costs about 2% of
 throughput to compute and the saving is net of that.
 
 The speed curve turns that into a prediction rather than a hope. 23.3% less
-time to depth is 0.38 doublings, which on the clock arm is **+67 Elo
-[+55, +78]** — pre-registered at +79 from the hard arm, before that arm was
+time to depth is 0.38 doublings, which on the clock arm is **+66 Elo
+[+57, +74]** — pre-registered at +79 from the hard arm, before that arm was
 known to be the wrong one; the conclusion below is unaffected either way — in [`docs/SEE_PREREG.md`](docs/SEE_PREREG.md)
 along with what each outcome would mean, before any game was played.
 

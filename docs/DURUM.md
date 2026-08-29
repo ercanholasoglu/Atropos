@@ -240,9 +240,9 @@ aralık doğru olanı.
 
 > **Alıntılamadan önce niteliğini okuyun.** Üçüncü bir kol (aşağıda) bu −207'nin *sert*
 > node bütçesine özgü olduğunu gösterdi — sert bütçe kestiği iterasyonu çöpe atıyor.
-> Kullanılacak sayı saat kolununki: **−158 [−182, −135], ve yalnızca ~1.6 katlamanın
-> üstünde.** Yarım katlamanın altında saat kolunu hiçbir tek eğim tarif etmiyor
-> (`docs/SPEED_CLOCK_PREREG.md`).
+> Kullanılacak sayı saat kolununki: **−171 [−194, −149]**, 0.34-2.04 katlama aralığında
+> dört noktadan. Nasıl varıldığı — bir noktanın 3.6σ aykırı görünüp sonra hata
+> çubuklarının dar olduğunun anlaşılması dahil — `docs/SPEED_CLOCK2_PREREG.md`'de.
 
 Her nokta tahminini **aynı yönde ve iki buçuk kat** ıskaladı. Tahminler klasik motorlar
 için yayınlanmış katlama eğrilerinden geliyordu (50-70 Elo) — ama onlar uzun zaman
@@ -295,13 +295,20 @@ bedeli. Ayırınca:
 | bütçe nasıl uygulanıyor | gerçek katlama başına Elo | %95 aralık |
 |---|---:|---:|
 | sert node limiti (4 nokta) | −207 | [−251, −164] |
-| **saat** (3 nokta; ≥1.6 katlama) | **−158** | [−182, −135] |
+| **saat** (4 nokta; 0.34-2.04 katlama) | **−171** | [−194, −149] |
 | yumuşak node limiti (1 nokta) | −98 | [−126, −69] |
 
-Saat koluna sonradan üçüncü bir nokta eklendi ve bu, yukarıdaki sayıların dayandığı
-**orijinden geçme varsayımını reddetti** (χ² = 13.8, 2 sd, p ≈ 0.001). Sapmanın tamamı
-B/2 noktasında; B/4 ile B/8 çizgi üzerinde. Saat satırı bu yüzden o ikisinin kapsadığı
-bölgeyle sınırlı.
+Saat satırını dört noktaya çıkarmak projenin en uzun ipiydi. Üçüncü nokta orijinden
+geçme varsayımını reddetti (χ² = 13.8, 2 sd); dördüncüsü sapmanın tamamını B/2'de
+yalıttı; B/2'yi hiç oynanmamış oyunlarla tekrarlayınca −201'den −116'ya taşındı —
+**aynı eşleşmenin iki koşusu p = 0.015 ile ayrışıyor.**
+
+Kusur noktada değil hata çubuklarındaydı. Her nokta yalnızca binom gürültüsü taşıyordu;
+oysa saat kolunun node harcaması koşudan koşuya %5.3'e varan oranda kayıyor — hiçbir
+binom aralığının içermediği ±13 Elo daha. Bu kayma bir belge önce **zaten ölçülmüş ve
+yazılmıştı**; ama eğim tahminine uygulandı (orada hiçbir şey değiştirmedi), nokta
+hatalarına değil — oysa uyum iyiliği testi orada yaşıyor. Dahil edilince: **χ² = 7.4,
+3 sd, hiçbir şey reddedilmiyor, hiçbir nokta atılmıyor.**
 
 Sert ile yumuşak örtüşmüyor; saat ikisinin arasında ve sert koldan ayrılamıyor. Yani
 **bu ölçümde bütçenin nasıl uygulandığı birinci derecede bir değişken** — uçlar arasında
@@ -319,23 +326,14 @@ Saat kolu üzerinden (gerçek oyunun durma biçimi):
 
 | iddia | katlama | dönüşüm | doğrudan ölçülen |
 |---|---:|---:|---:|
-| atropos bu motora karşı | 2.60 | **−411** [−472, −350] | ≈ −440 ✓ |
-| +%39 hızlanma | 0.48 | +75 — **bölge dışı** | — |
-| SEE budaması | 0.38 | +61 — **bölge dışı** | +48 [+11, +87] |
+| atropos bu motora karşı | 2.60 | **−445** [−504, −386] | ≈ −440 ✓ |
+| +%39 hızlanma | 0.48 | **+81** [+71, +92] | — |
+| SEE budaması | 0.38 | **+66** [+57, +74] | +48 [+11, +87] ✓ |
 
-atropos satırı işe yarayan kontrol **ve ölçülen bölgenin içine düşen tek satır**: −411
-diyor, 480 oyunluk gauntlet ~−440 ölçtü. Sert kol −537 demişti ve bu kontrolü sessizce
-kaybediyordu.
-
-**Diğer iki satır yarım katlamanın altında** — yani hiçbir fit'in tarif etmediği, B/2'nin
-(modeli kıran noktanın) yakınındaki aralıkta. Sayıları silmek yerine bu uyarıyla birlikte
-yazıyorum, çünkü aletin kapsamadığı bir bölgeden alınan dönüşüm tam da uyarısı düşerek
-tekrarlanan sayı türü. Kapatmak için B/1.25 ya da B/1.5'te bir eşleşme daha gerekiyor.
-
-Sapmanın **açıklaması yok.** Akla ilk gelen aday — harcamanın değişkenliği — veriyle
-çelişiyor: pozisyon başına en geniş yayılım B/8'de (3.6×) ve o çizgi üzerinde; B/2'ninki
-2.0× ve sapan o. İlk kulağa hoş gelen hikâyeye oturtmak yerine açıklanamamış olarak
-kaydedildi.
+Bağımsız ölçümü olan iki satır da eğriyle uyuşuyor. atropos'unki daha güçlü kontrol:
+480 oyunluk gauntlet L6'ya açığını ~−440 ölçtü, tamamen başka oyunlardan kurulmuş bir
+dönüşüm −445 öngörüyor. Özellik paritesi throughput'a yeniliyor, ve bu yenilginin
+büyüklüğü artık iddia değil öngörü.
 
 ### 3.5 Evaluation v3: demet düştü, içindeki bir terim ship edildi
 

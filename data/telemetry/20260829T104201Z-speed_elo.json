@@ -1,0 +1,55 @@
+{
+ "tool": "speed_elo",
+ "started_at": "2026-08-29T10:42:01+00:00",
+ "finished_at": "2026-08-29T10:43:44+00:00",
+ "commit": "7238086",
+ "tree_dirty": true,
+ "parameters": {
+  "arm": "movetime",
+  "level": 7,
+  "base_nodes": 5000,
+  "base_movetime": 0.09,
+  "divisors": [
+   2.0
+  ],
+  "games_per_pairing": 240,
+  "workers": 6,
+  "max_plies": 200
+ },
+ "wall_seconds": 102.51980008301325,
+ "cpu_seconds": 541.6458409999999,
+ "cpu_per_wall": 5.2833290794696595,
+ "peak_rss_mb_largest_process": 148.71875,
+ "nodes": 32449851,
+ "nodes_per_cpu_second": 59909.72060283946,
+ "games": 63,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "Ercan-MacBook-Pro.local"
+ },
+ "result": {
+  "pairings": [
+   {
+    "arm": "movetime",
+    "divisor": 2.0,
+    "doublings": 1.0,
+    "games": 240,
+    "score_for_full_speed": 0.6604166666666667,
+    "elo_for_slowed": -115.54866312551744,
+    "interval_for_slowed": [
+     -164.35533817319677,
+     -70.79998954374946
+    ],
+    "predicted_elo_for_slowed": -60.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.045,
+    "complete": true
+   }
+  ],
+  "fit": null
+ },
+ "notes": []
+}

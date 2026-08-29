@@ -134,3 +134,87 @@ and prove only that the code is deterministic; the replication is offset by
 
     python -m scripts.speed_elo --arm movetime --only 2 --index-offset 1000 \
         --out data/speed_elo_movetime_b2_replication.json
+
+---
+
+## Replication result
+
+**B/2 replayed, 240 games the first run did not play: −115.5 Elo
+[−162, −69].** Against the two declared outcomes:
+
+| | predicted | inside? |
+|---|---:|---|
+| the first B/2 was a fluke | −98 | **yes** |
+| it reproduces | −201 | no |
+
+But the more useful number is the comparison between the two runs of the same
+pairing:
+
+| run | games | score | Elo | 95% interval |
+|---|---:|---:|---:|---:|
+| original | 240 | 0.760 | −201 | [−252, −149] |
+| replication | 240 | 0.660 | −116 | [−162, −69] |
+| **pooled** | **480** | 0.710 | **−156** | **[−190, −122]** |
+
+**They differ at z = 2.43, p = 0.015.** Two runs of an identical pairing, and
+the intervals barely touch. That is the finding, and it is about the
+instrument rather than about B/2.
+
+## What was actually wrong: the error bars, not the point
+
+Refitting with the pooled B/2 leaves it 2.8σ off and the through-origin fit
+still rejected (χ² = 10.9 on 3 dof, p ≈ 0.03). So pooling alone does not
+rescue it.
+
+The cause was already measured and already written down — in the previous
+pre-registration, which reported that the clock arm's spend drifts run to run
+(B/2: 3962 ± 210 nodes, 5.3%) and said in as many words that "the published
+slope placed those points as though they were exact, so its interval is
+narrower than it should be."
+
+**I then applied that correction to the wrong quantity.** It went into a
+resampling of the slope estimate, where it changed the interval by 1 Elo, and
+not into the per-point errors — which is where it matters, because a
+goodness-of-fit test compares residuals *to those errors*. A point whose
+budget drifts by 5.3% has an extra ±13 Elo of uncertainty that no binomial
+error bar contains.
+
+Converting each point's measured spend drift into Elo through the slope and
+adding it in quadrature:
+
+| x | binomial | spend drift | combined | residual |
+|---:|---:|---:|---:|---:|
+| 0.341 | ±23 | ±7 | ±24 | −1.0σ |
+| 0.605 | ±18 | ±13 | ±22 | −2.3σ |
+| 1.608 | ±29 | ±9 | ±30 | +0.9σ |
+| 2.037 | ±34 | ±0 | ±34 | +0.5σ |
+
+**χ² = 7.4 on 3 dof, p ≈ 0.12. Nothing is rejected and nothing is discarded.**
+
+## The answer
+
+**−171 Elo per doubling, 95% interval [−194, −149]**, from all four clock
+points with no exclusions, across 0.34 to 2.04 doublings.
+
+The earlier "−158, valid only above 1.6 doublings" was the same data with one
+point thrown out for not fitting error bars that were too small. The
+restriction comes off; so does the caveat on every sub-doubling conversion.
+
+| claim | doublings | conversion | measured directly |
+|---|---:|---:|---:|
+| atropos deficit | 2.60 | **−445** [−504, −386] | ≈ −440 ✓ |
+| the +39% speedup | 0.48 | **+81** [+71, +92] | — |
+| SEE pruning | 0.38 | **+66** [+57, +74] | +48 [+11, +87] ✓ |
+
+Both independently measured checks now agree with the curve.
+
+## What this cost, and what it bought
+
+Four extra pairings — B/4, B/1.5, the B/2 replication, and the soft-node arm —
+about 960 games, to end up 13 Elo per doubling from where two points started.
+
+The number barely moved. What moved is what can be said about it: it now
+rests on four points that agree, with the run-to-run drift of the apparatus
+inside the error bars rather than masquerading as an outlier. The two-point
+version could not have detected any of that, and would have kept quoting a
+figure whose fit had never been tested.

@@ -26,10 +26,11 @@ The slowed side's Elo, negative because it lost:
 > `docs/SPEED_ARM3_PREREG.md`) shows −207 is specific to a *hard* node budget,
 > which throws away the iteration it interrupts. The conversion to use is
 > measured on the clock — how this engine and everything it plays actually
-> stops — and it is **−158 [−182, −135], valid above about 1.6 doublings**.
-> Below half a doubling the clock arm is not described by any single slope;
-> `docs/SPEED_CLOCK_PREREG.md` has the rejected fit and the point that breaks
-> it.
+> stops — and it is **−171 [−194, −149]**, from four points spanning 0.34 to
+> 2.04 doublings. `docs/SPEED_CLOCK_PREREG.md` and
+> `docs/SPEED_CLOCK2_PREREG.md` have how that number was arrived at, including
+> a stretch where one point looked like a 3.6σ outlier and turned out to be
+> error bars that were too small.
 
 That interval is not the one the least-squares fit reports. The fit says
 ±5, which treats the four points as exact; their own sampling errors run from
@@ -142,13 +143,16 @@ costs to be truncated. Separating them:
 | enforcement | Elo per real doubling | 95% interval |
 |---|---:|---:|
 | hard node limit (4 points) | −207 | [−251, −164] |
-| **clock** (3 points; above 1.6 doublings) | **−158** | [−182, −135] |
+| **clock** (4 points, 0.34–2.04 doublings) | **−171** | [−194, −149] |
 | soft node limit (1 point) | −98 | [−126, −69] |
 
-A third clock point was added afterwards, and it rejected the through-origin
-fit those numbers assume (χ² = 13.8 on 2 dof, p ≈ 0.001). The whole misfit is
-the B/2 point; B/4 and B/8 lie on the line quoted above. The clock row is
-therefore restricted to the region those two cover.
+The clock row took two more pairings and a replication to earn. A third point
+rejected the through-origin fit (χ² = 13.8 on 2 dof), a fourth localised the
+misfit to B/2 alone, and replaying B/2 with fresh games moved it from −201 to
+−116 — two runs of the same pairing differing at p = 0.015. The cause was the
+error bars: each point carried only binomial noise, while the clock arm's spend
+drifts run to run by up to 5.3%, worth another ±13 Elo. With that included,
+χ² = 7.4 on 3 dof and nothing is rejected or discarded.
 
 Hard and soft do not overlap. The clock sits between them and is not separable
 from the hard arm. What is established is that **how the budget is enforced is
@@ -163,31 +167,24 @@ out of building the apparatus, not out of the data.
 
 ## What this means for the rest of the project
 
-Converted on the **clock** arm, in the region where it is described by a line
-(≥1.6 doublings, −158 [−182, −135]):
+Converted on the **clock** arm — −171 Elo per doubling [−194, −149], four
+points, no exclusions:
 
 | claim | doublings | conversion | measured directly |
 |---|---:|---:|---:|
-| atropos vs this engine | 2.60 | **−411** [−472, −350] | ≈ −440 ✓ |
-| the +39% speedup | 0.48 | +75 — **outside that region** | — |
-| SEE pruning | 0.38 | +61 — **outside that region** | +48 [+11, +87] |
+| atropos vs this engine | 2.60 | **−445** [−504, −386] | ≈ −440 ✓ |
+| the +39% speedup | 0.48 | **+81** [+71, +92] | — |
+| SEE pruning | 0.38 | **+66** [+57, +74] | +48 [+11, +87] ✓ |
 
-The atropos row is the check worth having, and it is the one that lands inside
-the measured region: −411 against a 480-game gauntlet reading of about −440.
-Feature parity loses to throughput, and the size of the loss is now predicted
-by an independent measurement to within its error.
+Both rows that have an independent measurement agree with the curve. The
+atropos one is the stronger check: a 480-game gauntlet put its deficit to
+Level 6 at about −440, and a conversion built from entirely different games
+predicts −445. Feature parity loses to throughput, and the size of the loss is
+now predicted rather than asserted.
 
-**The other two rows sit below half a doubling, in the stretch of the clock
-arm that no fit describes** — nearer to B/2, the point that breaks the
-through-origin model, than to anything measured cleanly. They are quoted with
-that attached rather than dropped, because a conversion taken from a region
-the instrument does not cover is precisely the number that gets repeated
-without its caveat. Closing it needs one more pairing at B/1.25 or B/1.5.
-
-The +39% speedup is therefore worth **somewhere around +75 Elo** and not the
-+29 an unmeasured rule of thumb suggested — but the interval on that is wider
-than the arithmetic implies, and the honest summary is "clearly worth more
-than the rule of thumb, size not pinned down".
+The +39% speedup is worth **+81 Elo**, not the +29 an unmeasured rule of thumb
+suggested. The old note that a ten-game calibration could not have detected it
+still stands: ±110 Elo of noise swamps +81.
 
 ## Reproducing
 

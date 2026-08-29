@@ -1,0 +1,26 @@
+{
+ "arm": "movetime",
+ "games_per_pairing": 240,
+ "base_nodes": 5000,
+ "base_movetime": 0.09,
+ "pairings": [
+  {
+   "arm": "movetime",
+   "divisor": 2.0,
+   "doublings": 1.0,
+   "games": 240,
+   "score_for_full_speed": 0.6604166666666667,
+   "elo_for_slowed": -115.54866312551744,
+   "interval_for_slowed": [
+    -164.35533817319677,
+    -70.79998954374946
+   ],
+   "predicted_elo_for_slowed": -60.0,
+   "budget_nodes": null,
+   "budget_seconds": 0.045,
+   "complete": true
+  }
+ ],
+ "fit": null,
+ "complete": true
+}
