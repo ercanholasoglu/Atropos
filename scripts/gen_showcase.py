@@ -33,14 +33,34 @@ def num(v, plus=True):
 
 
 # ---------------------------------------------------------------- content
+# (pairing, fixed games, sequential figure, measured, lo, hi)
 LADDER = [
-    ("L2 vs L1", 9, 361, 194, 800),
-    ("L3 vs L2", 7, 800, 800, 800),
-    ("L4 vs L3", 9, 361, 194, 800),
-    ("L5 vs L4", 33, 132, 45, 240),
-    ("L6 vs L5", 9, 361, 134, 800),
-    ("L7 vs L6", 65, 93, 21, 174),
-    ("L8 vs L7", 25, -85, -238, 40),
+    ("L2 vs L1", 600, 361, 420, 375, 479),
+    ("L3 vs L2", 600, 800, 684, 603, 833),
+    ("L4 vs L3", 240, 361, 390, 326, 482),
+    ("L5 vs L4", 240, 132, 149, 103, 200),
+    ("L6 vs L5", 240, 361, 527, 443, 682),
+    ("L7 vs L6", 240, 93, 22, -22, 66),
+    ("L8 vs L7", 240, -85, -25, -69, 19),
+]
+
+# (gap, measured, lo, hi) — the joint fit over all 5,375 games at 0.1s
+GAPS = [
+    ("L1 → L2", 444, 229, 660),
+    ("L2 → L3", 703, 505, 902),
+    ("L3 → L4", 427, 251, 604),
+    ("L4 → L5", 193, 33, 352),
+    ("L5 → L6", 660, 546, 773),
+    ("L6 → L7", 19, -17, 55),
+    ("L7 → L8", -35, -79, 9),
+]
+
+# (true difference, games to stop, reported, bias, bias over its own sd)
+BIAS = [
+    (22, 96, 88, 66, 1.54),
+    (149, 41, 139, -10, 0.18),
+    (390, 14, 368, -22, 0.17),
+    (527, 12, 507, -20, 0.12),
 ]
 
 ANCHOR = [
@@ -198,12 +218,40 @@ NOT_MEASURED = [
 ]
 
 # ---------------------------------------------------------------- markup
+KEY_ROW = ' class="row-key"'
+OUT_CLASS = "out"
+OUT_LABEL = "300 dışarıda"
+BIAS_NOTE = {
+    True: "yanlılık baskın — sayı güvenilir biçimde yanlış",
+    False: "gürültü baskın — sayı, sistematik değil ama çok belirsiz",
+}
+
 ladder_rows = "\n".join(
-    f'<tr><td class="mono">{n}</td><td class="mono num">{g}</td>'
-    f'<td class="mono num">{num(e)}</td>'
-    f'<td class="ivl-cell">{bar(lo, e, hi, -300, 850)}</td>'
+    f"<tr{KEY_ROW if n == 'L7 vs L6' else ''}>"
+    f'<td class="mono">{n}</td><td class="mono num">{g}</td>'
+    f'<td class="mono num pred">{num(sq)}</td>'
+    f'<td class="mono num strong">{num(e)}</td>'
+    f'<td class="ivl-cell">{bar(lo, e, hi, -120, 900, pred=sq)}</td>'
     f'<td class="mono small">[{num(lo)}, {num(hi)}]</td></tr>'
-    for n, g, e, lo, hi in LADDER
+    for n, g, sq, e, lo, hi in LADDER
+)
+
+gap_rows = "\n".join(
+    f"<tr{KEY_ROW if 'L6 → L7' in n else ''}>"
+    f'<td class="mono">{n}</td><td class="mono num strong">{num(e)}</td>'
+    f'<td class="ivl-cell">{bar(lo, e, hi, -120, 950, pred=300)}</td>'
+    f'<td class="mono small">[{num(lo)}, {num(hi)}]</td>'
+    f'<td class="mono num small {OUT_CLASS if not (lo <= 300 <= hi) else "pred"}">'
+    f'{OUT_LABEL if not (lo <= 300 <= hi) else "300 içeride"}</td></tr>'
+    for n, e, lo, hi in GAPS
+)
+
+bias_rows = "\n".join(
+    f'<tr><td class="mono num">{t}</td><td class="mono num">{g}</td>'
+    f'<td class="mono num">{num(r)}</td><td class="mono num strong">{num(b)}</td>'
+    f'<td class="mono num">{ratio:.2f}</td>'
+    f'<td class="note">{BIAS_NOTE[ratio > 1]}</td></tr>'
+    for t, g, r, b, ratio in BIAS
 )
 
 anchor_rows = "\n".join(
@@ -421,6 +469,7 @@ td .sub {{ display: block; font-family: "IBM Plex Mono", monospace;
   font-size: .7rem; color: var(--ink-faint); }}
 td.note {{ font-size: .8125rem; color: var(--ink-soft); min-width: 15rem; }}
 td.pred {{ color: var(--ink-faint); }}
+td.out {{ color: var(--no); font-weight: 500; }}
 
 /* ---- interval bars ---- */
 .ivl-cell {{ width: 40%; min-width: 9rem; padding-right: .85rem; }}
@@ -528,78 +577,75 @@ hr.rule {{ border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }}
     her sayının nereden geldiğinin, hangi tahminin tutmadığının ve neyin hâlâ
     bilinmediğinin kaydı.</p>
   <div class="stats">
-    <div class="stat"><div class="v">6.900+</div><div class="k">telemetrili oyun</div></div>
-    <div class="stat"><div class="v">7</div><div class="k">ön-kayıtlı tahmin</div></div>
-    <div class="stat"><div class="v">3</div><div class="k">tutmadı</div></div>
-    <div class="stat"><div class="v">4</div><div class="k">geri alınan iddia</div></div>
-    <div class="stat"><div class="v">724</div><div class="k">test</div></div>
+    <div class="stat"><div class="v">6.901</div><div class="k">telemetrili oyun</div></div>
+    <div class="stat"><div class="v">8</div><div class="k">ön-kayıtlı tahmin</div></div>
+    <div class="stat"><div class="v">4</div><div class="k">tutmadı</div></div>
+    <div class="stat"><div class="v">5</div><div class="k">geri alınan iddia</div></div>
+    <div class="stat"><div class="v">732</div><div class="k">test</div></div>
   </div>
 </header>
 
 <section>
-  <h2>Merdiven sıralı. Aralıkları değil.</h2>
-  <p class="sec-sub">Her eşleşme sekans testiyle · 0,1 sn/hamle</p>
-  <p>Yedi eşleşmenin hepsi karara bağlandı ve merdiven Level 7'ye kadar
-    <strong>sıralı</strong>. Level 8'in ölçülebilir üstünlüğü yok.</p>
+  <h2>Bir merdivenin sıralaması ucuz, ölçeği değil</h2>
+  <p class="sec-sub">Her eşleşme sabit uzunlukta · 1.960 oyun · 0,1 sn/hamle</p>
+  <p>Merdivenin yedi eşleşmesi sekans testiyle doğrulanmıştı ve her sonuç yanında bir Elo
+    sayısıyla alıntılanıyordu. <strong>Hükümler ayaktaydı; sayılar değildi.</strong></p>
   <div class="scroll">
     <table>
-      <thead><tr><th>eşleşme</th><th class="num">oyun</th><th class="num">Elo</th>
-        <th>%95 güven aralığı</th><th></th></tr></thead>
+      <thead><tr><th>eşleşme</th><th class="num">oyun</th><th class="num">sekans dedi</th>
+        <th class="num">ölçülen</th><th>aralık ve sekans sayısı</th><th></th></tr></thead>
       <tbody>{ladder_rows}</tbody>
     </table>
   </div>
   <div class="legend">
     <span><i class="key range"></i>%95 aralık</span>
-    <span><i class="key est"></i>nokta tahmini</span>
-    <span>ince dikey çizgi: sıfır</span>
-  </div>
-  <div class="panel flag">
-    <p><strong>Basamaklar 300 Elo arayla etiketli ve bunu hiçbir ölçüm doğrulamadı.</strong>
-      Yukarıdaki testlerin hepsi <code>elo0=0, elo1=100</code> parantezinde koştu — yani
-      «kabul», <em>fark 0'dan çok 100'e benziyor</em> demek. Bir sıralama testi;
-      300'ün testi değil.</p>
-    <p>Sabit derinlikli Stockfish aynı şeyi dışarıdan söylüyor: Level 7'ye karşı −17,
-      Level 6'ya karşı −21 Elo. Yani iki basamak <strong>4 Elo arayla, [−47, +40]</strong> —
-      etiketlerin 300 dediği yerde. Sayılar <code>INITIAL_ELO</code>'da kuruluşta
-      <em>hedef</em> olarak atanmış.</p>
+    <span><i class="key est"></i>sabit uzunlukta ölçülen</span>
+    <span><i class="key pred"></i>sekans testinin raporladığı</span>
   </div>
 
-  <h3 class="sub-h">Hepsini birden uydurunca sıralama da çatladı</h3>
-  <p>Yukarıdaki her sayı <em>tek bir eşleşmeden</em> geliyor. 0,1 sn'deki 2.730 oyunun
-    hepsini birlikte uydurmak, komşu-çift zincirinin attığı bir şeyi kullanıyor: aynı
-    dış motor hem L6'ya hem L7'ye karşı oynadı, yani aradaki farkı merdiven maçından
-    <strong>bağımsız</strong> ölçüyor.</p>
+  <div class="panel flag">
+    <p><strong>Level 7, 0,1 sn/hamlede Level 6'dan ayırt edilemiyor.</strong>
+      Sekans testi +93 deyip «en az 100 Elo daha iyi» hükmü vermişti; sabit uzunlukta
+      240 oyun <strong>+22 [−22, +66]</strong> diyor — aralık sıfırı kapsıyor.</p>
+    <p>Aynı cevaba <em>dört bağımsız yol</em>: ortak uyum +50 [−3, +103], iki basamağa da
+      oynayan dış motor 4 Elo arayla, yanlılık simülasyonu +66'lık kayma öngörüyor
+      (gözlenen +71), ve bu ölçüm. Level 8 ise düzeltmenin bıraktığı yerde:
+      −25 [−69, +19], aralık hâlâ sıfırı kapsıyor — artık 25 değil 240 oyunla.</p>
+  </div>
+
+  <h3 class="sub-h">Neden sayılar atıldı</h3>
+  <p>Sekans testi kanıt bir sınırı geçtiği <em>anda</em> durur, ve geçiş uygun bir seri
+    üzerine olur. Durma noktasındaki tahmin, aynı oyunların tamamı oynansa çıkacak
+    tahmin değildir. Bu ders kitabı bilgisi; ölçülmemiş olan <strong>büyüklüğü</strong>.
+    Projenin kendi <code>Sprt</code> sınıfını gerçeği bilinen maçlara karşı koşturdum —
+    nokta başına 3.000 maç, hiç satranç oynamadan:</p>
   <div class="scroll">
     <table>
-      <thead><tr><th>L7'nin L6 üstünlüğü nasıl hesaplanırsa</th><th class="num">Elo</th>
-        <th>%95 aralık</th><th></th></tr></thead>
-      <tbody>
-        <tr><td>yalnızca skor, beraberlikler yok sayılır <span class="sub">projenin
-          kullandığı yöntem</span></td><td class="mono num">+93</td>
-          <td class="ivl-cell">{bar(21, 93, 174, -60, 220)}</td>
-          <td class="mono small">[+21, +174]</td></tr>
-        <tr><td>aynı 65 oyun, beraberlik modeliyle</td><td class="mono num">+100</td>
-          <td class="ivl-cell"></td><td class="mono small">—</td></tr>
-        <tr class="row-key"><td>0,1 sn'deki <em>her</em> oyun birlikte</td>
-          <td class="mono num">+50</td>
-          <td class="ivl-cell">{bar(-3, 50, 103, -60, 220)}</td>
-          <td class="mono small">[−3, +103]</td></tr>
-      </tbody>
+      <thead><tr><th class="num">gerçek fark</th><th class="num">duruş oyunu</th>
+        <th class="num">raporlanan</th><th class="num">yanlılık</th>
+        <th class="num">÷ saçılma</th><th></th></tr></thead>
+      <tbody>{bias_rows}</tbody>
     </table>
   </div>
-  <p>Model değişimi neredeyse hiçbir şey yapmıyor — <strong>hareketi çapraz bağ
-    yapıyor.</strong> Dış motor L7'ye karşı %47,5, L6'ya karşı %46,9 alıyor: iki basamak
-    4 Elo arayla. Havuzlanınca aralık <strong>sıfırı kapsıyor.</strong></p>
-  <blockquote>Merdivenin en zor kazanılan eşleşmesi tek bir rakibe karşı çözülmüştü.
-    İki tarafla da oynayan ikinci bir rakip itiraz ediyor.</blockquote>
-  <div class="panel">
-    <p><strong>Uyumun yapmayı reddettiği iki şey.</strong> Level 1 ve 2'yi hiç
-      yerleştirmiyor: geri kalana tek bağlantıları 7-0-0'lık bir sonuç, olabilirliği
-      sonsuzda maksimum. Söylenebilecek tek şey tek yönlü: <em>+109 Elo ya da daha
-      fazla</em>, üst sınır yok. Ve Level 8'i yeniden açmıyor — havuzlanmış beraberlik
-      parametresi −143 gösteriyor ama o eşleşmenin kendi beraberlik oranı havuzun beşte
-      biri; kendi oyunlarına uydurunca −86, ve aralık her halükârda sıfırı kapsıyor.</p>
+  <p>Erken durmaya koşullandığında raporlanan sayı <strong>gerçek fark 0 da olsa 100 de
+    olsa ~110</strong>. Yüz Elo'luk bir gerçek aralık boyunca tahmin beş Elo oynuyor.</p>
+  <blockquote>Hüküm kanıttır. Yanındaki sayı değildir.</blockquote>
+
+  <h3 class="sub-h">Ölçülmüş merdiven</h3>
+  <p>0,1 sn'deki 5.375 oyunun tamamı birlikte uydurulunca sekiz basamağın hepsi ilk kez
+    yerleşti. Nominal her aralık için 300:</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>aralık</th><th class="num">ölçülen</th>
+        <th>%95 aralık ve nominal 300</th><th></th><th></th></tr></thead>
+      <tbody>{gap_rows}</tbody>
+    </table>
   </div>
+  <p><strong>Yedi aralığın dördünde 300 güven aralığının dışında.</strong> Gerçek
+    merdiven altta dik çıkıyor, Level 4'te düzleşiyor, quiescence ve transposition
+    table'ın geldiği yerde tekrar sıçrıyor — ve sonra duruyor. Sayılar
+    <code>INITIAL_ELO</code>'da kuruluşta <em>hedef</em> olarak atanmıştı; hiçbir ölçüm
+    onları doğrulamadı.</p>
 </section>
 
 <section>
