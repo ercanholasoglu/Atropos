@@ -57,3 +57,69 @@ anything.
     python -m scripts.sprt_match --a passers-rooks --b v2 --fixed --max-games 600
 
 600 games, fixed length, no stopping rule, 0.1s per move.
+
+---
+
+## Result
+
+**600 games, fixed length: 53.7%, +26 Elo, interval [+1, +51].**
+
+| account | prediction | inside the interval? |
+|---|---:|---|
+| terms add | **+9** | **yes** |
+| the bundle interacts | +75 | no |
+
+**The interaction account is rejected. The additive one survives** — but only
+for this pair, and the rest of the table complicates it.
+
+### Additivity, tested piece by piece
+
+| composition | predicted | observed | difference | verdict |
+|---|---:|---:|---:|---|
+| passers + rooks → `passers-rooks` | +9 | +26 | +17 ± 22 (0.75σ) | consistent |
+| `passers-rooks` + shelter → bundle | −27 | +21 | +48 ± 25 (1.92σ) | consistent, barely |
+| rooks + passers + shelter → bundle | −44 | +21 | +65 ± 27 (**2.42σ**) | **inconsistent** |
+
+**The two cheap terms add cleanly. Shelter is where it breaks.**
+
+Measuring shelter's contribution two ways makes the point directly:
+
+| shelter added to | contributes |
+|---|---:|
+| v2 alone | **−53** ± 15 |
+| v2 + passers + rooks | **−5** ± 20 |
+
+Difference 48 ± 25, or 1.92σ — suggestive and not established. What can be
+said without straining: **shelter is clearly harmful on its own and clearly
+does nothing in company**, and whether that difference is a real interaction or
+two noisy numbers is not settled by 1,158 games.
+
+### The result that matters more than the hypothesis
+
+| variant | Elo vs v2 | nps |
+|---|---:|---:|
+| v2 | — | 64,794 |
+| `v3-rooks` — **the one that shipped** | −2 [−26, +22] | 60,337 |
+| `shelter-only` | −53 [−84, −24] | 58,138 |
+| **`passers-rooks`** | **+26 [+1, +51]** | 53,556 |
+| `v3-shelter` (all three) | +21 [−5, +47] | 49,064 |
+
+**`passers-rooks` is the first evaluation variant this project has measured
+with an interval clear of zero on the positive side.** It is also cheaper than
+the bundle, because it leaves out the term that was doing nothing.
+
+The margin is thin — the lower bound is **+1**, one Elo clear of nothing, on
+600 games. It is a result, not a comfortable one, and confirming it properly
+would take another 600.
+
+### What this says about the project's procedure
+
+Evaluation v3 was tested as a bundle of three, rejected, and then its parts
+were tested separately and **the one that measures −2 was shipped**. The
+combination that actually measures positive — passed pawns and rook files,
+without king safety — **was never tried until now**, because the bundle's
+rejection was read as covering everything inside it.
+
+Terms mostly add. The procedure that assumed they did was not wrong in
+principle. It was applied to a bundle whose rejection was itself an artifact of
+a stopping rule, and every step after that inherited the error.

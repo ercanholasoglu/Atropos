@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-31T14:12:33+00:00",
+ "finished_at": "2026-08-31T14:15:08+00:00",
+ "commit": "5af2c3f",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "passers-rooks",
+  "b": "v2",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 600,
+  "minutes_budget": 4.0,
+  "games_before": 546
+ },
+ "wall_seconds": 154.99795150000136,
+ "cpu_seconds": 633.175294,
+ "cpu_per_wall": 4.085055885399843,
+ "peak_rss_mb_largest_process": 169.90625,
+ "nodes": 40077905,
+ "nodes_per_cpu_second": 63296.697422941455,
+ "games": 54,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 600,
+  "wins": 263,
+  "draws": 118,
+  "losses": 219,
+  "score": 0.5366666666666666,
+  "elo_estimate": 25.524430311101813,
+  "elo_interval_95": [
+   0.6447579301408455,
+   50.66864181351682
+  ],
+  "llr": 1.4922286480431879,
+  "verdict": "out of games",
+  "diagnosis": "out of games",
+  "state_file": "data/fixed_passers-rooks_vs_v2.json"
+ },
+ "notes": []
+}

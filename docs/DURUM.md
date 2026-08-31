@@ -492,7 +492,8 @@ Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 > | `v3-rooks` | v2 + kale hattı | **−2** [−26, +22] |
 > | `v3-passers` | v2 + geçer piyon | +11 [−12, +34] (714 oyun, hiç durmadı) |
 > | `v3-shelter` | v2 + **üçü birden** | **+21** [−5, +47] |
-> | **`shelter-only`** | v2 + kral güvenliği | **−54** [−84, −24] |
+> | `shelter-only` | v2 + kral güvenliği | **−53** [−84, −24] |
+> | **`passers-rooks`** | **v2 + geçer piyon + kale hattı** | **+26 [+1, +51]** |
 >
 > Demet, ayrı ayrı ölçülen parçalarından iyi çıkıyor — aralıklar göz önüne alınınca
 > sıradan, ama projenin kendine anlattığı hikâyenin tam tersi: v3 *demet olarak*
@@ -515,6 +516,21 @@ Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 > zararlı üç terimin birlikte +21 etmesi bir hikâye olurdu ve veri onu anlatmayı
 > desteklemiyor. Söylenebilecek olan: demetin +21'i **demetin ölçümü olarak duruyor ve
 > içindeki hiçbir şey bir terime izlenebilmiş değil.**
+>
+> **Devamı: terimler toplanıyor mu?** Demetten shelter'ı çıkaran varyant (`passers-rooks`)
+> iki rakip tahmini 66 Elo arayla ayırıyordu: toplanabilirse **+9**, demet gerçekten
+> etkileşiyorsa **+75**. Ölçüm: **600 oyun, +26 Elo [+1, +51]** — +9 içeride, +75 dışarıda.
+> **Etkileşim açıklaması reddedildi.**
+>
+> Ama toplanabilirlik her yerde tutmuyor: geçer piyon + kale hattı temiz topluyor
+> (0,75σ), shelter'ın eklendiği yerde kırılıyor (2,42σ). Shelter tek başına v2'ye
+> **−53 ± 15**, diğer ikisinin üstüne **−5 ± 20** katıyor — fark 1,92σ, düşündürücü ama
+> kurulmuş değil.
+>
+> **Asıl sonuç hipotezden önemli:** `passers-rooks`, bu projede aralığı pozitif tarafta
+> sıfırı dışlayan **ilk** değerlendirme varyantı — ve bugüne kadar hiç denenmemişti,
+> çünkü v3'ün demet olarak reddi içindeki her şeyi kapsıyor sanılmıştı. Marj ince: alt
+> sınır **+1**, 600 oyunda hiçlikten bir Elo uzak. Ayrıntı: `docs/ADDITIVITY_PREREG.md`.
 >
 > | terim | verilen karar | neye dayanarak | 600 sabit oyun ne diyor |
 > |---|---|---:|---:|

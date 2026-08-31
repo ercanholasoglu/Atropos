@@ -515,12 +515,27 @@ section up as though the +21 belonged to king shelter. It does not.
 
 What the measurements actually say, all at 600 fixed games except where noted:
 
-| variant | what it is | Elo vs v2 |
-|---|---|---:|
-| `v3-rooks` | v2 + rook files | −2 [−26, +22] |
-| `v3-passers` | v2 + passed pawns | +11 [−12, +34] (714 games, never stopped) |
-| **`shelter-only`** | v2 + king shelter | **−54** [−84, −24] |
-| `v3-shelter` | v2 + **all three** | **+21** [−5, +47] |
+| variant | what it is | Elo vs v2 | nps |
+|---|---|---:|---:|
+| v2 | baseline | — | 64,794 |
+| `v3-rooks` — **the one that shipped** | + rook files | −2 [−26, +22] | 60,337 |
+| `v3-passers` | + passed pawns | +11 [−12, +34] | — |
+| `shelter-only` | + king shelter | **−53** [−84, −24] | 58,138 |
+| **`passers-rooks`** | **+ passers and rooks** | **+26 [+1, +51]** | 53,556 |
+| `v3-shelter` | + all three | +21 [−5, +47] | 49,064 |
+
+**`passers-rooks` is the first evaluation variant this project has measured
+with an interval clear of zero on the positive side** — and it was never tried
+until now, because v3's rejection as a bundle was read as covering everything
+inside it. The margin is thin: the lower bound is **+1**, one Elo clear of
+nothing on 600 games. A result, not a comfortable one.
+
+Terms mostly add. Passed pawns and rook files compose as predicted (+9
+expected, +26 measured, 0.75σ). Shelter is where it breaks — it contributes
+**−53 ± 15** added to v2 alone and **−5 ± 20** added to the other two, a
+difference of 1.92σ that is suggestive and not established. Full write-up in
+[`docs/ADDITIVITY_PREREG.md`](docs/ADDITIVITY_PREREG.md), pre-registered with
+two predictions 66 Elo apart; the interaction account was rejected.
 
 The bundle measures better than either part measured separately, which is
 unremarkable given the intervals but is the opposite of the story the project
