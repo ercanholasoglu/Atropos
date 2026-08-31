@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-31T14:48:46+00:00",
+ "finished_at": "2026-08-31T14:49:53+00:00",
+ "commit": "346307d",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "passers-rooks",
+  "b": "v2",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 1200,
+  "minutes_budget": 3.0,
+  "games_before": 1176
+ },
+ "wall_seconds": 67.25439958297648,
+ "cpu_seconds": 260.373651,
+ "cpu_per_wall": 3.871473875530756,
+ "peak_rss_mb_largest_process": 140.59375,
+ "nodes": 16569511,
+ "nodes_per_cpu_second": 63637.43388151054,
+ "games": 24,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 1200,
+  "wins": 489,
+  "draws": 262,
+  "losses": 449,
+  "score": 0.5166666666666667,
+  "elo_estimate": 11.585478374126668,
+  "elo_interval_95": [
+   -5.787022835357344,
+   29.01613278244471
+  ],
+  "llr": -3.603494855274654,
+  "verdict": "accept H0",
+  "diagnosis": "accept H0",
+  "state_file": "data/fixed_passers-rooks_vs_v2.json"
+ },
+ "notes": []
+}

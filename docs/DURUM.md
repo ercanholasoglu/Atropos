@@ -493,7 +493,7 @@ Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 > | `v3-passers` | v2 + geçer piyon | +11 [−12, +34] (714 oyun, hiç durmadı) |
 > | `v3-shelter` | v2 + **üçü birden** | **+21** [−5, +47] |
 > | `shelter-only` | v2 + kral güvenliği | **−53** [−84, −24] |
-> | **`passers-rooks`** | **v2 + geçer piyon + kale hattı** | **+26 [+1, +51]** |
+> | `passers-rooks` | v2 + geçer piyon + kale hattı | **+12 [−8, +31]** (1.200 oyun) |
 >
 > Demet, ayrı ayrı ölçülen parçalarından iyi çıkıyor — aralıklar göz önüne alınınca
 > sıradan, ama projenin kendine anlattığı hikâyenin tam tersi: v3 *demet olarak*
@@ -527,10 +527,25 @@ Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 > **−53 ± 15**, diğer ikisinin üstüne **−5 ± 20** katıyor — fark 1,92σ, düşündürücü ama
 > kurulmuş değil.
 >
-> **Asıl sonuç hipotezden önemli:** `passers-rooks`, bu projede aralığı pozitif tarafta
-> sıfırı dışlayan **ilk** değerlendirme varyantı — ve bugüne kadar hiç denenmemişti,
-> çünkü v3'ün demet olarak reddi içindeki her şeyi kapsıyor sanılmıştı. Marj ince: alt
-> sınır **+1**, 600 oyunda hiçlikten bir Elo uzak. Ayrıntı: `docs/ADDITIVITY_PREREG.md`.
+> **Ve doğrulama koşusu onu da götürdü.** 600 oyunda `passers-rooks` **+26 [+1, +51]**
+> ölçmüştü — hiçlikten bir Elo uzak, programın ürettiği ilk pozitif aralık. 1.200'e uzatma
+> *oynanmadan önce* ilan edildi, her sonucun ne anlama geleceğiyle birlikte. Geri dönen:
+> **+12 [−8, +31]**, ve dürüst okuma önceden yazılmış olandı: gürültünün ince ucu.
+> Üçüncü uzatma yok.
+>
+> #### Değerlendirme programı kapandı
+>
+> **3.672 A/B oyunu, beş varyant. Tam olarak bir aralık sıfırı dışlıyor ve o da negatif
+> tarafta.** Hiçbir şeyin değerlendirmeyi iyileştirdiği gösterilemedi; bir terimin
+> kötüleştirdiği gösterildi.
+>
+> **Ve projenin kendisi bunu baştan söylemişti.** Erken bir ölçüm çözünürlük tabanını
+> kurmuştu: ≥100 Elo 7-65 oyunda, ≥40 ~350'de, ≥20 ~1.500'de, ≥10 ~6.000'de çözülür.
+> Klasik değerlendirme terimleri +10 ile +25 arası eder. **En iyi adaya 1.200 oyun +12
+> [−8, +31] döndürdü** — makul aralığın dibinde bir etki, çözünürlüğü ona az kala biten
+> bir aletle ölçüldü. Program terimler değersiz olduğu için başarısız olmadı; bu boyuttaki
+> etkiler harcanandan binlerce oyun fazlasını istediği için — ve tablo bunu hiçbiri
+> oynanmadan önce söylemişti. Ayrıntı: `docs/ADDITIVITY_PREREG.md`.
 >
 > | terim | verilen karar | neye dayanarak | 600 sabit oyun ne diyor |
 > |---|---|---:|---:|

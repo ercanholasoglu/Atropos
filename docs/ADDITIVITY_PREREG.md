@@ -151,3 +151,52 @@ Either way the number is reported. **No third extension.** If 1,200 games do
 not resolve it, the answer is that an effect this size is at the resolution
 floor of this setup — which the project measured early and has kept running
 into.
+
+### Confirmation result
+
+**1,200 games: 51.67%, +12 Elo, interval [−8, +31].**
+
+The prediction was that +26 would hold and the interval would tighten to about
+[+6, +46]. **It did not.** The estimate fell from +26 to +12 as the games
+accumulated, and the interval now contains zero.
+
+By the outcome fixed before the run: *"the 600-game result was the thin end of
+noise, and the honest position is that nothing in this evaluation programme has
+been shown to help."* That is the position.
+
+No third extension, as declared.
+
+## The evaluation programme, closed
+
+**3,672 A/B games across five variants.**
+
+| variant | games | Elo vs v2 | 95% interval |
+|---|---:|---:|---:|
+| `v3-rooks` — the one that shipped | 600 | −2 | [−26, +22] |
+| `v3-passers` | 714 | +11 | [−12, +34] |
+| `shelter-only` | 558 | **−53** | **[−84, −24]** |
+| `passers-rooks` | 1,200 | +12 | [−8, +31] |
+| `v3-shelter` (all three) | 600 | +21 | [−5, +47] |
+
+**Exactly one of these intervals is clear of zero, and it is clear on the
+negative side.** After 3,672 games: nothing has been shown to improve the
+evaluation, and one term has been shown to make it worse.
+
+### The project predicted this at the start
+
+An early measurement in this repository established a resolution floor: a
+change worth ≥100 Elo resolves in 7–65 games, ≥40 Elo in about 350, ≥20 Elo in
+about 1,500, and ≥10 Elo in about 6,000. Classical evaluation terms are worth
++10 to +25.
+
+**1,200 games on the best candidate returned +12 [−8, +31].** That is precisely
+what the table said would happen — an effect at the bottom of the plausible
+range, measured with a tool whose resolution stops just short of it. The
+programme did not fail to find an effect because the terms are worthless. It
+failed because effects of this size need thousands more games than were spent,
+and the table said so before any of them were played.
+
+That is also the argument for where the effort went instead. The speed work
+produced **+83 Elo** for the ladder's throughput improvement, measured and
+converted, on a fraction of the games — because a 39% speed change is a
+100-Elo-class effect and lands in the region this setup resolves easily.

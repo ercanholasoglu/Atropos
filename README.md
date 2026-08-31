@@ -515,27 +515,48 @@ section up as though the +21 belonged to king shelter. It does not.
 
 What the measurements actually say, all at 600 fixed games except where noted:
 
-| variant | what it is | Elo vs v2 | nps |
-|---|---|---:|---:|
-| v2 | baseline | — | 64,794 |
-| `v3-rooks` — **the one that shipped** | + rook files | −2 [−26, +22] | 60,337 |
-| `v3-passers` | + passed pawns | +11 [−12, +34] | — |
-| `shelter-only` | + king shelter | **−53** [−84, −24] | 58,138 |
-| **`passers-rooks`** | **+ passers and rooks** | **+26 [+1, +51]** | 53,556 |
-| `v3-shelter` | + all three | +21 [−5, +47] | 49,064 |
+| variant | what it is | games | Elo vs v2 | nps |
+|---|---|---:|---:|---:|
+| v2 | baseline | — | — | 64,794 |
+| `v3-rooks` — **the one that shipped** | + rook files | 600 | −2 [−26, +22] | 60,337 |
+| `v3-passers` | + passed pawns | 714 | +11 [−12, +34] | — |
+| `shelter-only` | + king shelter | 558 | **−53 [−84, −24]** | 58,138 |
+| `passers-rooks` | + passers and rooks | 1,200 | +12 [−8, +31] | 53,556 |
+| `v3-shelter` | + all three | 600 | +21 [−5, +47] | 49,064 |
 
-**`passers-rooks` is the first evaluation variant this project has measured
-with an interval clear of zero on the positive side** — and it was never tried
-until now, because v3's rejection as a bundle was read as covering everything
-inside it. The margin is thin: the lower bound is **+1**, one Elo clear of
-nothing on 600 games. A result, not a comfortable one.
+**3,672 A/B games. Exactly one interval is clear of zero, and it is clear on
+the negative side.** Nothing here has been shown to improve the evaluation; one
+term has been shown to make it worse.
+
+`passers-rooks` is the one that came closest, and it is a lesson in stopping
+where you said you would. At 600 games it measured **+26 [+1, +51]** — one Elo
+clear of nothing, the first positive interval this programme had produced. The
+confirmation run to 1,200 was declared before it was played, along with what
+each outcome would mean. It came back **+12 [−8, +31]**, and the honest reading
+was the one written down in advance: the thin end of noise.
 
 Terms mostly add. Passed pawns and rook files compose as predicted (+9
-expected, +26 measured, 0.75σ). Shelter is where it breaks — it contributes
-**−53 ± 15** added to v2 alone and **−5 ± 20** added to the other two, a
-difference of 1.92σ that is suggestive and not established. Full write-up in
-[`docs/ADDITIVITY_PREREG.md`](docs/ADDITIVITY_PREREG.md), pre-registered with
-two predictions 66 Elo apart; the interaction account was rejected.
+expected, +26 at the time, 0.75σ). Shelter is where it breaks — **−53 ± 15**
+added to v2 alone against **−5 ± 20** added to the other two, a difference of
+1.92σ, suggestive and not established.
+
+### The project called this at the start
+
+An early measurement here established a resolution floor: ≥100 Elo resolves in
+7–65 games, ≥40 in about 350, ≥20 in about 1,500, ≥10 in about 6,000. Classical
+evaluation terms are worth +10 to +25.
+
+**1,200 games on the best candidate returned +12 [−8, +31]** — an effect at the
+bottom of the plausible range, measured with a tool whose resolution stops just
+short of it. The programme did not fail because the terms are worthless. It
+failed because effects this size need thousands more games than were spent, and
+the table said so before any were played.
+
+Which is the argument for where the effort went instead: the throughput work
+produced **+83 Elo**, measured and converted, on a fraction of the games —
+because a 39% speed change is a 100-Elo-class effect and lands where this setup
+resolves easily. Full write-up in
+[`docs/ADDITIVITY_PREREG.md`](docs/ADDITIVITY_PREREG.md).
 
 The bundle measures better than either part measured separately, which is
 unremarkable given the intervals but is the opposite of the story the project
