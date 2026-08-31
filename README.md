@@ -108,8 +108,9 @@ higher. The bias reverses above a true difference of about 100, which
 ### The Target Elo column is a column of names
 
 The second thing it shows took an outside instrument to see. The rungs are
-labelled 300 Elo apart. **Nothing in this project has ever measured that, and
-the measurements that exist disagree with it.**
+labelled 400 apart at the bottom and 300 apart the rest of the way.
+**Nothing in this project ever measured that, and the measurements that exist
+disagree with it.**
 
 Every pairing above was tested with the bracket `elo0=0, elo1=100`. "Accepted"
 therefore means *this gap looks more like 100 Elo than like 0* — a test of
@@ -155,21 +156,28 @@ number regardless of the truth. The fit now places all eight rungs. It could not
 off a 7-0-0 sweep whose maximum likelihood is at infinity. Six hundred
 fixed-length games produce losses, and a finite gap can be fit.
 
-The measured ladder, all seven gaps against a nominal 300 for each:
+The measured ladder, every gap against the step its labels claim:
 
-| gap | measured | 95% interval |
-|---|---:|---:|
-| L1 → L2 | +444 | [+229, +660] |
-| L2 → L3 | +703 | [+505, +902] |
-| L3 → L4 | +427 | [+251, +604] |
-| L4 → L5 | +193 | [+33, +352] |
-| L5 → L6 | +660 | [+546, +773] |
-| L6 → L7 | **+19** | **[−17, +55]** |
-| L7 → L8 | −35 | [−79, +9] |
+| gap | measured | 95% interval | nominal | |
+|---|---:|---:|---:|---|
+| L1 → L2 | +444 | [+229, +660] | 400 | consistent |
+| L2 → L3 | +703 | [+505, +902] | 300 | **outside** |
+| L3 → L4 | +427 | [+251, +604] | 300 | consistent |
+| L4 → L5 | +193 | [+33, +352] | 300 | consistent |
+| L5 → L6 | +660 | [+546, +773] | 300 | **outside** |
+| L6 → L7 | **+19** | **[−17, +55]** | 300 | **outside** |
+| L7 → L8 | −35 | [−79, +9] | 300 | **outside** |
 
-**Four of seven have 300 outside their interval.** The real ladder rises
-steeply at the bottom, flattens at Level 4, jumps again where quiescence and
-the transposition table arrive, and then stops.
+**Four of the seven miss their nominal step by more than an interval**, and the
+top two are not distinguishable from zero. The real ladder rises steeply at the
+bottom, flattens at Level 4, jumps again where quiescence and the transposition
+table arrive, and then stops.
+
+Both scales now live in `engine/utils/constants.py`: `INITIAL_ELO` as the
+specification each level was aiming at, and **`MEASURED_ELO` as what they are**,
+with standard errors and a note that the scale has no absolute zero. A test
+asserts the two disagree, so the ladder cannot quietly go back to claiming an
+even 300 per rung.
 
 ### A correction, and the mistake behind it
 

@@ -142,15 +142,16 @@ def main() -> int:
                 f"{result.stderr[name]:>6.0f}  {'—':>8}  {'—':>12}"
             )
 
-    print(f"\nrung-to-rung gaps (nominal is 300 for every one):")
-    print(f"{'gap':<12} {'measured':>10} {'95% interval':>20}")
+    print("\nrung-to-rung gaps, against the nominal step each one claims:")
+    print(f"{'gap':<12} {'measured':>10} {'95% interval':>20} {'nominal':>7}")
     print("-" * 44)
     gaps = []
     for lo, hi in zip(rungs, rungs[1:]):
         est, l, h = result.gap(hi, lo)
         gaps.append((lo, hi, est, l, h))
-        flag = "" if l <= 300 <= h else "   <- 300 outside"
-        print(f"{lo}->{hi:<7} {est:>10.0f}   [{l:>+6.0f}, {h:>+6.0f}]{flag}")
+        nominal = INITIAL_ELO[int(hi[1:])] - INITIAL_ELO[int(lo[1:])]
+        flag = "" if l <= nominal <= h else f"   <- {nominal} outside"
+        print(f"{lo}->{hi:<7} {est:>10.0f}   [{l:>+6.0f}, {h:>+6.0f}]  " f"{nominal:>5}{flag}")
 
     if bad:
         print("\nlinks the data bounds on one side only:")

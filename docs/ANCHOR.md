@@ -63,6 +63,8 @@ why these three points cluster instead of spreading.
 One extra pairing: the *same* opponent, depth 1, against **Level 6** (nominal
 1800). If the ladder's own units are meaningful, an outside ruler placed
 against two rungs 300 nominal Elo apart should read 300 Elo apart.
+(The bottom rung is labelled 400 from the one below it; every other step
+is 300.)
 
 | opponent | games | score | Elo vs rung | 95% interval |
 |---|---:|---:|---:|---:|

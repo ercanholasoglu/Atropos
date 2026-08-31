@@ -99,3 +99,45 @@ def test_one_sided_bound_rejects_a_non_sweep() -> None:
 
 def test_pairing_counts_its_games() -> None:
     assert Pairing("A", "B", 3, 2, 1).games == 6
+
+
+def test_measured_elo_matches_the_recorded_fit() -> None:
+    """The constants and the fit output must not drift apart.
+
+    ``MEASURED_ELO`` is a copy of what ``scripts/rating_fit.py`` produced. A
+    copy that quietly stops matching its source is worse than no copy, so this
+    reads the recorded run and compares.
+    """
+    import json
+    from pathlib import Path
+
+    from engine.utils.constants import MEASURED_ELO
+
+    recorded = json.loads(Path("data/rating_fit.json").read_text())
+    gauge_offset = recorded["gauge_nominal"]
+    for level, (rating, stderr) in MEASURED_ELO.items():
+        entry = recorded["ratings"].get(f"L{level}")
+        assert entry is not None, f"L{level} is not in the recorded fit"
+        assert abs(entry["relative_to_gauge"] + gauge_offset - rating) < 1.5, level
+        assert abs(entry["stderr"] - stderr) < 1.5, level
+
+
+def test_the_measured_scale_disagrees_with_the_nominal_one() -> None:
+    """The finding itself, asserted so it cannot be quietly undone.
+
+    If someone later edits either table into agreement, this fails and asks why
+    rather than letting the ladder go back to claiming an even 300 per rung.
+    """
+    from engine.utils.constants import INITIAL_ELO, MEASURED_ELO
+
+    # 400 then six 300s. This assertion caught a claim made repeatedly in the
+    # documentation -- that the rungs are "300 apart" -- which is true of six
+    # of the seven gaps and not of the first.
+    nominal_gaps = [INITIAL_ELO[n + 1] - INITIAL_ELO[n] for n in range(1, 8)]
+    assert nominal_gaps == [400, 300, 300, 300, 300, 300, 300]
+
+    measured_gaps = [MEASURED_ELO[n + 1][0] - MEASURED_ELO[n][0] for n in range(1, 8)]
+    assert measured_gaps != nominal_gaps
+    # The top two transitions are the ones that are not there at all.
+    assert measured_gaps[5] < 100, "L6->L7 was measured at about +19"
+    assert measured_gaps[6] < 0, "L7->L8 was measured slightly negative"

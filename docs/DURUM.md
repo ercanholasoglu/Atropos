@@ -693,12 +693,30 @@ Her iki repo da artık versiyon kontrolünde. chess-bot `Atropos` adıyla
 (`data/telemetry/`); telemetriden önceki 16 kayıt `commit unknown` olarak damgalandı —
 uydurulmadı, çünkü çalışma ağacı proje boyunca kirliydi.
 
-### 6.2 Merdiven ✅ sıralı, ⚠️ aralıkları değil
+### 6.2 Merdiven ✅ sıralı, ✅ aralıkları da ölçüldü
 
-Yedi eşleşmenin hepsi karara bağlandı; merdiven L7'ye kadar **sıralı**. Ama 2.1'de
-yazıldığı gibi **aralıkları hiç ölçülmemiş** — üç bağımsız alet (merdivenin kendi
-SPRT'leri, atropos gauntlet'i, sabit derinlikli Stockfish) nominal 300'ün üç basamakta da
-güven aralığının dışında kaldığını söylüyor.
+Yedi eşleşmenin hepsi karara bağlandı ve **aralıkları da ölçüldü** — sekans testinin
+sayıları atılıp her eşleşme sabit uzunlukta yeniden oynandıktan, ve 0,1sn'deki bütün
+oyunlar birlikte uydurulduktan sonra.
+
+| aralık | ölçülen | %95 aralık | nominal | |
+|---|---:|---:|---:|---|
+| L1 → L2 | +444 | [+229, +660] | 400 | tutarlı |
+| L2 → L3 | +703 | [+505, +902] | 300 | **dışarıda** |
+| L3 → L4 | +427 | [+251, +604] | 300 | tutarlı |
+| L4 → L5 | +193 | [+33, +352] | 300 | tutarlı |
+| L5 → L6 | +660 | [+546, +773] | 300 | **dışarıda** |
+| L6 → L7 | **+19** | **[−17, +55]** | 300 | **dışarıda** |
+| L7 → L8 | −35 | [−79, +9] | 300 | **dışarıda** |
+
+**Yedinin dördü nominal adımını bir aralıktan fazla ıskalıyor**, ve üstteki ikisi sıfırdan
+ayırt edilemiyor. İki ölçek de artık `engine/utils/constants.py`'de: `INITIAL_ELO`
+her seviyenin *nişan aldığı* şartname, **`MEASURED_ELO` ise ne oldukları** — standart
+hatalarıyla ve ölçeğin mutlak sıfırı olmadığı notuyla. Bir test ikisinin uyuşmadığını
+iddia ediyor, yani merdiven sessizce «her basamak 300» demeye geri dönemez.
+
+(Küçük bir düzeltme: nominal merdiven düzgün 300'lük değilmiş — L1→L2 **400**. Bunu
+belgelerde «300 arayla» diye yazmıştım; testi yazarken kendi iddiam yakalandı.)
 
 **Level 8 açık kalıyor.** Ölçülebilir üstünlüğü yok ve olması da beklenmez: L7'nin
 araması artı bir zaman heuristiği. Uyarlanabilir saatin yardım mı zarar mı ettiği hâlâ
