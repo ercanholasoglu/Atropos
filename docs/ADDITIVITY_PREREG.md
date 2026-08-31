@@ -123,3 +123,31 @@ rejection was read as covering everything inside it.
 Terms mostly add. The procedure that assumed they did was not wrong in
 principle. It was applied to a bundle whose rejection was itself an artifact of
 a stopping rule, and every step after that inherited the error.
+
+---
+
+## Confirmation run, declared before it starts
+
+The result above is +26 with a lower bound of **+1**. That is a margin of one
+Elo on 600 games, and this document called it "a result, not a comfortable
+one". Confirming it means more games, and saying how many *before* playing
+them — otherwise the run stops wherever it looks best, which is the failure
+this whole line of work exists to document.
+
+**Target: 1,200 games total, fixed length, no stopping rule.** The existing 600
+are kept and 600 more are played from game index 600 onward, so no game is
+replayed. 1,200 games gives about ±20 Elo.
+
+**Prediction: +26 stays, and the interval tightens to roughly [+6, +46].**
+
+* **Interval still clear of zero** → the effect is real at this operating
+  point, and `passers-rooks` is a shipping candidate on the measurement rather
+  than on an argument.
+* **Interval now contains zero** → the 600-game result was the thin end of
+  noise, and the honest position is that nothing in this evaluation programme
+  has been shown to help.
+
+Either way the number is reported. **No third extension.** If 1,200 games do
+not resolve it, the answer is that an effect this size is at the resolution
+floor of this setup — which the project measured early and has kept running
+into.
