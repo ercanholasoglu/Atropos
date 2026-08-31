@@ -88,6 +88,30 @@ def positional_eval_passers(board: chess.Board) -> int:
     return tapered_pst(board) + positional_score_v2(board) + int(passers)
 
 
+def positional_eval_passers_rooks(board: chess.Board) -> int:
+    """Version 2 plus passed pawns and rook files — the bundle without king safety.
+
+    The bundle ``v3-shelter`` measures +21 against v2 while king shelter alone
+    measures -54, and those two facts cannot both be simple. Removing shelter
+    from the bundle is what separates them: if the terms add, this lands near
+    the sum of its two parts; if the bundle's result really is carried by an
+    interaction, this lands far above it.
+    """
+    from engine.evaluation.positional import positional_score_v2
+    from engine.evaluation.structure import passed_pawn_scores, rook_file_score
+
+    phase = game_phase(board)
+    endgame_weight = (TOTAL_PHASE - phase) / TOTAL_PHASE
+    middlegame_weight = phase / TOTAL_PHASE
+
+    score = float(tapered_pst(board) + positional_score_v2(board))
+    for color, sign in ((chess.WHITE, 1), (chess.BLACK, -1)):
+        middlegame_passers, endgame_passers = passed_pawn_scores(board, color)
+        score += sign * (middlegame_passers * middlegame_weight + endgame_passers * endgame_weight)
+        score += sign * rook_file_score(board, color)
+    return int(score)
+
+
 def positional_eval_shelter(board: chess.Board) -> int:
     """Version 2 plus king shelter, and nothing else.
 

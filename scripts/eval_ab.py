@@ -28,6 +28,7 @@ from engine.evaluation.tapered import (
     positional_eval,
     positional_eval_passers,
     positional_eval_rooks,
+    positional_eval_passers_rooks,
     positional_eval_shelter,
     positional_eval_v2,
     positional_eval_v3,
@@ -50,6 +51,7 @@ VARIANTS = {
     "v3-no-attackers": lambda board: positional_eval_v3(board, king_attackers=False),
     "v3-shelter": lambda board: positional_eval_v3(board, king_attackers=False),
     "shelter-only": lambda board: positional_eval_shelter(board),
+    "passers-rooks": lambda board: positional_eval_passers_rooks(board),
     "v3-full": lambda board: positional_eval_v3(board, king_attackers=True),
 }
 
