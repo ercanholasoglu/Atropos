@@ -488,12 +488,56 @@ numbers were off by.
 Full write-up in [`docs/EVAL_AB_PREREG.md`](docs/EVAL_AB_PREREG.md), including
 a prediction of +50 that the games refuted.
 
+### The rejected term, re-measured
+
+The bias study had only looked at what a sequential test reports when it
+*accepts*. Simulating the other verdict: at the ladder's bracket a genuinely
++50 Elo change is **rejected more than half the time**, and reports about zero
+when it is; at the evaluation bracket a real +20 is rejected two times in five.
+**The rejections are as unreliable as the acceptances, mirrored.**
+
+That implicated one record. `v3-shelter` — king shelter — reported −2 at 359
+games and was dropped.
+
+| run | games | stopping | Elo |
+|---|---:|---|---:|
+| original | 359 | sequential, accepted H0 | **−2** |
+| re-run | 600 | none | **+21** [−5, +47] |
+
+The interval contains zero, so this is not a demonstration that the term works.
+It does refute the decision: **at no point did the evidence justify
+"rejected".**
+
+And the throughput numbers make it more interesting than that. Shelter runs at
+**50,441 nps against v2's 64,815** — 22.2% slower, which is **−62 Elo** of pure
+speed cost. An A/B at a fixed clock measures the net, so **+21 is what is left
+after paying −62.** The positional gain implied is around **+83**, roughly
+[+49, +117] carrying both intervals through.
+
+That inference chains two measurements and inherits the speed curve's
+assumptions, and the variants search different node counts, so it is an
+estimate rather than a reading. With that attached: **king shelter looks like
+the most valuable positional term tested here, buried under an implementation
+that costs a fifth of the engine's speed.** A cheaper formulation would be
+testing something that has shown its worth, rather than guessing at a new term.
+
+| term | decision taken | on what | 600 fixed games say |
+|---|---|---:|---:|
+| `v3-rooks` | **shipped** | sequential +44 | **−2** [−26, +22] |
+| `v3-shelter` | **dropped** | sequential −2 | **+21** [−5, +47] |
+
+`v3-passers` needs no re-run: it never stopped, so its +11 [−12, +34] over 714
+games carries no stopping bias and stands.
+
+Full write-up in [`docs/REJECTION_PREREG.md`](docs/REJECTION_PREREG.md).
+
 ### Two decisions that are the wrong way round
 
-The engine currently has **the rook term on**, decided from a sequential result
-a fixed-length re-run does not reproduce, and **SEE pruning off**, decided
-conservatively, where SEE measured **+48 [+11, +87]** with both its runs
-excluding zero.
+The engine currently has **the rook term on**, from a sequential result a
+fixed-length re-run does not reproduce; **SEE pruning off**, decided
+conservatively, where SEE measured **+48 [+11, +87]** with both runs excluding
+zero; and **king shelter dropped**, on a rejection the evidence never
+supported.
 
 On the evidence as it now stands those are backwards. Neither is changed here:
 Level 7 is the instrument every current number was taken with, and switching

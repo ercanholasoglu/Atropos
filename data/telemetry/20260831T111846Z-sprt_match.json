@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-31T11:18:46+00:00",
+ "finished_at": "2026-08-31T11:27:52+00:00",
+ "commit": "45ac447",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "v3-shelter",
+  "b": "v2",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 600,
+  "minutes_budget": 9.0,
+  "games_before": 360
+ },
+ "wall_seconds": 546.3707757079974,
+ "cpu_seconds": 2277.791953,
+ "cpu_per_wall": 4.168949098802722,
+ "peak_rss_mb_largest_process": 184.75,
+ "nodes": 145193355,
+ "nodes_per_cpu_second": 63743.027456379816,
+ "games": 186,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 546,
+  "wins": 252,
+  "draws": 83,
+  "losses": 211,
+  "score": 0.5375457875457875,
+  "elo_estimate": 26.138689251581216,
+  "elo_interval_95": [
+   -0.6577854921896891,
+   53.249825315764184
+  ],
+  "llr": 1.370831929683515,
+  "verdict": "continue",
+  "diagnosis": "the interval [-1, +53] still spans the whole bracket [+0, +40] \u2014 more games",
+  "state_file": "data/fixed_v3-shelter_vs_v2.json"
+ },
+ "notes": []
+}

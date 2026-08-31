@@ -421,7 +421,7 @@ Bağımsız ölçümü olan iki satır da eğriyle uyuşuyor. atropos'unki daha 
 dönüşüm −445 öngörüyor. Özellik paritesi throughput'a yeniliyor, ve bu yenilginin
 büyüklüğü artık iddia değil öngörü.
 
-### 3.5 Evaluation v3: demet düştü, içindeki bir terim ship edildi
+### 3.5 Evaluation v3: iki karar da tersmiş
 
 Passed pawn, açık hat, kral güvenliği. **Demet olarak iki kez reddedildi** —
 sonra terimler tek tek test edildi ve biri kabul edildi.
@@ -469,6 +469,35 @@ Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 > **Sonuç olarak iki karar ters duruyor:** motorda *kale terimi açık* (yeniden
 > üretilemeyen bir sekans sonucundan), *SEE budaması kapalı* (temkinli davranıldığı
 > için) — oysa SEE +48 [+11, +87] ölçüldü ve iki koşusu da sıfırı dışlıyor.
+
+> **Reddetme tarafı da yanlı çıktı.** Yanlılık çalışması yalnızca H1 kabul eden koşulara
+> bakıyordu. Diğer hükmü simüle edince: merdivenin parantezinde gerçekten +50 Elo
+> iyileştiren bir değişiklik **yarıdan fazla reddediliyor** ve reddedilince ~0
+> raporluyor; A/B parantezinde gerçek +20 beşte iki oranında reddediliyor.
+>
+> Bu bir kaydı doğrudan ilgilendiriyordu. **v3-shelter** 359 oyunda −2 deyip reddedilmişti.
+> Sabit uzunlukta 600 oyun: **+21 Elo [−5, +47]**. Aralık sıfırı kapsıyor, yani terimin
+> *işe yaradığı* gösterilmiş değil — ama **reddedilmesini hiçbir aşamada kanıt
+> desteklemiyormuş.**
+>
+> Throughput ölçüldüğünde daha da ilginçleşiyor: shelter **50.441 nps**, v2'nin 64.815'ine
+> karşı — %22,2 yavaş, yani **−62 Elo**'luk saf hız bedeli. Sabit saatte A/B *net*'i
+> ölçtüğü için **+21, o −62 ödendikten sonra kalan.** İma edilen pozisyonel kazanç
+> **~+83**, iki aralık taşınınca kabaca [+49, +117]. (Bu çıkarım iki ölçümü zincirliyor
+> ve hız eğrisinin varsayımlarını devralıyor; ayrıca varyantlar farklı node sayısı
+> arıyor.) Yani: **kral güvenliği burada test edilen en değerli pozisyonel terime
+> benziyor ve motorun beşte bir hızına mal olan bir uygulamanın altında gömülü.**
+>
+> | terim | verilen karar | neye dayanarak | 600 sabit oyun ne diyor |
+> |---|---|---:|---:|
+> | `v3-rooks` | **ship edildi** | sekans +44 | **−2** [−26, +22] |
+> | `v3-shelter` | **düşürüldü** | sekans −2 | **+21** [−5, +47] |
+>
+> `v3-passers`'a dokunmak gerekmiyor: hiç durmadı, dolayısıyla 714 oyunluk +11 [−12, +34]
+> durma yanlılığı taşımıyor. Ayrıntı: `docs/REJECTION_PREREG.md`.
+>
+> **Terminoloji:** kabul edilen bir H0 «reddedildi» değil, **«yardım ettiği
+> gösterilemedi»** demek. Level 8'de yapılan ayrımın aynısı.
 
 v3-shelter'ın yolculuğu öğretici:
 

@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-31T11:28:00+00:00",
+ "finished_at": "2026-08-31T11:30:33+00:00",
+ "commit": "45ac447",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "v3-shelter",
+  "b": "v2",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 600,
+  "minutes_budget": 4.0,
+  "games_before": 546
+ },
+ "wall_seconds": 152.47801716602407,
+ "cpu_seconds": 623.949596,
+ "cpu_per_wall": 4.092062630383101,
+ "peak_rss_mb_largest_process": 156.46875,
+ "nodes": 39297638,
+ "nodes_per_cpu_second": 62982.07139154874,
+ "games": 54,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 600,
+  "wins": 271,
+  "draws": 94,
+  "losses": 235,
+  "score": 0.53,
+  "elo_estimate": 20.87120466602867,
+  "elo_interval_95": [
+   -4.629798702164843,
+   46.59922444851249
+  ],
+  "llr": 0.313843731791728,
+  "verdict": "out of games",
+  "diagnosis": "out of games",
+  "state_file": "data/fixed_v3-shelter_vs_v2.json"
+ },
+ "notes": []
+}
