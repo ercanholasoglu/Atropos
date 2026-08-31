@@ -714,7 +714,7 @@ açık (54 oyun, [−99, +72]).
 | 19 | Turnuva zaman yönetimi | ✅ `uci/time_manager.py` |
 | 20 | Profilleme + NPS | ✅ +%39; artık Elo'ya çevrilebiliyor (−207/katlama) |
 | 21 | Taktik suite | ⚠️ 8 pozisyon — atropos'un "larger tactical suite" maddesi açık |
-| 22 | Benchmark baseline | ⚠️ telemetri var, ayrı bir `bench` komutu yok |
+| 22 | Benchmark baseline | ✅ `scripts/bench.py` — deterministik, `make bench` / `make bench-check` |
 | 23 | Kalibre Elo hattı | ✅ `elo/sprt.py` + `scripts/calibrate.py` + `scripts/anchor.py` |
 | 24-31 | NNUE hattı | `research/minimal_nnue` çekirdek soruyu cevapladı: bu ölçekte ödemiyor |
 
@@ -740,6 +740,12 @@ seçildi çünkü skill ayarları kasten hata yaptırıp ölçülen güçle ilgi
   ölçüm aleti. Açılırsa mevcut bütün sayıların "SEE öncesi" diye etiketlenmesi gerekir.
 - **v3-passers** — 714 oyunda çözülmedi, [−12, +34]; ~+10'luk etki için dar bracket gerek
 - **L8'in uyarlanabilir saati** — çözülmedi, dar bracket ile yeniden denenmeli
+- **Benchmark** ✅ kapandı — `scripts/bench.py` 16 pozisyonu sabit derinlikte arıyor ve
+  **"daha hızlı" ile "farklı"yı ayırıyor**: node sayıları deterministik, biri değiştiyse
+  arama değişmiştir ve nps artık bir hız karşılaştırması değildir. Bu ayrım hipotetik
+  değil — bu projede değerlendirme varyantları aynı derinlikte 166.458'e karşı 181.238
+  node arıyordu, yani nps karşılaştırmaları hiçbir zaman yalnız hesap maliyetini
+  ölçmüyordu.
 - **Hız → Elo'nun açık ucu** ✅ kapandı — üçüncü kol sapmanın saatte değil, bütçenin
   *nasıl uygulandığında* olduğunu gösterdi. Sert node limiti kestiği iterasyonu çöpe
   atıyor ve %46 fazla node harcıyor; −207 bunu da ölçüyormuş. Gerçek dönüşüm sayısı

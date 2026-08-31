@@ -799,6 +799,42 @@ the Stockfish anchor and the Atropos gauntlet were both measured against.
 Turning it on changes the instrument every current number was taken with —
 a decision about what the ladder is for, not one the data settles.
 
+### Measuring speed without playing games
+
+Throughput is the one lever this project could reliably measure, so it gets an
+instrument that is not a match. `make bench` searches sixteen positions — eight
+from the opening book, eight tactical — at a fixed depth and records them.
+
+The point of it is a distinction this project kept tripping over: **a change
+can make the engine faster, or it can make the engine search different nodes,
+and those are not the same result** even when both show up as more nodes per
+second.
+
+```
+$ make bench-check
+  search unchanged — all 16 positions visit the same nodes as the baseline,
+  so nps is a clean speed comparison.
+    56,305 nps against 56,064 — 0.4% faster
+    at the measured −171 Elo per doubling that is +1 Elo
+```
+
+Switch on a real behaviour change — SEE pruning — and it refuses to compare:
+
+```
+  SEARCH CHANGED — 11 of 16 positions visit a different number of nodes.
+      open:French     15,764 ->    10,933
+      open:Open Game  16,499 ->    10,317
+  The engine is not doing the same work, so the nps figures are not a
+  speed comparison.
+```
+
+That confusion is not hypothetical here. The evaluation variants searched
+**166,458 nodes against a baseline's 181,238** at the same depth, so every nps
+comparison between them was measuring computation cost *and* a different tree
+at once. Node counts are deterministic and the benchmark checks that they are
+before reporting anything; timings are best-of-N, because interruptions only
+ever add time.
+
 ## Where the time actually went
 
 Three measurements in a row pointed at throughput — Atropos losing 440 Elo to

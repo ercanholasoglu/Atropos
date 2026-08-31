@@ -1,0 +1,28 @@
+{
+ "commit": "e6e05ff",
+ "level": 7,
+ "depth": 4,
+ "positions": 16,
+ "nodes": {
+  "open:Open Game": 16499,
+  "open:Ruy Lopez": 7629,
+  "open:Sicilian": 25642,
+  "open:French": 15764,
+  "open:Caro-Kann": 11375,
+  "open:Queen's Gambit": 11886,
+  "open:King's Indian": 10561,
+  "open:English": 6618,
+  "tact:back-rank mate": 33,
+  "tact:queen mate in one": 47,
+  "tact:corner mate": 52,
+  "tact:queen sacrifice, mate in two": 10368,
+  "tact:take the free queen": 284,
+  "tact:win the rook, not the pawn": 731,
+  "tact:decline the poisoned pawn": 3878,
+  "tact:promote and mate": 14
+ },
+ "total_nodes": 121381,
+ "seconds": 2.165041415952146,
+ "seconds_spread": 0.04143354203552008,
+ "nps": 56064.05452831434
+}

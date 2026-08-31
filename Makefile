@@ -35,6 +35,12 @@ leaderboard:
 uci:                ## the engine on stdin/stdout, for a GUI or a match runner
 	$(PY) -m uci
 
+bench:               ## record a deterministic speed baseline
+	$(PY) -m scripts.bench --out data/bench_baseline.json
+
+bench-check:         ## compare against it, keeping speed and behaviour apart
+	$(PY) -m scripts.bench --baseline data/bench_baseline.json
+
 perft:              ## prove the move generation against published counts
 	$(PY) -c "from engine.perft import run_suite; s = run_suite(4); print(s.table()); raise SystemExit(0 if s.passed else 1)"
 
