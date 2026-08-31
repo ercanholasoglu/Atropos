@@ -88,6 +88,26 @@ def positional_eval_passers(board: chess.Board) -> int:
     return tapered_pst(board) + positional_score_v2(board) + int(passers)
 
 
+def positional_eval_shelter(board: chess.Board) -> int:
+    """Version 2 plus king shelter, and nothing else.
+
+    This variant was missing, and its absence caused a wrong reading: the
+    variant named ``v3-shelter`` is ``positional_eval_v3`` with only the
+    *attacker* half of king safety switched off, so it carries passed pawns
+    and rook files as well. Measuring shelter on its own needs this.
+    """
+    from engine.evaluation.positional import positional_score_v2
+    from engine.evaluation.structure import KING_SAFETY_MIN_PHASE, king_shelter_score
+
+    phase = game_phase(board)
+    score = float(tapered_pst(board) + positional_score_v2(board))
+    if phase >= KING_SAFETY_MIN_PHASE:
+        middlegame_weight = phase / TOTAL_PHASE
+        for color, sign in ((chess.WHITE, 1), (chess.BLACK, -1)):
+            score += sign * king_shelter_score(board, color) * middlegame_weight
+    return int(score)
+
+
 def positional_eval_rooks(board: chess.Board) -> int:
     """Version 2 plus rooks on open files, and nothing else.
 

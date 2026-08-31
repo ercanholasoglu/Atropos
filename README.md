@@ -488,7 +488,7 @@ numbers were off by.
 Full write-up in [`docs/EVAL_AB_PREREG.md`](docs/EVAL_AB_PREREG.md), including
 a prediction of +50 that the games refuted.
 
-### The rejected term, re-measured
+### The rejected bundle, re-measured — and a name that misled me
 
 The bias study had only looked at what a sequential test reports when it
 *accepts*. Simulating the other verdict: at the ladder's bracket a genuinely
@@ -496,38 +496,41 @@ The bias study had only looked at what a sequential test reports when it
 when it is; at the evaluation bracket a real +20 is rejected two times in five.
 **The rejections are as unreliable as the acceptances, mirrored.**
 
-That implicated one record. `v3-shelter` — king shelter — reported −2 at 359
-games and was dropped.
+That implicated one record, `v3-shelter`, which reported −2 at 359 games and
+was dropped.
 
 | run | games | stopping | Elo |
 |---|---:|---|---:|
 | original | 359 | sequential, accepted H0 | **−2** |
 | re-run | 600 | none | **+21** [−5, +47] |
 
-The interval contains zero, so this is not a demonstration that the term works.
-It does refute the decision: **at no point did the evidence justify
-"rejected".**
+The interval contains zero, so this is not a demonstration that it works. It
+does refute the decision: **at no point did the evidence justify "rejected".**
 
-And the throughput numbers make it more interesting than that. Shelter runs at
-**50,441 nps against v2's 64,815** — 22.2% slower, which is **−62 Elo** of pure
-speed cost. An A/B at a fixed clock measures the net, so **+21 is what is left
-after paying −62.** The positional gain implied is around **+83**, roughly
-[+49, +117] carrying both intervals through.
+**And then the variant's name turned out to be wrong.** `v3-shelter` is
+`positional_eval_v3(king_attackers=False)` — evaluation v3 with only the
+*attacker* half of king safety switched off. It carries **passed pawns and rook
+files as well**. It is a bundle of three terms, not one, and I first wrote this
+section up as though the +21 belonged to king shelter. It does not.
 
-That inference chains two measurements and inherits the speed curve's
-assumptions, and the variants search different node counts, so it is an
-estimate rather than a reading. With that attached: **king shelter looks like
-the most valuable positional term tested here, buried under an implementation
-that costs a fifth of the engine's speed.** A cheaper formulation would be
-testing something that has shown its worth, rather than guessing at a new term.
+What the measurements actually say, all at 600 fixed games except where noted:
 
-| term | decision taken | on what | 600 fixed games say |
-|---|---|---:|---:|
-| `v3-rooks` | **shipped** | sequential +44 | **−2** [−26, +22] |
-| `v3-shelter` | **dropped** | sequential −2 | **+21** [−5, +47] |
+| variant | what it is | Elo vs v2 |
+|---|---|---:|
+| `v3-rooks` | v2 + rook files | **−2** [−26, +22] |
+| `v3-passers` | v2 + passed pawns | +11 [−12, +34] (714 games, never stopped) |
+| `v3-shelter` | v2 + **all three** | **+21** [−5, +47] |
+| `shelter-only` | v2 + king shelter | **not measured — the variant did not exist** |
 
-`v3-passers` needs no re-run: it never stopped, so its +11 [−12, +34] over 714
-games carries no stopping bias and stands.
+The bundle measures better than either part measured separately, which is
+unremarkable given the intervals but is the opposite of the story the project
+told itself: v3 was rejected as a bundle and one part was shipped alone.
+**On these numbers the bundle was the better thing all along.**
+
+`engine/evaluation/tapered.py` now has `positional_eval_shelter`, so shelter
+can be measured on its own — 58,138 nps against v2's 64,886, where the
+three-term bundle runs at 49,640. Whether the term is worth its 10% is an open
+question and a cheap one to answer.
 
 Full write-up in [`docs/REJECTION_PREREG.md`](docs/REJECTION_PREREG.md).
 
@@ -536,8 +539,8 @@ Full write-up in [`docs/REJECTION_PREREG.md`](docs/REJECTION_PREREG.md).
 The engine currently has **the rook term on**, from a sequential result a
 fixed-length re-run does not reproduce; **SEE pruning off**, decided
 conservatively, where SEE measured **+48 [+11, +87]** with both runs excluding
-zero; and **king shelter dropped**, on a rejection the evidence never
-supported.
+zero; and **the three-term v3 bundle dropped**, on a rejection the
+evidence never supported.
 
 On the evidence as it now stands those are backwards. Neither is changed here:
 Level 7 is the instrument every current number was taken with, and switching

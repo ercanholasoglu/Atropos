@@ -152,3 +152,45 @@ guessing at a new one.
 Independent of any of this: an accepted H0 means **"not shown to help"**, never
 "rejected". The README and `docs/DURUM.md` are corrected accordingly, the same
 distinction this project already had to make about Level 8.
+
+
+---
+
+## Correction: the variant is not what its name says
+
+Everything above about "king shelter" being the most valuable term here is
+**withdrawn**. `v3-shelter` is `positional_eval_v3(king_attackers=False)` —
+evaluation v3 with only the *attacker* half of king safety switched off. It
+carries passed pawns and rook files too. **It is a bundle of three terms.**
+
+I wrote the section above as though +21 belonged to king shelter, checked the
+variant definition afterwards, and it does not. The error was mine and it came
+from trusting a name instead of reading what it built.
+
+What survives, and what does not:
+
+| claim | status |
+|---|---|
+| The rejection side of the SPRT is biased, and by how much | **stands** — simulated, not inferred |
+| `v3-shelter` was dropped on evidence that never justified it | **stands** — −2 sequential against +21 [−5, +47] on 600 fixed games |
+| The +21 belongs to king shelter | **withdrawn** — it belongs to a bundle of three |
+| King shelter is the most valuable positional term here | **withdrawn** — never measured on its own |
+| Shelter's implementation costs 22% of throughput | **withdrawn** — that is the bundle's cost; shelter alone is 10% |
+
+Corrected measurements:
+
+| variant | what it is | nps | Elo vs v2 |
+|---|---|---:|---:|
+| v2 | baseline | 64,886 | — |
+| `v3-rooks` | + rook files | 60,337 | −2 [−26, +22] |
+| `v3-passers` | + passed pawns | — | +11 [−12, +34] |
+| `shelter-only` | + king shelter | 58,138 | **not yet measured** |
+| `v3-shelter` | + all three | 49,640 | +21 [−5, +47] |
+
+`positional_eval_shelter` has been added to `engine/evaluation/tapered.py` and
+registered as `shelter-only`, so the question the name implied can now actually
+be asked. It costs 10% of throughput, not 22%.
+
+The finding that does survive is the one about the project's own story: **v3
+was rejected as a bundle and one of its parts was shipped alone, and the
+measurements say the bundle was the better thing.**

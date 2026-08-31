@@ -480,18 +480,32 @@ Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 > *işe yaradığı* gösterilmiş değil — ama **reddedilmesini hiçbir aşamada kanıt
 > desteklemiyormuş.**
 >
-> Throughput ölçüldüğünde daha da ilginçleşiyor: shelter **50.441 nps**, v2'nin 64.815'ine
-> karşı — %22,2 yavaş, yani **−62 Elo**'luk saf hız bedeli. Sabit saatte A/B *net*'i
-> ölçtüğü için **+21, o −62 ödendikten sonra kalan.** İma edilen pozisyonel kazanç
-> **~+83**, iki aralık taşınınca kabaca [+49, +117]. (Bu çıkarım iki ölçümü zincirliyor
-> ve hız eğrisinin varsayımlarını devralıyor; ayrıca varyantlar farklı node sayısı
-> arıyor.) Yani: **kral güvenliği burada test edilen en değerli pozisyonel terime
-> benziyor ve motorun beşte bir hızına mal olan bir uygulamanın altında gömülü.**
+> **Ve varyantın adı beni yanılttı.** `v3-shelter`, `positional_eval_v3(king_attackers=False)`
+> demek — yani v3'ün yalnızca kral güvenliğinin *saldıran* yarısı kapalı hali. İçinde
+> **geçer piyon ve kale hattı da var.** Üç terimlik bir demet, tek terim değil; ben bu
+> bölümü ilk yazarken +21'i kral güvenliğine atfetmiştim. **Öyle değil.**
+>
+> Ölçümlerin gerçekte söylediği:
+>
+> | varyant | ne olduğu | v2'ye karşı Elo |
+> |---|---|---:|
+> | `v3-rooks` | v2 + kale hattı | **−2** [−26, +22] |
+> | `v3-passers` | v2 + geçer piyon | +11 [−12, +34] (714 oyun, hiç durmadı) |
+> | `v3-shelter` | v2 + **üçü birden** | **+21** [−5, +47] |
+> | `shelter-only` | v2 + kral güvenliği | **ölçülmedi — varyant yoktu** |
+>
+> Demet, ayrı ayrı ölçülen parçalarından iyi çıkıyor — aralıklar göz önüne alınınca
+> sıradan, ama projenin kendine anlattığı hikâyenin tam tersi: v3 *demet olarak*
+> reddedilmiş, bir parçası *tek başına* ship edilmişti. **Bu sayılara göre demet baştan
+> beri doğru olanmış.**
+>
+> `engine/evaluation/tapered.py`'a `positional_eval_shelter` eklendi, artık kral güvenliği
+> tek başına ölçülebilir: 58.138 nps (v2 64.886, üç terimlik demet 49.640).
 >
 > | terim | verilen karar | neye dayanarak | 600 sabit oyun ne diyor |
 > |---|---|---:|---:|
-> | `v3-rooks` | **ship edildi** | sekans +44 | **−2** [−26, +22] |
-> | `v3-shelter` | **düşürüldü** | sekans −2 | **+21** [−5, +47] |
+> | `v3-rooks` (tek terim) | **ship edildi** | sekans +44 | **−2** [−26, +22] |
+> | `v3-shelter` (üç terim) | **düşürüldü** | sekans −2 | **+21** [−5, +47] |
 >
 > `v3-passers`'a dokunmak gerekmiyor: hiç durmadı, dolayısıyla 714 oyunluk +11 [−12, +34]
 > durma yanlılığı taşımıyor. Ayrıntı: `docs/REJECTION_PREREG.md`.

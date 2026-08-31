@@ -28,6 +28,7 @@ from engine.evaluation.tapered import (
     positional_eval,
     positional_eval_passers,
     positional_eval_rooks,
+    positional_eval_shelter,
     positional_eval_v2,
     positional_eval_v3,
 )
@@ -43,7 +44,12 @@ VARIANTS = {
     "current": lambda board: positional_eval(board),
     "v3-passers": lambda board: positional_eval_passers(board),
     "v3-rooks": lambda board: positional_eval_rooks(board),
+    # NOTE the name: this is v3 with only the *attacker* half of king safety
+    # switched off, so it carries passers and rook files too. It is a bundle
+    # of three terms, not one, and reading it as "shelter" was an error.
+    "v3-no-attackers": lambda board: positional_eval_v3(board, king_attackers=False),
     "v3-shelter": lambda board: positional_eval_v3(board, king_attackers=False),
+    "shelter-only": lambda board: positional_eval_shelter(board),
     "v3-full": lambda board: positional_eval_v3(board, king_attackers=True),
 }
 
