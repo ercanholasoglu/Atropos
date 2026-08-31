@@ -713,7 +713,7 @@ açık (54 oyun, [−99, +72]).
 | 18 | Search v2 | ✅ L7'de zaten var (null-move, LMR, aspiration, check extension) |
 | 19 | Turnuva zaman yönetimi | ✅ `uci/time_manager.py` |
 | 20 | Profilleme + NPS | ✅ +%39; artık Elo'ya çevrilebiliyor (−207/katlama) |
-| 21 | Taktik suite | ⚠️ 8 pozisyon — atropos'un "larger tactical suite" maddesi açık |
+| 21 | Taktik suite | ✅ 16 pozisyon + 6 «known miss», Stockfish ile üretilip doğrulandı |
 | 22 | Benchmark baseline | ✅ `scripts/bench.py` — deterministik, `make bench` / `make bench-check` |
 | 23 | Kalibre Elo hattı | ✅ `elo/sprt.py` + `scripts/calibrate.py` + `scripts/anchor.py` |
 | 24-31 | NNUE hattı | `research/minimal_nnue` çekirdek soruyu cevapladı: bu ölçekte ödemiyor |
@@ -740,6 +740,14 @@ seçildi çünkü skill ayarları kasten hata yaptırıp ölçülen güçle ilgi
   ölçüm aleti. Açılırsa mevcut bütün sayıların "SEE öncesi" diye etiketlenmesi gerekir.
 - **v3-passers** — 714 oyunda çözülmedi, [−12, +34]; ~+10'luk etki için dar bracket gerek
 - **L8'in uyarlanabilir saati** — çözülmedi, dar bracket ile yeniden denenmeli
+- **Taktik suite** ✅ kapandı — 8'den 16'ya çıkarıldı, ama asıl mesele *nasıl*:
+  pozisyonlar **ezberden yazılmadı, üretildi**. Suite'in ilk hâlinde 2 yasadışı pozisyon
+  ve 3 yanlış çözüm vardı, çünkü hatırlanarak yazılmıştı. Yeni yöntem: merdiven
+  seviyeleri arasında oyunlar oynanıyor, pozisyonlar **Stockfish'e** soruluyor (test
+  edilen motora değil — kendi kendini doğrulayan suite olurdu), ve yalnızca en iyi hamle
+  ikinciden 250+ santipiyon iyiyse alınıyor. Motorun **çözemediği** 6 taktik atılmadı;
+  `KNOWN_MISSES` olarak kaydedildi ve biri çözülmeye başlarsa test **XPASS** ile
+  bildiriyor — hep kırmızı yanıp okunmaz hale gelen bir suite yerine.
 - **Benchmark** ✅ kapandı — `scripts/bench.py` 16 pozisyonu sabit derinlikte arıyor ve
   **"daha hızlı" ile "farklı"yı ayırıyor**: node sayıları deterministik, biri değiştiyse
   arama değişmiştir ve nps artık bir hız karşılaştırması değildir. Bu ayrım hipotetik

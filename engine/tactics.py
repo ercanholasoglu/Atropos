@@ -100,6 +100,54 @@ TACTICAL_SUITE: tuple[TacticalPosition, ...] = (
         ("h8=Q#", "h8=R#"),
         note="a rook mates too — the extra squares a queen covers are already covered",
     ),
+    TacticalPosition(
+        "mined 1",
+        "1Q6/3bpkbr/5p2/7p/p3Pp1P/1PN2P2/P2P1PR1/1R1K1BN1 w - - 0 23",
+        ("Bc4+",),
+        note="mate in 12, white to move; Stockfish depth 16 prefers it by 8778 centipawns",
+    ),
+    TacticalPosition(
+        "mined 2",
+        "5r2/4p1k1/4b3/4Pp1p/PQ3p1P/P1N2P2/3P1P2/1R1K1BN1 w - - 2 28",
+        ("Qxe7+",),
+        note="mate in 8, white to move; Stockfish depth 16 prefers it by 8820 centipawns",
+    ),
+    TacticalPosition(
+        "mined 3",
+        "rnb2bn1/3pk1Pr/pp1p3p/6NQ/2Pp4/1P6/P4PPP/R1B1KB1R w KQ - 2 16",
+        ("Qf7+",),
+        note="mate in 3, white to move; Stockfish depth 16 prefers it by 8938 centipawns",
+    ),
+    TacticalPosition(
+        "mined 4",
+        "rnbk1bn1/3p2Pr/pp1p3p/6N1/2Pp4/1P6/P3QPPP/R1B1KB1R w KQ - 4 17",
+        ("gxf8=Q+",),
+        note="mate in 8, white to move; Stockfish depth 16 prefers it by 8989 centipawns",
+    ),
+    TacticalPosition(
+        "mined 5",
+        "rn1qkb1r/p5np/b1pP1ppQ/8/8/4P3/PPPP2PP/RNB1K1NR b KQkq - 0 11",
+        ("Nh5",),
+        note="wins material (+5.6), black to move; Stockfish depth 16 prefers it by 266 centipawns",
+    ),
+    TacticalPosition(
+        "mined 6",
+        "2Q3nr/p1p5/1p1kP3/5p1p/6pq/P2P4/PBP2PPP/1R1K1BNR w - - 5 14",
+        ("Qd7+",),
+        note="mate in 2, white to move; Stockfish depth 16 prefers it by 8919 centipawns",
+    ),
+    TacticalPosition(
+        "mined 7",
+        "rn2kbnr/pb1pp2p/1pp2p2/q7/2P3P1/1Q1P1N1P/PP1BPP2/RN2KB1R w KQkq - 1 11",
+        ("Bxa5",),
+        note="wins material (+7.6), white to move; Stockfish depth 16 prefers it by 316 centipawns",
+    ),
+    TacticalPosition(
+        "mined 8",
+        "r7/7N/b2B2kp/Rppn4/6PP/1PP2P2/3PP1B1/1NQ1K2R w K - 1 28",
+        ("Qc2+",),
+        note="mate in 9, white to move; Stockfish depth 16 prefers it by 8718 centipawns",
+    ),
 )
 
 
@@ -144,6 +192,54 @@ class TacticalReport:
         lines.append("-" * len(header))
         lines.append(f"{self.solved}/{self.total} solved in {self.seconds:.1f}s")
         return "\n".join(lines)
+
+
+# Positions this engine does **not** currently solve, kept rather than
+# discarded. They were mined and verified the same way, and each is a tactic
+# Stockfish sees decisively at depth 16 that a depth-4 search here misses.
+#
+# They are not assertions. A suite that demanded these pass would be red
+# forever and would stop being read. They are checked and *reported*: if a
+# change makes one start solving, that is a real improvement and the test says
+# so instead of letting it pass unnoticed.
+KNOWN_MISSES: tuple[TacticalPosition, ...] = (
+    TacticalPosition(
+        "known miss 1",
+        "rnb2kB1/pp1p4/2N2p2/2P3p1/7p/2N1P3/PPPQ1PPP/R3K2R w KQ - 0 19",
+        ("Qd5",),
+        note="mate in 3, white to move; Stockfish depth 16 prefers it by 8824 centipawns",
+    ),
+    TacticalPosition(
+        "known miss 2",
+        "rnb2Qn1/2kp3N/pp1p3p/8/2P5/1P1p4/P3QPPP/R1B1KB1R w KQ - 0 19",
+        ("Qxd6+",),
+        note="mate in 8, white to move; Stockfish depth 16 prefers it by 8681 centipawns",
+    ),
+    TacticalPosition(
+        "known miss 3",
+        "4kb1R/8/2p2p2/N1Nbp3/1P1P2P1/2P1B3/5K2/2R2Q2 w - - 0 35",
+        ("Ke2",),
+        note="mate in 9, white to move; Stockfish depth 16 prefers it by 8663 centipawns",
+    ),
+    TacticalPosition(
+        "known miss 4",
+        "r5nN/1Q6/n4p2/p1k1p3/2p4P/P4P2/P2PP3/R1B1KB1R w KQ - 1 22",
+        ("Rb1",),
+        note="mate in 8, white to move; Stockfish depth 16 prefers it by 8685 centipawns",
+    ),
+    TacticalPosition(
+        "known miss 5",
+        "1r3r2/ppQ4p/2p1pkpP/P2p4/2P5/7N/P4P1P/R3KB1R w KQ - 11 26",
+        ("Qg7+",),
+        note="mate in 6, white to move; Stockfish depth 16 prefers it by 8894 centipawns",
+    ),
+    TacticalPosition(
+        "known miss 6",
+        "1Q6/p4r1p/1pp1pkpP/P2p4/2P5/3B3N/P4P1P/R3K2R w KQ - 0 28",
+        ("Qd8+",),
+        note="wins material (+15.7), white to move; Stockfish depth 16 prefers it by 250 centipawns",
+    ),
+)
 
 
 def run_suite(engine, positions=TACTICAL_SUITE, on_result=None) -> TacticalReport:

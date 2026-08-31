@@ -11,7 +11,7 @@ import chess
 import pytest
 
 from engine.levels import create_engine
-from engine.tactics import TACTICAL_SUITE, TacticalPosition, run_suite
+from engine.tactics import KNOWN_MISSES, TACTICAL_SUITE, TacticalPosition, run_suite
 
 # --- the suite has to be right before it can judge anything ---------------
 
@@ -108,3 +108,46 @@ def test_the_report_adds_up():
 def test_the_upper_levels_solve_the_whole_suite():
     report = run_suite(create_engine(6, seed=1, time_limit=1.0))
     assert report.solved == report.total, report.table()
+
+
+# --- the known misses ------------------------------------------------------
+
+
+@pytest.mark.parametrize("position", KNOWN_MISSES, ids=lambda p: p.name)
+def test_known_misses_are_legal_too(position: TacticalPosition):
+    """They are not asserted to fail, but they still have to be real positions."""
+    board = position.board()
+    assert board.is_valid(), board.status()
+    legal = {board.san(move) for move in board.legal_moves}
+    for san in position.best_moves:
+        assert san in legal, f"{san} is not legal in {position.name}"
+
+
+@pytest.mark.parametrize("position", KNOWN_MISSES, ids=lambda p: p.name)
+@pytest.mark.xfail(reason="known miss: recorded so an improvement is noticed", strict=False)
+def test_known_miss_still_missed(position: TacticalPosition):
+    """Reports rather than demands.
+
+    ``strict=False`` is the whole point. These are expected to fail, so a
+    failure is silent; if one starts *passing*, pytest reports XPASS and the
+    improvement gets noticed instead of sliding by. A suite that asserted these
+    pass would be red forever and would stop being read.
+    """
+    board = position.board()
+    engine = create_engine(7, seed=3, time_limit=None)
+    setattr(engine, "depth", 4)
+    move = engine.get_best_move(board)
+    assert position.solved_by(board, move)
+
+
+def test_the_two_sets_do_not_overlap():
+    """A position cannot be both a guard and a known miss."""
+    assert not ({p.fen for p in TACTICAL_SUITE} & {p.fen for p in KNOWN_MISSES})
+
+
+def test_mined_positions_carry_their_provenance():
+    """Every mined entry says what verified it, so the suite is auditable."""
+    mined = [p for p in TACTICAL_SUITE + KNOWN_MISSES if p.name.startswith(("mined", "known miss"))]
+    assert len(mined) == 14
+    for position in mined:
+        assert "Stockfish" in position.note, position.name

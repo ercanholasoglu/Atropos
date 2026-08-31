@@ -799,6 +799,33 @@ the Stockfish anchor and the Atropos gauntlet were both measured against.
 Turning it on changes the instrument every current number was taken with —
 a decision about what the ladder is for, not one the data settles.
 
+### A tactical suite that was mined, not remembered
+
+The first version of this suite was written from memory and shipped **two
+illegal positions and three wrong solutions**. That is not unusual — a FEN is
+easy to mistype and a well-known tactic is easy to misremember — so the
+expansion from 8 to 16 positions generates them instead.
+
+`scripts/build_tactics.py` plays games between ladder levels, samples
+positions, and asks **Stockfish** whether each one has a single decisively best
+move. Four choices in that sentence are doing work:
+
+* **Games, not composed studies** — positions an engine like this actually
+  reaches.
+* **Stockfish, not our engine** — verifying with the engine under test would
+  build a suite it passes by construction.
+* **Two lines searched** — unless the best move beats the second best by 250
+  centipawns, the position does not have one right answer.
+* **Legality checked directly**, because that is the failure that got through
+  last time.
+
+Of 14 mined positions, **8 are solved by the engine at depth 4 and became
+guards. The other 6 are kept as `KNOWN_MISSES`** — tactics Stockfish sees
+decisively that this search does not. They are not asserted to fail, because a
+suite that demanded them would be red forever and stop being read. They are
+`xfail(strict=False)`: silent while they miss, and reported as **XPASS by name**
+if a change makes one start solving. That mechanism was checked, not assumed.
+
 ### Measuring speed without playing games
 
 Throughput is the one lever this project could reliably measure, so it gets an
