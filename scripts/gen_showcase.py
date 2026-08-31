@@ -55,6 +55,16 @@ GAPS = [
     ("L7 → L8", -35, -79, 9),
 ]
 
+# (variant, what it is, games, elo, lo, hi, nps)
+EVAL = [
+    ("v2", "temel", None, None, None, None, 64794),
+    ("v3-rooks", "+ kale hattı — <strong>ship edilen</strong>", 600, -2, -26, 22, 60337),
+    ("v3-passers", "+ geçer piyon", 714, 11, -12, 34, None),
+    ("shelter-only", "+ kral güvenliği", 558, -53, -84, -24, 58138),
+    ("passers-rooks", "+ geçer piyon ve kale hattı", 1200, 12, -8, 31, 53556),
+    ("v3-shelter", "+ üçü birden", 600, 21, -5, 47, 49064),
+]
+
 # (true difference, games to stop, reported, bias, bias over its own sd)
 BIAS = [
     (22, 96, 88, 66, 1.54),
@@ -117,13 +127,12 @@ PREREG = [
         "−159 / −417 / −636 / −830",
         "fail",
         "Dördü de aynı yönde, 2,5 kat ıskalandı. Tahminler uzun zaman kontrollerinde "
-        "ölçülmüş literatürden geliyordu; burada referans bütçe derinlik 3,0'da. "
-        "Ön-kayıtlı <em>doğrusallık</em> iddiası ayakta kaldı.",
+        "ölçülmüş literatürden geliyordu. Ön-kayıtlı <em>doğrusallık</em> iddiası ayakta.",
     ),
     (
         "Movetime çapraz kontrolü",
         "B/2'de örtüşür, B/8'de ayrışır",
-        "B/2 örtüştü, B/8 ayrıştı",
+        "öyle oldu",
         "pass",
         "Kaynak koddan türetilmişti: <code>check_interval</code> 2048, yani B/8 bütçesi "
         "onu uygulayan aletin çözünürlüğünün altında.",
@@ -133,31 +142,22 @@ PREREG = [
         "−349 ya da −257",
         "−165",
         "fail",
-        "İkisinin de dışında. Ön-kaydın çürütme şartı işledi ve incelenecek şeyin "
-        "eğrinin kendisi olduğunu söyledi — öyle de çıktı.",
+        "İkisinin de dışında. Çürütme şartı işledi ve incelenecek şeyin eğrinin kendisi "
+        "olduğunu söyledi — öyle çıktı.",
     ),
     (
-        "B/1,5: ofset var mı?",
+        "B/1,5: ofset modeli",
         "−58 (çizgi) ya da −174 (ofset)",
         "−83",
         "pass",
-        "Çizgi okuması desteklendi, ofset modeli reddedildi.",
+        "Çizgi desteklendi, ofset reddedildi.",
     ),
     (
-        "B/2 tekrarı: fluke mu?",
+        "B/2 tekrarı",
         "−98 (fluke) ya da −201 (tekrarlanır)",
         "−116",
         "pass",
         "Aynı eşleşmenin iki koşusu p = 0,015 ile ayrıştı. Asıl bulgu buydu.",
-    ),
-    (
-        "SEE budaması",
-        "+79, sonra +66'ya düzeltildi",
-        "+48 [+11, +87]",
-        "null",
-        "Ön-kayıt, aralığın hem +79'u hem +20'yi kapsaması durumunu <em>büyüklük "
-        "sorusunda null</em> ilan edip nokta tahminine yaslanmamayı şart koşmuştu. "
-        "Öyle raporlandı.",
     ),
     (
         "x'i yeniden örneklemek aralığı genişletir",
@@ -166,33 +166,103 @@ PREREG = [
         "fail",
         "Genişlemedi. Yazılı olduğu için raporlandı.",
     ),
+    (
+        "Sabit uzunlukta merdiven",
+        "hepsi sekans sayısının altında",
+        "altısının dördü <em>üstünde</em>",
+        "fail",
+        "Yanlılık gerçek fark ~100'ün üstünde tersine dönüyor — kendi simülasyonum bunu "
+        "raporlamıştı, tahmini yazarken tablomu taşımamışım.",
+    ),
+    (
+        "SEE budaması",
+        "+79, sonra +66'ya düzeltildi",
+        "+48 [+11, +87]",
+        "null",
+        "Aralık hem +79'u hem +20'yi kapsayınca <em>büyüklük sorusunda null</em> ilan "
+        "edilecekti. Öyle raporlandı.",
+    ),
+    (
+        "Ship edilen kale terimi yeniden ölçülür",
+        "+50, sıfırı dışlayan aralık",
+        "−2 [−26, +22]",
+        "fail",
+        "«Sıfırın altı» çürütme ölçütüydü. Aralık ship edilmesini gerekçelendiren +44'ü "
+        "dışlıyor.",
+    ),
+    (
+        "Reddedilen demet yeniden ölçülür",
+        "−15 ile +25 arası",
+        "+21 [−5, +47]",
+        "pass",
+        "Reddi hiçbir aşamada kanıt desteklemiyormuş. (Varyantın adı beni yanılttı: üç "
+        "terimlik demetmiş, tek terim değil — ayrı bir düzeltme.)",
+    ),
+    (
+        "Kral güvenliği tek başına",
+        "+12 (parçaların toplamından)",
+        "−53 [−84, −24]",
+        "fail",
+        "Çürütme aralığının ([−40, +65]) dışında. Projede temelden belirgin kötü ölçülen "
+        "ilk varyant.",
+    ),
+    (
+        "Terimler toplanıyor mu?",
+        "+9 (toplanır) ya da +75 (etkileşir)",
+        "+26",
+        "pass",
+        "+9 içeride, +75 dışarıda. Etkileşim açıklaması reddedildi.",
+    ),
+    (
+        "Doğrulama: +26 kalır",
+        "aralık [+6, +46]'ya daralır",
+        "+12 [−8, +31]",
+        "fail",
+        "Aralık sıfırı kapsadı. Ön-kayıt bu duruma «gürültünün ince ucu» diyecekti; "
+        "dedi. Üçüncü uzatma yok.",
+    ),
 ]
 
 CORRECTIONS = [
     (
         "«Level 8 bir gerileme»",
         "−85'lik nokta tahmininden söylenmişti; %95 aralığı [−238, +40] <em>sıfırı "
-        "içeriyordu.</em> Asıl hata parantezteydi: tek bir zaman heuristiğiyle ayrışan "
-        "iki motora «en az 100 Elo mu?» diye sormak baştan bilgi taşımıyordu.",
+        "içeriyordu.</em> Asıl hata parantezteydi.",
     ),
     (
         "«Terimler PST'yi tekrarlıyor, o yüzden işe yaramıyor»",
-        "−3 Elo'luk bir okumadan çıkarılmıştı; yüz oyun sonra +21'e taşındı. "
-        "Tablo örtüşmesine dair yapısal gözlem ölçülmüş ve doğru; ondan çıkarılan "
-        "sonuç desteklenmiyordu.",
+        "−3 Elo'luk bir okumadan çıkarılmıştı; yüz oyun sonra +21'e taşındı. Yapısal "
+        "gözlem doğru, ondan çıkarılan sonuç desteklenmiyordu.",
     ),
     (
         "«İki aday mekanizma var, bu tasarım ayırmıyor»",
-        "İkisi bağımsız değilmiş: iterasyon sınırında uygulanan bir bütçe "
-        "<em>zorunlu olarak</em> değişken node harcar. Tek mekanizmanın iki adıydı. "
-        "Bu, veriden değil aleti kurmaya çalışmaktan çıktı.",
+        "İkisi bağımsız değilmiş: sınırda uygulanan bir bütçe <em>zorunlu olarak</em> "
+        "değişken node harcar. Veriden değil, aleti kurmaya çalışmaktan çıktı.",
+    ),
+    (
+        "«Merdivenin Elo sütunu farkların tahmini»",
+        "Erken duran bir sekans testi gerçek fark ne olursa olsun ~110 raporluyor. "
+        "Hükümler ayakta, büyüklükler hiç ölçülmemişti — sonradan sabit uzunlukta ölçüldü.",
     ),
     (
         "«B/2 3,6σ aykırı bir nokta»",
-        "Kusur noktada değil hata çubuklarındaydı. Her nokta yalnızca binom gürültüsü "
-        "taşıyordu; saat kolunun harcaması koşudan koşuya %5,3 kayıyor — ±13 Elo daha. "
-        "Kayma bir belge önce ölçülmüştü ama yanlış büyüklüğe uygulanmıştı. "
-        "Dahil edilince χ² = 7,4 (3 sd): hiçbir nokta atılmadan fit oturdu.",
+        "Kusur noktada değil hata çubuklarındaydı. Saat kolunun harcaması koşudan koşuya "
+        "%5,3 kayıyor; kayma bir belge önce ölçülmüş ama yanlış büyüklüğe uygulanmıştı.",
+    ),
+    (
+        "«Kral güvenliği buradaki en değerli pozisyonel terim»",
+        "Varyantın adına güvenip ne inşa ettiğini okumamışım. <code>v3-shelter</code> üç "
+        "terimlik bir demet. Tek başına ölçülünce −53 [−84, −24] çıktı — tam tersi.",
+    ),
+    (
+        "«Kale terimi +44 Elo ediyor»",
+        "Sekans testinin durma noktasındaki sayıydı. 600 sabit oyun −2 [−26, +22] diyor; "
+        "aralık +44'ü dışlıyor. Motorda hâlâ o terim var.",
+    ),
+    (
+        "«passers-rooks +26, ilk pozitif sonuç»",
+        "600 oyunda öyleydi, alt sınır +1. Önceden ilan edilen doğrulama 1.200 oyunda "
+        "+12 [−8, +31] döndürdü. Gürültünün ince ucu.",
     ),
 ]
 
@@ -244,6 +314,17 @@ gap_rows = "\n".join(
     f'<td class="mono num small {OUT_CLASS if not (lo <= 300 <= hi) else "pred"}">'
     f'{OUT_LABEL if not (lo <= 300 <= hi) else "300 içeride"}</td></tr>'
     for n, e, lo, hi in GAPS
+)
+
+eval_rows = "\n".join(
+    f"<tr{KEY_ROW if n == 'shelter-only' else ''}>"
+    f'<td class="mono">{n}</td><td>{what}</td>'
+    f'<td class="mono num">{g if g else "—"}</td>'
+    f'<td class="mono num strong">{num(e) if e is not None else "—"}</td>'
+    f'<td class="ivl-cell">{bar(lo, e, hi, -100, 60) if e is not None else ""}</td>'
+    f'<td class="mono small">{f"[{num(lo)}, {num(hi)}]" if e is not None else "—"}</td>'
+    f'<td class="mono num pred">{f"{nps:,}" if nps else "—"}</td></tr>'
+    for n, what, g, e, lo, hi, nps in EVAL
 )
 
 bias_rows = "\n".join(
@@ -577,10 +658,10 @@ hr.rule {{ border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }}
     her sayının nereden geldiğinin, hangi tahminin tutmadığının ve neyin hâlâ
     bilinmediğinin kaydı.</p>
   <div class="stats">
-    <div class="stat"><div class="v">6.901</div><div class="k">telemetrili oyun</div></div>
-    <div class="stat"><div class="v">8</div><div class="k">ön-kayıtlı tahmin</div></div>
-    <div class="stat"><div class="v">4</div><div class="k">tutmadı</div></div>
-    <div class="stat"><div class="v">5</div><div class="k">geri alınan iddia</div></div>
+    <div class="stat"><div class="v">9.889</div><div class="k">telemetrili oyun</div></div>
+    <div class="stat"><div class="v">13</div><div class="k">ön-kayıtlı tahmin</div></div>
+    <div class="stat"><div class="v">6</div><div class="k">tutmadı</div></div>
+    <div class="stat"><div class="v">8</div><div class="k">geri alınan iddia</div></div>
     <div class="stat"><div class="v">732</div><div class="k">test</div></div>
   </div>
 </header>
@@ -729,6 +810,40 @@ hr.rule {{ border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }}
       iki sayı. Özellik paritesi throughput'a yeniliyor, ve büyüklüğü artık iddia değil
       öngörü.</p>
   </div>
+</section>
+
+<section>
+  <h2>3.672 oyun, ve hiçbir şey iyileştirmedi</h2>
+  <p class="sec-sub">Değerlendirme programı · beş varyant · hepsi sabit uzunlukta</p>
+  <p>Değerlendirmeye terim eklemek klasik yol. Bu proje beş varyantı ölçtü ve programı
+    kapattı.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>varyant</th><th>ne olduğu</th><th class="num">oyun</th>
+        <th class="num">Elo</th><th>%95 aralık</th><th></th><th class="num">nps</th></tr></thead>
+      <tbody>{eval_rows}</tbody>
+    </table>
+  </div>
+  <p><strong>Tam olarak bir aralık sıfırı dışlıyor — ve o da negatif tarafta.</strong>
+    Hiçbir şeyin değerlendirmeyi iyileştirdiği gösterilemedi; bir terimin
+    kötüleştirdiği gösterildi.</p>
+
+  <div class="panel flag">
+    <p><strong>Ve proje bunu baştan söylemişti.</strong> Erken bir ölçüm çözünürlük
+      tabanını kurmuştu: ≥100 Elo 7-65 oyunda çözülür, ≥40 ~350'de, ≥20 ~1.500'de,
+      ≥10 ~6.000'de. Klasik değerlendirme terimleri +10 ile +25 arası eder.</p>
+    <p>En iyi adaya <strong>1.200 oyun +12 [−8, +31]</strong> döndürdü — makul aralığın
+      dibinde bir etki, çözünürlüğü ona az kala biten bir aletle ölçüldü. Program
+      terimler değersiz olduğu için başarısız olmadı; bu boyuttaki etkiler harcanandan
+      binlerce oyun fazlasını istediği için — ve tablo bunu hiçbiri oynanmadan önce
+      söylemişti.</p>
+  </div>
+
+  <p>Çabanın nereye gittiğinin gerekçesi de bu: throughput işi <strong>+83 Elo</strong>
+    üretti, ölçülmüş ve dönüştürülmüş halde, oyunların bir kesriyle — çünkü %39'luk bir
+    hız değişimi 100-Elo sınıfı bir etki ve bu kurulumun rahatça çözdüğü bölgeye düşüyor.</p>
+  <blockquote>Bir terimin değersiz olduğunu göstermek ile ölçemediğini göstermek aynı
+    şey değil.</blockquote>
 </section>
 
 <section>

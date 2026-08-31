@@ -272,10 +272,10 @@ hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }
     her sayının nereden geldiğinin, hangi tahminin tutmadığının ve neyin hâlâ
     bilinmediğinin kaydı.</p>
   <div class="stats">
-    <div class="stat"><div class="v">6.901</div><div class="k">telemetrili oyun</div></div>
-    <div class="stat"><div class="v">8</div><div class="k">ön-kayıtlı tahmin</div></div>
-    <div class="stat"><div class="v">4</div><div class="k">tutmadı</div></div>
-    <div class="stat"><div class="v">5</div><div class="k">geri alınan iddia</div></div>
+    <div class="stat"><div class="v">9.889</div><div class="k">telemetrili oyun</div></div>
+    <div class="stat"><div class="v">13</div><div class="k">ön-kayıtlı tahmin</div></div>
+    <div class="stat"><div class="v">6</div><div class="k">tutmadı</div></div>
+    <div class="stat"><div class="v">8</div><div class="k">geri alınan iddia</div></div>
     <div class="stat"><div class="v">732</div><div class="k">test</div></div>
   </div>
 </header>
@@ -452,26 +452,75 @@ hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }
 </section>
 
 <section>
+  <h2>3.672 oyun, ve hiçbir şey iyileştirmedi</h2>
+  <p class="sec-sub">Değerlendirme programı · beş varyant · hepsi sabit uzunlukta</p>
+  <p>Değerlendirmeye terim eklemek klasik yol. Bu proje beş varyantı ölçtü ve programı
+    kapattı.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>varyant</th><th>ne olduğu</th><th class="num">oyun</th>
+        <th class="num">Elo</th><th>%95 aralık</th><th></th><th class="num">nps</th></tr></thead>
+      <tbody><tr><td class="mono">v2</td><td>temel</td><td class="mono num">—</td><td class="mono num strong">—</td><td class="ivl-cell"></td><td class="mono small">—</td><td class="mono num pred">64,794</td></tr>
+<tr><td class="mono">v3-rooks</td><td>+ kale hattı — <strong>ship edilen</strong></td><td class="mono num">600</td><td class="mono num strong">-2</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:62.50%"></span><span class="ivl-range" style="left:46.25%;width:30.00%"></span><span class="ivl-est" style="left:61.25%"></span></span></td><td class="mono small">[-26, +22]</td><td class="mono num pred">60,337</td></tr>
+<tr><td class="mono">v3-passers</td><td>+ geçer piyon</td><td class="mono num">714</td><td class="mono num strong">+11</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:62.50%"></span><span class="ivl-range" style="left:55.00%;width:28.75%"></span><span class="ivl-est" style="left:69.38%"></span></span></td><td class="mono small">[-12, +34]</td><td class="mono num pred">—</td></tr>
+<tr class="row-key"><td class="mono">shelter-only</td><td>+ kral güvenliği</td><td class="mono num">558</td><td class="mono num strong">-53</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:62.50%"></span><span class="ivl-range" style="left:10.00%;width:37.50%"></span><span class="ivl-est" style="left:29.38%"></span></span></td><td class="mono small">[-84, -24]</td><td class="mono num pred">58,138</td></tr>
+<tr><td class="mono">passers-rooks</td><td>+ geçer piyon ve kale hattı</td><td class="mono num">1200</td><td class="mono num strong">+12</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:62.50%"></span><span class="ivl-range" style="left:57.50%;width:24.38%"></span><span class="ivl-est" style="left:70.00%"></span></span></td><td class="mono small">[-8, +31]</td><td class="mono num pred">53,556</td></tr>
+<tr><td class="mono">v3-shelter</td><td>+ üçü birden</td><td class="mono num">600</td><td class="mono num strong">+21</td><td class="ivl-cell"><span class="ivl"><span class="ivl-zero" style="left:62.50%"></span><span class="ivl-range" style="left:59.38%;width:32.50%"></span><span class="ivl-est" style="left:75.62%"></span></span></td><td class="mono small">[-5, +47]</td><td class="mono num pred">49,064</td></tr></tbody>
+    </table>
+  </div>
+  <p><strong>Tam olarak bir aralık sıfırı dışlıyor — ve o da negatif tarafta.</strong>
+    Hiçbir şeyin değerlendirmeyi iyileştirdiği gösterilemedi; bir terimin
+    kötüleştirdiği gösterildi.</p>
+
+  <div class="panel flag">
+    <p><strong>Ve proje bunu baştan söylemişti.</strong> Erken bir ölçüm çözünürlük
+      tabanını kurmuştu: ≥100 Elo 7-65 oyunda çözülür, ≥40 ~350'de, ≥20 ~1.500'de,
+      ≥10 ~6.000'de. Klasik değerlendirme terimleri +10 ile +25 arası eder.</p>
+    <p>En iyi adaya <strong>1.200 oyun +12 [−8, +31]</strong> döndürdü — makul aralığın
+      dibinde bir etki, çözünürlüğü ona az kala biten bir aletle ölçüldü. Program
+      terimler değersiz olduğu için başarısız olmadı; bu boyuttaki etkiler harcanandan
+      binlerce oyun fazlasını istediği için — ve tablo bunu hiçbiri oynanmadan önce
+      söylemişti.</p>
+  </div>
+
+  <p>Çabanın nereye gittiğinin gerekçesi de bu: throughput işi <strong>+83 Elo</strong>
+    üretti, ölçülmüş ve dönüştürülmüş halde, oyunların bir kesriyle — çünkü %39'luk bir
+    hız değişimi 100-Elo sınıfı bir etki ve bu kurulumun rahatça çözdüğü bölgeye düşüyor.</p>
+  <blockquote>Bir terimin değersiz olduğunu göstermek ile ölçemediğini göstermek aynı
+    şey değil.</blockquote>
+</section>
+
+<section>
   <h2>Ön-kayıt sicili</h2>
   <p class="sec-sub">Her tahmin, ilk oyundan önce commit'lendi</p>
   <p>Veriye bakıldıktan sonra seçilen parantez, parantez değildir. Tahminlerin
     tutmadığı üç durum da burada — çıkarıldıkları için değil, kayıtlı oldukları için.</p>
-  <div class="pr-grid"><article class="pr"><header><h3>Hız eğrisi: dört yarılanma</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">−60 / −120 / −180 / −240</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−159 / −417 / −636 / −830</dd></div></dl><p>Dördü de aynı yönde, 2,5 kat ıskalandı. Tahminler uzun zaman kontrollerinde ölçülmüş literatürden geliyordu; burada referans bütçe derinlik 3,0'da. Ön-kayıtlı <em>doğrusallık</em> iddiası ayakta kaldı.</p></article>
-<article class="pr"><header><h3>Movetime çapraz kontrolü</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">B/2'de örtüşür, B/8'de ayrışır</dd></div><div><dt>ölçülen</dt><dd class="mono strong">B/2 örtüştü, B/8 ayrıştı</dd></div></dl><p>Kaynak koddan türetilmişti: <code>check_interval</code> 2048, yani B/8 bütçesi onu uygulayan aletin çözünürlüğünün altında.</p></article>
-<article class="pr"><header><h3>Üçüncü kol: saat mi, sınırda durma mı?</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">−349 ya da −257</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−165</dd></div></dl><p>İkisinin de dışında. Ön-kaydın çürütme şartı işledi ve incelenecek şeyin eğrinin kendisi olduğunu söyledi — öyle de çıktı.</p></article>
-<article class="pr"><header><h3>B/1,5: ofset var mı?</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">−58 (çizgi) ya da −174 (ofset)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−83</dd></div></dl><p>Çizgi okuması desteklendi, ofset modeli reddedildi.</p></article>
-<article class="pr"><header><h3>B/2 tekrarı: fluke mu?</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">−98 (fluke) ya da −201 (tekrarlanır)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−116</dd></div></dl><p>Aynı eşleşmenin iki koşusu p = 0,015 ile ayrıştı. Asıl bulgu buydu.</p></article>
-<article class="pr"><header><h3>SEE budaması</h3><span class="badge b-null">null</span></header><dl><div><dt>tahmin</dt><dd class="mono">+79, sonra +66'ya düzeltildi</dd></div><div><dt>ölçülen</dt><dd class="mono strong">+48 [+11, +87]</dd></div></dl><p>Ön-kayıt, aralığın hem +79'u hem +20'yi kapsaması durumunu <em>büyüklük sorusunda null</em> ilan edip nokta tahminine yaslanmamayı şart koşmuştu. Öyle raporlandı.</p></article>
-<article class="pr"><header><h3>x'i yeniden örneklemek aralığı genişletir</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">genişler</dd></div><div><dt>ölçülen</dt><dd class="mono strong">46 → 47 Elo</dd></div></dl><p>Genişlemedi. Yazılı olduğu için raporlandı.</p></article></div>
+  <div class="pr-grid"><article class="pr"><header><h3>Hız eğrisi: dört yarılanma</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">−60 / −120 / −180 / −240</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−159 / −417 / −636 / −830</dd></div></dl><p>Dördü de aynı yönde, 2,5 kat ıskalandı. Tahminler uzun zaman kontrollerinde ölçülmüş literatürden geliyordu. Ön-kayıtlı <em>doğrusallık</em> iddiası ayakta.</p></article>
+<article class="pr"><header><h3>Movetime çapraz kontrolü</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">B/2'de örtüşür, B/8'de ayrışır</dd></div><div><dt>ölçülen</dt><dd class="mono strong">öyle oldu</dd></div></dl><p>Kaynak koddan türetilmişti: <code>check_interval</code> 2048, yani B/8 bütçesi onu uygulayan aletin çözünürlüğünün altında.</p></article>
+<article class="pr"><header><h3>Üçüncü kol: saat mi, sınırda durma mı?</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">−349 ya da −257</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−165</dd></div></dl><p>İkisinin de dışında. Çürütme şartı işledi ve incelenecek şeyin eğrinin kendisi olduğunu söyledi — öyle çıktı.</p></article>
+<article class="pr"><header><h3>B/1,5: ofset modeli</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">−58 (çizgi) ya da −174 (ofset)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−83</dd></div></dl><p>Çizgi desteklendi, ofset reddedildi.</p></article>
+<article class="pr"><header><h3>B/2 tekrarı</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">−98 (fluke) ya da −201 (tekrarlanır)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−116</dd></div></dl><p>Aynı eşleşmenin iki koşusu p = 0,015 ile ayrıştı. Asıl bulgu buydu.</p></article>
+<article class="pr"><header><h3>x'i yeniden örneklemek aralığı genişletir</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">genişler</dd></div><div><dt>ölçülen</dt><dd class="mono strong">46 → 47 Elo</dd></div></dl><p>Genişlemedi. Yazılı olduğu için raporlandı.</p></article>
+<article class="pr"><header><h3>Sabit uzunlukta merdiven</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">hepsi sekans sayısının altında</dd></div><div><dt>ölçülen</dt><dd class="mono strong">altısının dördü <em>üstünde</em></dd></div></dl><p>Yanlılık gerçek fark ~100'ün üstünde tersine dönüyor — kendi simülasyonum bunu raporlamıştı, tahmini yazarken tablomu taşımamışım.</p></article>
+<article class="pr"><header><h3>SEE budaması</h3><span class="badge b-null">null</span></header><dl><div><dt>tahmin</dt><dd class="mono">+79, sonra +66'ya düzeltildi</dd></div><div><dt>ölçülen</dt><dd class="mono strong">+48 [+11, +87]</dd></div></dl><p>Aralık hem +79'u hem +20'yi kapsayınca <em>büyüklük sorusunda null</em> ilan edilecekti. Öyle raporlandı.</p></article>
+<article class="pr"><header><h3>Ship edilen kale terimi yeniden ölçülür</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">+50, sıfırı dışlayan aralık</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−2 [−26, +22]</dd></div></dl><p>«Sıfırın altı» çürütme ölçütüydü. Aralık ship edilmesini gerekçelendiren +44'ü dışlıyor.</p></article>
+<article class="pr"><header><h3>Reddedilen demet yeniden ölçülür</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">−15 ile +25 arası</dd></div><div><dt>ölçülen</dt><dd class="mono strong">+21 [−5, +47]</dd></div></dl><p>Reddi hiçbir aşamada kanıt desteklemiyormuş. (Varyantın adı beni yanılttı: üç terimlik demetmiş, tek terim değil — ayrı bir düzeltme.)</p></article>
+<article class="pr"><header><h3>Kral güvenliği tek başına</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">+12 (parçaların toplamından)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">−53 [−84, −24]</dd></div></dl><p>Çürütme aralığının ([−40, +65]) dışında. Projede temelden belirgin kötü ölçülen ilk varyant.</p></article>
+<article class="pr"><header><h3>Terimler toplanıyor mu?</h3><span class="badge b-pass">tuttu</span></header><dl><div><dt>tahmin</dt><dd class="mono">+9 (toplanır) ya da +75 (etkileşir)</dd></div><div><dt>ölçülen</dt><dd class="mono strong">+26</dd></div></dl><p>+9 içeride, +75 dışarıda. Etkileşim açıklaması reddedildi.</p></article>
+<article class="pr"><header><h3>Doğrulama: +26 kalır</h3><span class="badge b-fail">tutmadı</span></header><dl><div><dt>tahmin</dt><dd class="mono">aralık [+6, +46]'ya daralır</dd></div><div><dt>ölçülen</dt><dd class="mono strong">+12 [−8, +31]</dd></div></dl><p>Aralık sıfırı kapsadı. Ön-kayıt bu duruma «gürültünün ince ucu» diyecekti; dedi. Üçüncü uzatma yok.</p></article></div>
 </section>
 
 <section>
   <h2>Geri alınan iddialar</h2>
   <p class="sec-sub">Sonradan düzeltildi, silinmedi</p>
-  <ol class="corr"><li><h3>«Level 8 bir gerileme»</h3><p>−85'lik nokta tahmininden söylenmişti; %95 aralığı [−238, +40] <em>sıfırı içeriyordu.</em> Asıl hata parantezteydi: tek bir zaman heuristiğiyle ayrışan iki motora «en az 100 Elo mu?» diye sormak baştan bilgi taşımıyordu.</p></li>
-<li><h3>«Terimler PST'yi tekrarlıyor, o yüzden işe yaramıyor»</h3><p>−3 Elo'luk bir okumadan çıkarılmıştı; yüz oyun sonra +21'e taşındı. Tablo örtüşmesine dair yapısal gözlem ölçülmüş ve doğru; ondan çıkarılan sonuç desteklenmiyordu.</p></li>
-<li><h3>«İki aday mekanizma var, bu tasarım ayırmıyor»</h3><p>İkisi bağımsız değilmiş: iterasyon sınırında uygulanan bir bütçe <em>zorunlu olarak</em> değişken node harcar. Tek mekanizmanın iki adıydı. Bu, veriden değil aleti kurmaya çalışmaktan çıktı.</p></li>
-<li><h3>«B/2 3,6σ aykırı bir nokta»</h3><p>Kusur noktada değil hata çubuklarındaydı. Her nokta yalnızca binom gürültüsü taşıyordu; saat kolunun harcaması koşudan koşuya %5,3 kayıyor — ±13 Elo daha. Kayma bir belge önce ölçülmüştü ama yanlış büyüklüğe uygulanmıştı. Dahil edilince χ² = 7,4 (3 sd): hiçbir nokta atılmadan fit oturdu.</p></li></ol>
+  <ol class="corr"><li><h3>«Level 8 bir gerileme»</h3><p>−85'lik nokta tahmininden söylenmişti; %95 aralığı [−238, +40] <em>sıfırı içeriyordu.</em> Asıl hata parantezteydi.</p></li>
+<li><h3>«Terimler PST'yi tekrarlıyor, o yüzden işe yaramıyor»</h3><p>−3 Elo'luk bir okumadan çıkarılmıştı; yüz oyun sonra +21'e taşındı. Yapısal gözlem doğru, ondan çıkarılan sonuç desteklenmiyordu.</p></li>
+<li><h3>«İki aday mekanizma var, bu tasarım ayırmıyor»</h3><p>İkisi bağımsız değilmiş: sınırda uygulanan bir bütçe <em>zorunlu olarak</em> değişken node harcar. Veriden değil, aleti kurmaya çalışmaktan çıktı.</p></li>
+<li><h3>«Merdivenin Elo sütunu farkların tahmini»</h3><p>Erken duran bir sekans testi gerçek fark ne olursa olsun ~110 raporluyor. Hükümler ayakta, büyüklükler hiç ölçülmemişti — sonradan sabit uzunlukta ölçüldü.</p></li>
+<li><h3>«B/2 3,6σ aykırı bir nokta»</h3><p>Kusur noktada değil hata çubuklarındaydı. Saat kolunun harcaması koşudan koşuya %5,3 kayıyor; kayma bir belge önce ölçülmüş ama yanlış büyüklüğe uygulanmıştı.</p></li>
+<li><h3>«Kral güvenliği buradaki en değerli pozisyonel terim»</h3><p>Varyantın adına güvenip ne inşa ettiğini okumamışım. <code>v3-shelter</code> üç terimlik bir demet. Tek başına ölçülünce −53 [−84, −24] çıktı — tam tersi.</p></li>
+<li><h3>«Kale terimi +44 Elo ediyor»</h3><p>Sekans testinin durma noktasındaki sayıydı. 600 sabit oyun −2 [−26, +22] diyor; aralık +44'ü dışlıyor. Motorda hâlâ o terim var.</p></li>
+<li><h3>«passers-rooks +26, ilk pozitif sonuç»</h3><p>600 oyunda öyleydi, alt sınır +1. Önceden ilan edilen doğrulama 1.200 oyunda +12 [−8, +31] döndürdü. Gürültünün ince ucu.</p></li></ol>
 </section>
 
 <section>
