@@ -517,20 +517,47 @@ What the measurements actually say, all at 600 fixed games except where noted:
 
 | variant | what it is | Elo vs v2 |
 |---|---|---:|
-| `v3-rooks` | v2 + rook files | **−2** [−26, +22] |
+| `v3-rooks` | v2 + rook files | −2 [−26, +22] |
 | `v3-passers` | v2 + passed pawns | +11 [−12, +34] (714 games, never stopped) |
+| **`shelter-only`** | v2 + king shelter | **−54** [−84, −24] |
 | `v3-shelter` | v2 + **all three** | **+21** [−5, +47] |
-| `shelter-only` | v2 + king shelter | **not measured — the variant did not exist** |
 
 The bundle measures better than either part measured separately, which is
 unremarkable given the intervals but is the opposite of the story the project
 told itself: v3 was rejected as a bundle and one part was shipped alone.
 **On these numbers the bundle was the better thing all along.**
 
-`engine/evaluation/tapered.py` now has `positional_eval_shelter`, so shelter
-can be measured on its own — 58,138 nps against v2's 64,886, where the
-three-term bundle runs at 49,640. Whether the term is worth its 10% is an open
-question and a cheap one to answer.
+### King shelter, measured alone at last
+
+`engine/evaluation/tapered.py` gained `positional_eval_shelter` so the question
+could be asked. 534 fixed games: **−54 Elo [−84, −24]**. The pre-registered
+prediction was +12 with falsification outside [−40, +65]; **−54 falsifies it.**
+
+This is **the first evaluation variant in this project measured as clearly
+worse than the baseline** — the only one whose interval excludes zero on the
+negative side. The implementation was checked against its definition on 320
+positions first (0 mismatches), so the number is not a bug in the new variant.
+
+| | Elo |
+|---|---:|
+| measured net | **−54** |
+| speed cost, 10.4% slower | −27 |
+| positional contribution, by difference | **−26** |
+
+**The term is not merely expensive; it makes the evaluation worse.** Which is
+what a comment in `tapered.py` already suspected: `KING_MG` pushes the king to
+the corner and rewards the pawns in front of it, and a separate shelter bonus
+pays for the same fact twice. The double-counting measured earlier between
+passed pawns and the piece-square tables applies here, and harder.
+
+**The parts do not add, and that does not resolve.** The three components sum
+to −45 ± 37 where the bundle measures +21 ± 26 — a difference of 66 ± 45, or
+1.47 standard errors. A 66-Elo interaction between three terms that are
+worthless or harmful alone would be a story, and the data does not support
+telling it. What can be said: `v3-shelter`'s +21 **stands as a measurement of
+the bundle, and nothing in it has been traced to a term.**
+
+One decision follows cleanly: **king shelter as implemented should not go in.**
 
 Full write-up in [`docs/REJECTION_PREREG.md`](docs/REJECTION_PREREG.md).
 

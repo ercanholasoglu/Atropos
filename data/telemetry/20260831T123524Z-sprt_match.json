@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-31T12:35:24+00:00",
+ "finished_at": "2026-08-31T12:44:36+00:00",
+ "commit": "9050b34",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "shelter-only",
+  "b": "v2",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 600,
+  "minutes_budget": 9.0,
+  "games_before": 174
+ },
+ "wall_seconds": 551.7502750420244,
+ "cpu_seconds": 2429.575326,
+ "cpu_per_wall": 4.403396674002473,
+ "peak_rss_mb_largest_process": 199.640625,
+ "nodes": 177283345,
+ "nodes_per_cpu_second": 72968.86130790414,
+ "games": 192,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 366,
+  "wins": 106,
+  "draws": 91,
+  "losses": 169,
+  "score": 0.4139344262295082,
+  "elo_estimate": -60.40586547296769,
+  "elo_interval_95": [
+   -92.14571477563841,
+   -29.6363292393553
+  ],
+  "llr": -11.885458297724512,
+  "verdict": "accept H0",
+  "diagnosis": "accept H0",
+  "state_file": "data/fixed_shelter-only_vs_v2.json"
+ },
+ "notes": []
+}

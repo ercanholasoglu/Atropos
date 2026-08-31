@@ -492,15 +492,29 @@ Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 > | `v3-rooks` | v2 + kale hattı | **−2** [−26, +22] |
 > | `v3-passers` | v2 + geçer piyon | +11 [−12, +34] (714 oyun, hiç durmadı) |
 > | `v3-shelter` | v2 + **üçü birden** | **+21** [−5, +47] |
-> | `shelter-only` | v2 + kral güvenliği | **ölçülmedi — varyant yoktu** |
+> | **`shelter-only`** | v2 + kral güvenliği | **−54** [−84, −24] |
 >
 > Demet, ayrı ayrı ölçülen parçalarından iyi çıkıyor — aralıklar göz önüne alınınca
 > sıradan, ama projenin kendine anlattığı hikâyenin tam tersi: v3 *demet olarak*
 > reddedilmiş, bir parçası *tek başına* ship edilmişti. **Bu sayılara göre demet baştan
 > beri doğru olanmış.**
 >
-> `engine/evaluation/tapered.py`'a `positional_eval_shelter` eklendi, artık kral güvenliği
-> tek başına ölçülebilir: 58.138 nps (v2 64.886, üç terimlik demet 49.640).
+> `positional_eval_shelter` eklendi ve **534 sabit oyunla ölçüldü: −54 Elo [−84, −24].**
+> Ön-kayıtlı tahmin +12'ydi, çürütme aralığı [−40, +65]; **tahmin çürütüldü.** Bu, projede
+> temelden *belirgin biçimde kötü* ölçülen ilk değerlendirme varyantı — aralığı negatif
+> tarafta sıfırı dışlayan tek varyant. Sayıyı yazmadan önce uygulama tanımına karşı 320
+> pozisyonda doğrulandı (0 uyuşmazlık), yani yeni varyantta bug değil.
+>
+> Ayrışımı: net −54, hız bedeli −27 (%10,4 yavaş), **pozisyonel katkı −26.** Yani terim
+> yalnızca pahalı değil, **değerlendirmeyi kötüleştiriyor.** `tapered.py`'daki bir yorum
+> bunu zaten sezmişti: `KING_MG` şahı köşeye itip önündeki piyonları ödüllendiriyor, ayrı
+> bir shelter bonusu aynı olguyu ikinci kez ödüyor.
+>
+> **Parçalar toplanmıyor, ama bu da çözülmüyor:** üç bileşen −45 ± 37 ediyor, demet
+> +21 ± 26 ölçülüyor — fark 66 ± 45, yani 1,47 standart hata. Tek başına değersiz ya da
+> zararlı üç terimin birlikte +21 etmesi bir hikâye olurdu ve veri onu anlatmayı
+> desteklemiyor. Söylenebilecek olan: demetin +21'i **demetin ölçümü olarak duruyor ve
+> içindeki hiçbir şey bir terime izlenebilmiş değil.**
 >
 > | terim | verilen karar | neye dayanarak | 600 sabit oyun ne diyor |
 > |---|---|---:|---:|
