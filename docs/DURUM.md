@@ -452,6 +452,24 @@ Benimseme: `positional_score`'a girdi, `positional_score_v2` kayıt için korund
 ve terim `EvalParams`'a **ayarlanabilir parametre** olarak eklendi (9 → 11).
 Bedeli: 58.138 → 53.758 nps (−%7.5) karşılığında +44 Elo.
 
+> **Sonradan düzeltildi.** O +44, sekans testinin durma noktasındaki sayıydı. Sabit
+> uzunlukta 600 oyunla yeniden ölçüldüğünde **−2 Elo [−26, +22]** çıkıyor — aralık
+> +44'ü dışlıyor. Terimin *zarar verdiğini* söylemiyor (aralık sıfırı kapsıyor); ship
+> edilmesini gerekçelendiren sayının desteklenmediğini söylüyor. Throughput maliyeti de
+> ölçüldü: 66.197 → 61.297 nps, yani %7,4 = 0,111 katlama = **−18 Elo**. Yani
+> pozisyonel kazancın başa baş gelmesi için bile ~+18 etmesi gerekiyor ve net −2.
+> Tutarlı bir tablo: terim muhtemelen bir şey yapıyor ve bedelini aynı hızda ödüyor.
+> Ayrıntı: `docs/EVAL_AB_PREREG.md`.
+>
+> Bu A/B'lerin parantezi (`elo1=30`) merdivenin `elo1=100`'ünden **çok daha iyi bir
+> seçimdi**: testi bir düzine yerine beş yüz oyun koşmaya zorluyor ve yanlılığı ilgili
+> aralıkta 11 Elo'nun altında tutuyor. Değerlendirme deneyleri merdiven testlerinden
+> daha iyi tasarlanmış.
+>
+> **Sonuç olarak iki karar ters duruyor:** motorda *kale terimi açık* (yeniden
+> üretilemeyen bir sekans sonucundan), *SEE budaması kapalı* (temkinli davranıldığı
+> için) — oysa SEE +48 [+11, +87] ölçüldü ve iki koşusu da sıfırı dışlıyor.
+
 v3-shelter'ın yolculuğu öğretici:
 
 | oyun | skor | Elo | LLR |

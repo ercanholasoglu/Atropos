@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-31T10:02:48+00:00",
+ "finished_at": "2026-08-31T10:06:38+00:00",
+ "commit": "e74374f",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "v3-rooks",
+  "b": "v2",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 240,
+  "minutes_budget": 6.0,
+  "games_before": 162
+ },
+ "wall_seconds": 230.1399795000907,
+ "cpu_seconds": 1033.5168399999998,
+ "cpu_per_wall": 4.490818336931295,
+ "peak_rss_mb_largest_process": 173.515625,
+ "nodes": 72154712,
+ "nodes_per_cpu_second": 69814.74244773797,
+ "games": 78,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 240,
+  "wins": 86,
+  "draws": 60,
+  "losses": 94,
+  "score": 0.48333333333333334,
+  "elo_estimate": -11.585478374126659,
+  "elo_interval_95": [
+   -49.96213426215112,
+   26.50951951455522
+  ],
+  "llr": -3.01095442319423,
+  "verdict": "accept H0",
+  "diagnosis": "accept H0",
+  "state_file": "data/fixed_v3-rooks_vs_v2.json"
+ },
+ "notes": []
+}

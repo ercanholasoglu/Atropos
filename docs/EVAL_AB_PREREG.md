@@ -68,3 +68,68 @@ excluding zero is expected but not guaranteed at the low end of that range.
 
 **Falsified if** the result lands below zero: the simulation says that outcome
 has a probability under 2% if the true effect is anywhere near 50.
+
+---
+
+## Result
+
+**600 games, fixed length: 49.8%, −2 Elo, interval [−26, +22].**
+
+| run | games | stopping | score | Elo |
+|---|---:|---|---:|---:|
+| original | 318 | sequential, accepted H1 | 56.3% | **+44** |
+| this one | 600 | none | 49.8% | **−2** [−26, +22] |
+
+**The prediction failed.** It said +50 with an interval excluding zero, and
+named "below zero" as the falsifying outcome. The point estimate is −2.
+
+More usefully: **the interval excludes +44.** The number that justified
+shipping this term is outside what 600 games will support.
+
+## What this does and does not say
+
+It does **not** say the term hurts. [−26, +22] contains zero, and reading a
+negative point estimate as a regression is the exact mistake this project
+corrected over Level 8.
+
+It says the term's *claimed benefit is refuted*. The shipped figure was +44;
+the measurement is −2 with a tight enough interval to rule that out.
+
+The two runs are in tension but not flatly incompatible — z = 1.88 on the
+score difference, p ≈ 0.06. Pooling them would be wrong: the first stopped on a
+favourable swing and its games are not a fair sample, which is the rule
+`scripts/rating_fit.py` already applies.
+
+## The cost side, measured rather than quoted
+
+| evaluation | nodes | time | nps |
+|---|---:|---:|---:|
+| v2 | 181,238 | 2.74 s | 66,197 |
+| v3-rooks | 181,145 | 2.96 s | 61,297 |
+
+The term costs **7.4% of throughput**, which is 0.111 doublings, which at the
+measured −171 Elo per doubling is **−18 Elo**. So the positional gain has to be
+worth about +18 just to break even, and the net measurement is −2.
+
+That is a coherent picture rather than a puzzle: **the term is probably doing
+something positional, and paying for it in speed at roughly the same rate.**
+
+## Where that leaves the engine
+
+The engine currently has this on, decided from a sequential result the
+measurement does not reproduce. It also has **SEE pruning off**, decided
+conservatively, and SEE measured **+48 [+11, +87]** over 240 fixed games with
+both its runs excluding zero.
+
+**Those two decisions are the wrong way round on the evidence available now.**
+Neither is mine to change unilaterally — Level 7 is the instrument every
+current number was taken with, and switching either rewrites what those numbers
+describe — but the asymmetry should be stated rather than left in the code.
+
+## What would settle the rook term
+
+The interval is [−26, +22] on 600 games. Distinguishing "nothing" from "+20"
+needs roughly 1,500, and from "+10" roughly 6,000 — the resolution floor this
+project measured early and has run into repeatedly. The honest summary is that
+**a term of this size is at the edge of what this setup can resolve at all**,
+which is itself the argument for spending effort on throughput instead.

@@ -398,7 +398,8 @@ are kept here as the record of what was measured when.
 
 ### The third run, and the explanation it killed
 
-The rook term shipped (+44 Elo, `positional_score`), so the gauntlet was run
+The rook term shipped (reported +44 Elo at the time; a later 600-game
+fixed-length re-run says −2 [−26, +22] — see below), so the gauntlet was run
 again against the ladder as it now stands. This time at **120 games per
 pairing instead of ten**, because the earlier runs had a standard error near
 110 Elo and were being read as though they did not.
@@ -452,6 +453,52 @@ the same five positions at depth 4 it runs at **8,938 nodes/second against
 this engine's 41,817**, so at the same clock Level 6 simply searches deeper.
 Feature parity, four and a half times the speed, and — now that the gap has
 actually been measured rather than read off a label — **about 440 Elo.**
+
+### The one change that shipped, re-measured
+
+`v3-rooks` — rooks on open and semi-open files — was accepted at 318 games and
+shipped at **+44 Elo**. It is in `positional_score` and in every number taken
+since. Once the sequential bias was measured, that figure had to be checked
+the same way the ladder's were.
+
+| run | games | stopping | Elo |
+|---|---:|---|---:|
+| original | 318 | sequential, accepted | **+44** |
+| re-run | 600 | none | **−2** [−26, +22] |
+
+**The interval excludes +44.** It does *not* say the term hurts — [−26, +22]
+contains zero, and reading a negative point estimate as a regression is the
+mistake this project corrected over Level 8. It says the number that justified
+shipping is not supported.
+
+The cost side, measured rather than quoted: the term runs at **61,297 nps
+against v2's 66,197** on the same nodes, a 7.4% loss, which is 0.111 doublings,
+which at −171 Elo per doubling is **−18 Elo**. So the positional gain has to be
+worth about +18 just to break even, and the net comes out at −2. That is a
+coherent picture rather than a puzzle: the term is probably doing something,
+and paying for it in speed at about the same rate.
+
+The bracket those A/Bs used deserves credit here. They ran `elo0=0, elo1=30`
+rather than the ladder's `elo1=100`, which forces five hundred games instead of
+a dozen and keeps the bias under 11 Elo across the range that mattered. **The
+evaluation experiments were better designed than the ladder tests** — the
+sequential figure is off, but by tens rather than by the factor the ladder's
+numbers were off by.
+
+Full write-up in [`docs/EVAL_AB_PREREG.md`](docs/EVAL_AB_PREREG.md), including
+a prediction of +50 that the games refuted.
+
+### Two decisions that are the wrong way round
+
+The engine currently has **the rook term on**, decided from a sequential result
+a fixed-length re-run does not reproduce, and **SEE pruning off**, decided
+conservatively, where SEE measured **+48 [+11, +87]** with both its runs
+excluding zero.
+
+On the evidence as it now stands those are backwards. Neither is changed here:
+Level 7 is the instrument every current number was taken with, and switching
+either rewrites what those numbers describe. The asymmetry belongs in the
+README rather than only in the code.
 
 ### An outside ruler, and what it caught
 

@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-08-31T09:54:37+00:00",
+ "finished_at": "2026-08-31T10:02:38+00:00",
+ "commit": "e74374f",
+ "tree_dirty": false,
+ "parameters": {
+  "a": "v3-rooks",
+  "b": "v2",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 240,
+  "minutes_budget": 8.0,
+  "games_before": 0
+ },
+ "wall_seconds": 481.2095989580266,
+ "cpu_seconds": 1973.459666,
+ "cpu_per_wall": 4.101039693042646,
+ "peak_rss_mb_largest_process": 183.5,
+ "nodes": 135199671,
+ "nodes_per_cpu_second": 68508.96085149581,
+ "games": 162,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 162,
+  "wins": 64,
+  "draws": 39,
+  "losses": 59,
+  "score": 0.5154320987654321,
+  "elo_estimate": 10.726727495339782,
+  "elo_interval_95": [
+   -35.99519098176596,
+   57.842135037406706
+  ],
+  "llr": -0.5389602525651132,
+  "verdict": "continue",
+  "diagnosis": "the interval [-36, +58] still spans the whole bracket [+0, +40] \u2014 more games",
+  "state_file": "data/fixed_v3-rooks_vs_v2.json"
+ },
+ "notes": []
+}
