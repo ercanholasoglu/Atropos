@@ -84,8 +84,13 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
             searcher = getattr(engine, "searcher", None)
             if searcher is not None and hasattr(searcher.config, "use_see_pruning"):
                 searcher.config.use_see_pruning = False
-            engine.static_eval = lambda board: (  # type: ignore[assignment]
-                tapered.tapered_pst(board) + positional_score_rooks(board)
+            # setattr rather than assignment: static_eval is defined on the
+            # searching levels, not on BaseEngine, so a plain assignment is a
+            # type error even though every engine reaching this branch has it.
+            setattr(
+                engine,
+                "static_eval",
+                lambda board: tapered.tapered_pst(board) + positional_score_rooks(board),
             )
             engine.name = f"L{level}-v1"
         elif flag == "see":
@@ -117,14 +122,14 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
     )
 
 
-def play_one(job: tuple[str, str, int, float, int, str]) -> tuple[float, int, str]:
+def play_one(job: tuple[str, str, int, float, int, str, str | None]) -> tuple[float, int, str]:
     """One game as ``(score for a, nodes searched)``. Runs in its own process.
 
     Module-level and taking only plain data because process pools have to
     pickle what they are handed. Nodes come back with the score so a run can
     report what its answer cost, which is not reconstructable afterwards.
     """
-    a_spec, b_spec, index, movetime, max_plies, book_name = job
+    a_spec, b_spec, index, movetime, max_plies, book_name, components = job
 
     book = load_book(book_name)
     opening = book[(index // 2) % len(book)]
@@ -135,7 +140,16 @@ def play_one(job: tuple[str, str, int, float, int, str]) -> tuple[float, int, st
 
     try:
         record = play_game(
-            white, black, start_fen=opening.fen, max_plies=max_plies, opening=opening.name
+            white,
+            black,
+            start_fen=opening.fen,
+            max_plies=max_plies,
+            opening=opening.name,
+            on_move=component_logger(
+                Path(components) if components else None,
+                index,
+                {"a": a_spec, "b": b_spec, "movetime": movetime, "book": book_name},
+            ),
         )
     finally:
         for engine in (first, second):
@@ -144,6 +158,57 @@ def play_one(job: tuple[str, str, int, float, int, str]) -> tuple[float, int, st
 
     white_score = {"1-0": 1.0, "0-1": 0.0, "1/2-1/2": 0.5}[record.result]
     return (white_score if a_is_white else 1 - white_score), record.nodes, record.pgn
+
+
+def component_logger(path: Path | None, game_index: int, meta: dict):
+    """A move hook that writes the evaluation term by term, or nothing.
+
+    One JSON object per move, appended. It records what the engine thought and
+    what it spent thinking: the evaluation split into its parts, the depth and
+    nodes the search reached, and the principal variation. None of it can be
+    reconstructed after the game — the search is gone the moment the move is
+    played — which is why it is written during rather than derived after.
+    """
+    if path is None:
+        return None
+
+    from engine.evaluation.breakdown import breakdown
+
+    def hook(game, engine, result) -> None:
+        # The hook fires *after* the move is pushed, so game.board is the
+        # position that follows it. Everything else in this record -- the
+        # depth, the nodes, the score, the principal variation -- describes the
+        # position the engine was *thinking about*, so that is the one whose
+        # evaluation gets broken down. Logging the post-move position here
+        # would pair a search with the wrong board.
+        after = game.board
+        board = after.copy(stack=False)
+        if board.move_stack or after.move_stack:
+            board = after.copy()
+            try:
+                board.pop()
+            except IndexError:  # pragma: no cover - first move of a fresh game
+                board = after.copy(stack=False)
+        record = {
+            "game": game_index,
+            "ply": board.ply(),
+            "fen": board.fen(),
+            "fen_after": after.fen(),
+            "engine": engine.name,
+            "move": result.move.uci() if result.move else None,
+            "depth": result.depth,
+            "nodes": result.nodes,
+            "time_ms": round(result.time_ms, 2),
+            "score": round(result.score, 1),
+            "pv": [m.uci() for m in result.pv[:8]],
+            "eval": breakdown(board).as_dict(),
+            **meta,
+        }
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, separators=(",", ":")) + "\n")
+
+    return hook
 
 
 def save_pgn(path: Path | None, pgn: str) -> None:
@@ -207,6 +272,13 @@ def main() -> int:
         default="default",
         choices=("default", "midgame"),
         help="which openings to start from; see tournament.openings.load_book",
+    )
+    parser.add_argument(
+        "--log-components",
+        default=None,
+        help="append one JSON line per move: the evaluation split into its "
+        "terms, plus depth, nodes, time and PV. Cannot be produced "
+        "retroactively -- the search is gone once the move is played.",
     )
     parser.add_argument(
         "--pgn",
@@ -294,7 +366,15 @@ def main() -> int:
             # Seeds move with the game index, so a resumed run does not replay
             # the games it already has.
             score, nodes, pgn = play_one(
-                (args.a, args.b, test.games, args.movetime, args.max_plies, args.book)
+                (
+                    args.a,
+                    args.b,
+                    test.games,
+                    args.movetime,
+                    args.max_plies,
+                    args.book,
+                    args.log_components,
+                )
             )
             save_pgn(pgn_path, pgn)
             test.record(score)
@@ -313,7 +393,15 @@ def main() -> int:
         with ProcessPoolExecutor(max_workers=workers) as pool:
             while not done() and time.monotonic() < deadline:
                 jobs = [
-                    (args.a, args.b, test.games + offset, args.movetime, args.max_plies, args.book)
+                    (
+                        args.a,
+                        args.b,
+                        test.games + offset,
+                        args.movetime,
+                        args.max_plies,
+                        args.book,
+                        args.log_components,
+                    )
                     for offset in range(workers)
                 ]
                 for score, nodes, pgn in pool.map(play_one, jobs):

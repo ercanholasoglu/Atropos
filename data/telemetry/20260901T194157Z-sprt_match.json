@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-09-01T19:41:57+00:00",
+ "finished_at": "2026-09-01T19:42:13+00:00",
+ "commit": "fff1529",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "L7",
+  "b": "L6",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 4,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 4,
+  "minutes_budget": 2.0,
+  "games_before": 0
+ },
+ "wall_seconds": 16.267367084044963,
+ "cpu_seconds": 41.359006,
+ "cpu_per_wall": 2.542452370215763,
+ "peak_rss_mb_largest_process": 61.703125,
+ "nodes": 2059146,
+ "nodes_per_cpu_second": 49787.124961368754,
+ "games": 4,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 4,
+  "wins": 1,
+  "draws": 1,
+  "losses": 2,
+  "score": 0.375,
+  "elo_estimate": -88.73949984654253,
+  "elo_interval_95": [
+   -800.0,
+   221.17392927234238
+  ],
+  "llr": -0.20647126053268453,
+  "verdict": "out of games",
+  "diagnosis": "out of games",
+  "state_file": "/tmp/c.json"
+ },
+ "notes": []
+}
