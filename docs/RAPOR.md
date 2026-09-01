@@ -1,8 +1,8 @@
 # Atropos — yapılan işler ve son durum
 
-**Repo:** `github.com/ercanholasoglu/Atropos` (private) · **51 commit** · 433 dosya
+**Repo:** `github.com/ercanholasoglu/Atropos` (private) · **54 commit** · 435 dosya
 **Test:** 795 geçiyor, 6 xfail · mypy temiz (53 dosya)
-**Ölçüm:** 135 koşu, **9.901 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
+**Ölçüm:** 143 koşu, **10.864 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
 **Showcase:** https://claude.ai/code/artifact/4f9ebb66-e882-451a-a152-470a9632e0b3
 
 ---
@@ -128,9 +128,45 @@ Program terimler değersiz olduğu için başarısız olmadı; bu boyuttaki etki
 | | durum | kanıt |
 |---|---|---|
 | Kale terimi | **AÇIK** | +44 sekans sayısından; 600 sabit oyun **−2 [−26, +22]** diyor, aralık +44'ü dışlıyor |
-| SEE budaması | **KAPALI** | **+48 [+11, +87]**, iki koşusu da sıfırı dışlıyor |
+| SEE budaması | **KAPALI** | **+50 [+30, +70]**, 1.200 sabit oyun — projedeki tek onaylanmış pozitif etki |
 
 Bugünkü kanıta göre ters. **Hiçbirini tek başıma değiştirmedim:** Level 7, mevcut bütün sayıların alındığı ölçüm aleti; birini açmak o sayıların neyi tarif ettiğini yeniden yazar.
+
+### SEE çözüldü: +50 [+30, +70]
+
+1.200 sabit oyun, ön-kayıtlı her ölçüt tuttu (nokta +40..+60 → **+50**; aralık ~[+30,+70] → **[+30,+70]**).
+
+**Asıl kazanılan sayı budamanın bedeli.** Deterministik sayım yalnızca throughput'tan **+65** öngörüyordu; maç **+50** diyor. **Aradaki +15, budamanın doğrulukta maliyeti** — ve bu sayıyı projede başka hiçbir şey üretemez, çünkü aynı değişikliğin hem sayılmış hem oynanmış ölçümünü gerektiriyor.
+
+Ve iki adayın davranışı gerçek etki ile gürültüyü ayırıyor:
+
+| | 240 | 600 | 1.200 |
+|---|---:|---:|---:|
+| `passers-rooks` | — | +26 [+1, +51] | **+12 [−8, +31]** |
+| **SEE** | +48 [+11, +87] | +46 [+20, +73] | **+50 [+30, +70]** |
+
+Biri düştü ve aralığı sıfırı yuttu; diğeri kıpırdamadı ve aralığı sıfırdan uzaklaşarak daraldı. İkisi de **sabit uzunlukta koştuğu için** ayırt edilebiliyor — sekans testi ikisi için de ~+110 raporlardı.
+
+### Bayrağı açmanın faturası (`scripts/see_impact.py`)
+
+Endişe yerine tablo. Ortak uyum `L7-see`'yi zaten aynı ölçeğe yerleştirdiği için hepsi mevcut ölçümlerden türetiliyor — yeni oyun gerekmedi. (Uyum **+62 ± 10** diyor, doğrudan A/B **+50** — iki yol, 12 Elo arayla, örtüşen ama aynı olmayan oyunlardan.)
+
+| ölçüm | şimdi | SEE açıksa |
+|---|---:|---:|
+| merdiven L6 → L7 | +19 | **+81** |
+| merdiven L7 → L8 | −35 | −97 |
+| Stockfish d1 vs L7 | −17 | −79 |
+| Stockfish d2 vs L7 | +61 | −1 |
+| L6 altındaki bütün aralıklar | — | **değişmez** |
+| değerlendirme A/B'leri (hepsi L6'da) | — | **değişmez** |
+| hız eğrisi | — | **yeniden ölçülmeli** |
+| benchmark | — | yeni baseline |
+
+Okunuşu:
+- **L6 → L7, +19 [−17, +55]'ten (sıfırdan ayırt edilemiyor) ~+81'e** çıkardı — yani gerçek bir basamak olurdu.
+- Çıpanın bütün satırları aynı miktar kayıyor: mutlak Elo eşlemesi **kayar ama belirsizliği değişmez** — R(d) zaten bilinmiyordu, yine bilinmiyor olurdu.
+- **Yeniden koşulması gereken tek şey hız eğrisi**, çünkü SEE aramanın *hangi* node'ları ziyaret ettiğini değiştiriyor, yalnızca hızını değil (~960 oyun).
+- Geri kalan her şey, ölçtükleri motor için geçerli kalan sayıları **yeniden etiketlemek**.
 
 ---
 
@@ -175,7 +211,7 @@ Ayrıca bir süreç ihlali kaydettim: zaman kontrollü maç sürerken test süit
 | konu | durum |
 |---|---|
 | Mutlak Elo | Dış bağımlılık: CCRL listesindeki motor + gerçek zaman kontrolü, ya da Lichess bot havuzu |
-| SEE'nin büyüklüğü | [+11, +87]; pozitif olduğu kesin, ne kadar olduğu değil |
+| SEE'nin büyüklüğü | ✅ çözüldü — **+50 [+30, +70]**, 1.200 oyun |
 | İki ters karar | Sizin kararınız (§5) |
 | v3-passers, L8'in saati | Çözülmedi — ve "çözülmedi" ≠ "reddedildi" |
 | Zobrist deneyi | **Başlatmadım** — ön-kaydı sizde |

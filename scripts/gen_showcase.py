@@ -658,8 +658,8 @@ hr.rule {{ border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }}
     her sayının nereden geldiğinin, hangi tahminin tutmadığının ve neyin hâlâ
     bilinmediğinin kaydı.</p>
   <div class="stats">
-    <div class="stat"><div class="v">9.889</div><div class="k">telemetrili oyun</div></div>
-    <div class="stat"><div class="v">13</div><div class="k">ön-kayıtlı tahmin</div></div>
+    <div class="stat"><div class="v">10.864</div><div class="k">telemetrili oyun</div></div>
+    <div class="stat"><div class="v">14</div><div class="k">ön-kayıtlı tahmin</div></div>
     <div class="stat"><div class="v">6</div><div class="k">tutmadı</div></div>
     <div class="stat"><div class="v">8</div><div class="k">geri alınan iddia</div></div>
     <div class="stat"><div class="v">732</div><div class="k">test</div></div>
@@ -844,6 +844,40 @@ hr.rule {{ border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }}
     hız değişimi 100-Elo sınıfı bir etki ve bu kurulumun rahatça çözdüğü bölgeye düşüyor.</p>
   <blockquote>Bir terimin değersiz olduğunu göstermek ile ölçemediğini göstermek aynı
     şey değil.</blockquote>
+
+  <h3 class="sub-h">Ölçülebilen tek iyileştirme bir arama değişikliği</h3>
+  <p>Değerlendirme tarafı boş dönerken <strong>SEE budaması</strong> — alışı geri-alışa
+    kaybeden hamleleri quiescence'ta atlamak — 1.200 sabit oyunda
+    <strong>+50 Elo [+30, +70]</strong> ölçtü. Projede aralığı pozitif tarafta sıfırdan
+    uzak duran tek değişiklik.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>aday</th><th class="num">240</th><th class="num">600</th>
+        <th class="num">1.200</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="mono">passers-rooks</td><td class="mono num">—</td>
+          <td class="mono num">+26 [+1, +51]</td>
+          <td class="mono num strong">+12 [−8, +31]</td>
+          <td class="note">düştü, aralık sıfırı yuttu</td></tr>
+        <tr class="row-key"><td class="mono">SEE budaması</td>
+          <td class="mono num">+48 [+11, +87]</td><td class="mono num">+46 [+20, +73]</td>
+          <td class="mono num strong">+50 [+30, +70]</td>
+          <td class="note">kıpırdamadı, aralık sıfırdan uzaklaşarak daraldı</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Gerçek bir etkinin ve gürültünün ince ucunun görüntüsü bu</strong> — ve ikisi
+    yalnızca <em>ikisi de sabit uzunlukta koştuğu için</em> ayırt edilebiliyor. Sekans
+    testi ikisini de erken durdurup her biri için ~+110 raporlardı.</p>
+  <div class="panel">
+    <p><strong>Ve mekanizmanın veremediği sayı.</strong> Deterministik sayım SEE'nin
+      belirli bir derinliğe ulaşma süresinin %23,3'ünü kaldırdığını söylüyordu —
+      ölçülmüş dönüşümle <strong>+65</strong>, ama bu yalnızca throughput. Maç
+      <strong>+50</strong> diyor. <strong>Aradaki +15 Elo, budamanın bedeli:</strong>
+      atılan hatlardan sonradan önemli çıkanların maliyeti. Bu sayıyı projede başka
+      hiçbir şey üretemez — aynı değişikliğin hem sayılmış hem oynanmış ölçümünü
+      gerektiriyor ve ikisinin farkı.</p>
+  </div>
 </section>
 
 <section>
