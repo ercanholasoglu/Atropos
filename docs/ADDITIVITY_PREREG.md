@@ -197,6 +197,6 @@ failed because effects of this size need thousands more games than were spent,
 and the table said so before any of them were played.
 
 That is also the argument for where the effort went instead. The speed work
-produced **+83 Elo** for the ladder's throughput improvement, measured and
+produced **+81 Elo** for the ladder's throughput improvement, measured and
 converted, on a fraction of the games — because a 39% speed change is a
 100-Elo-class effect and lands in the region this setup resolves easily.

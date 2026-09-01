@@ -144,3 +144,18 @@ The SEE row moves from +79 to +67, which is now comfortably inside the +48
 [+11, +87] that was measured. The pre-registered SEE prediction was drawn from
 the wrong arm; the conclusion recorded there — a null result on the magnitude
 question — does not change, because +67 sits inside that interval too.
+
+
+---
+
+## Superseded, in part
+
+The conversions in the table above used the clock arm as it stood with **two**
+points, −174 [−203, −144]. Two further pairings and a replication later
+(`docs/SPEED_CLOCK_PREREG.md`, `docs/SPEED_CLOCK2_PREREG.md`) it rests on four
+points at **−171 [−194, −149]**, and the atropos row reads **−445 [−504, −386]**
+rather than −451.
+
+Nothing in the argument changes — the hard arm still predicted −537 and still
+failed that check — but the numbers to quote are the later ones. This document
+is left as the record of what was predicted and found at the time.

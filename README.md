@@ -561,7 +561,7 @@ failed because effects this size need thousands more games than were spent, and
 the table said so before any were played.
 
 Which is the argument for where the effort went instead: the throughput work
-produced **+83 Elo**, measured and converted, on a fraction of the games —
+produced **+81 Elo**, measured and converted, on a fraction of the games —
 because a 39% speed change is a 100-Elo-class effect and lands where this setup
 resolves easily. Full write-up in
 [`docs/ADDITIVITY_PREREG.md`](docs/ADDITIVITY_PREREG.md).

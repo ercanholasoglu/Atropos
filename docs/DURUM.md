@@ -433,6 +433,10 @@ sonra terimler tek tek test edildi ve biri kabul edildi.
 | v3-passers (sadece geçer piyon) | 714 | %51.5 | +11 | çözülmedi |
 | **v3-rooks (sadece kale açık hat)** | **318** | **%56.3** | **+44** | **KABUL** |
 
+> ⚠️ **Bu satırdaki +44 sonradan çürütüldü.** Sekans testinin durma
+> noktasındaki sayıydı; 600 sabit oyun **−2 [−26, +22]** ölçtü ve aralık +44'ü
+> dışlıyor. Terim motorda duruyor. Bkz. 3.5 ve `docs/EVAL_AB_PREREG.md`.
+
 **İşe yarayan terim, tekrar eden iki terimin altında gömülüydü.** Ayırmak buldu.
 
 Yapısal sebep tablolarda görünüyor:
