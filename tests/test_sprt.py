@@ -435,7 +435,7 @@ def test_a_game_can_be_played_from_plain_data():
     """
     from scripts.sprt_match import play_one
 
-    score, nodes = play_one(("L1", "L1", 0, 0.02, 20))
+    score, nodes = play_one(("L1", "L1", 0, 0.02, 20, "default"))
     assert score in (0.0, 0.5, 1.0)
     assert nodes >= 0
 
@@ -445,8 +445,8 @@ def test_the_same_job_index_replays_the_same_game():
     silently repeat or skip games."""
     from scripts.sprt_match import play_one
 
-    first = play_one(("L2", "L1", 3, 0.02, 20))
-    again = play_one(("L2", "L1", 3, 0.02, 20))
+    first = play_one(("L2", "L1", 3, 0.02, 20, "default"))
+    again = play_one(("L2", "L1", 3, 0.02, 20, "default"))
     assert first == again
 
 
@@ -535,3 +535,27 @@ def test_the_audit_separates_traced_records_from_untraced(tmp_path):
     assert stamped["commit"] is None
     assert stamped["provenance"] == "commit unknown"
     assert json.loads((tmp_path / "traced.json").read_text())["commit"] == "deadbee"
+
+
+def test_the_book_is_part_of_the_job():
+    """Which openings a game starts from travels with the job, not as state.
+
+    A pool worker is a fresh process with no memory of what the run chose, so
+    a book selected on the command line has to be handed to it explicitly. It
+    was not, until --book was added, and these two calls would otherwise play
+    the same game from different positions without saying so.
+    """
+    from scripts.sprt_match import play_one
+
+    default = play_one(("L2", "L1", 1, 0.02, 20, "default"))
+    midgame = play_one(("L2", "L1", 1, 0.02, 20, "midgame"))
+    # Same engines, same index, different starting position: the node counts
+    # have no reason to match, and if they do the book was ignored.
+    assert default[1] != midgame[1]
+
+
+def test_an_unknown_book_fails_loudly():
+    from tournament.openings import load_book
+
+    with pytest.raises(SystemExit):
+        load_book("no-such-book")

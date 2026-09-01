@@ -66,3 +66,60 @@ The middlegame positions were *reached from* the default openings, so the two
 books are not independent. A genuinely independent book would come from human
 games or another engine's play. This is the cheaper test, and its weakness is
 stated here rather than discovered later.
+
+---
+
+## Result
+
+**600 games on the midgame book: 58.83%, +62 Elo, interval [+34, +91].**
+
+| book | games | score | Elo | 95% interval |
+|---|---:|---:|---:|---:|
+| default (ply 5-6) | 1,200 | 57.12% | +50 | [+30, +70] |
+| **midgame (ply 31-44)** | **600** | **58.83%** | **+62** | **[+34, +91]** |
+
+Against what was written down:
+
+| criterion | outcome |
+|---|---|
+| predicted +50 to +75 | **+62** — inside |
+| predicted interval ~[+30, +95] | **[+34, +91]** — inside |
+| falsification outside [0, +120] | not reached |
+| overlaps the default book's interval | **yes**, substantially |
+
+The two measurements differ by **+12 ± 18, or 0.69σ**. They agree.
+
+**SEE's effect survives changing the book.** The result is a property of the
+change, not of the eight openings it was first measured on.
+
+### The direction, which was also predicted
+
++62 against +50 is the direction the capture-density count predicted — 2.12
+captures per position against 1.00 — and the size is the modest one predicted
+too, for the stated reason: games from either book run to 160 plies and spend
+most of their length in middlegames regardless, so what changes is the fraction
+at high capture density, not whether such positions occur.
+
+**But 0.69σ does not establish the direction.** The prediction was right about
+the sign and the magnitude, and the data cannot tell that from luck. Separating
++50 from +62 would need roughly four times these games, and there is no reason
+to spend them: the question this run was built to answer was whether the effect
+survives, and it does.
+
+## What this establishes, and what it still does not
+
+**Establishes:** one well-measured effect, re-measured on a book with twice the
+capture density, agrees within 0.7 standard errors. The strongest result in
+this project is not an artifact of its openings.
+
+**Does not establish:** that the default book is representative. The midgame
+positions were *reached from* it, so the two books share whatever the first one
+gets wrong about chess. A genuinely independent book — human games, or another
+engine's play — would test something this cannot. That weakness was written
+down before the run and is unchanged by its passing.
+
+**Does not extend to the other results.** SEE was tested because it is the
+best-measured effect here. The ladder, the anchor and the speed curve were all
+measured on the default book alone, and this run says nothing directly about
+them. What it says is that the one case anyone checked came out clean, which
+raises the prior and settles nothing.

@@ -1,0 +1,34 @@
+{
+ "tool": "ladder_sprt",
+ "started_at": "2026-09-01T12:05:04+00:00",
+ "finished_at": "2026-09-01T12:05:04+00:00",
+ "commit": "766db8d",
+ "tree_dirty": true,
+ "parameters": {
+  "pairs": "2:1",
+  "elo0": 0.0,
+  "elo1": 100.0,
+  "movetime": 0.05,
+  "max_plies": 40,
+  "max_games": 600,
+  "minutes_budget": 1.0
+ },
+ "wall_seconds": 0.0002690411638468504,
+ "cpu_seconds": 0.00027999999999650527,
+ "cpu_per_wall": 1.0407329346668048,
+ "peak_rss_mb_largest_process": 585.515625,
+ "nodes": 0,
+ "nodes_per_cpu_second": 0.0,
+ "games": 0,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "pairings": {}
+ },
+ "notes": []
+}

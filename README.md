@@ -245,6 +245,38 @@ before, 68.8% after. The second was the sample; the colour-reversed opening
 book and 16 games make that unlikely, and the 1.5s run reproduces cleanly.
 The clock was the whole story.
 
+### And the check that came after it
+
+The null control cleared the harness of colour, seeding and scoring bias, and
+named what it could not see: a bias both arms share. **An unrepresentative
+opening book is exactly that.** Every match in this project started from the
+same eight mainline openings at ply 5-6.
+
+So the best-measured effect was re-measured on a different book — eight
+balanced middlegame positions, each verified by Stockfish to sit within 60
+centipawns of level, built by `scripts/build_book.py`. They differ from the
+defaults in the one property SEE acts on, counted rather than guessed: **2.12
+captures per position against 1.00.**
+
+| book | games | Elo | 95% interval |
+|---|---:|---:|---:|
+| default (ply 5-6) | 1,200 | +50 | [+30, +70] |
+| **midgame (ply 31-44)** | **600** | **+62** | **[+34, +91]** |
+
+**+12 ± 18, or 0.69σ. They agree.** SEE's effect is a property of the change,
+not of the openings it was first measured on. The direction — higher where
+captures are denser — is the one the density count predicted, and 0.69σ cannot
+tell that from luck.
+
+What it does not establish is written down too. The midgame positions were
+*reached from* the default openings, so the two books share whatever the first
+gets wrong; a genuinely independent book would test something this cannot. And
+SEE was tested because it is the best-measured effect here — the ladder, the
+anchor and the speed curve were all measured on the default book alone, and
+this says nothing directly about them. The one case anyone checked came out
+clean, which raises the prior and settles nothing. Full write-up in
+[`docs/BOOK_GENERALISATION_PREREG.md`](docs/BOOK_GENERALISATION_PREREG.md).
+
 ### The check that should have come first
 
 Fifteen thousand games were played on this harness before anything tested its

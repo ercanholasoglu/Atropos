@@ -1,0 +1,24 @@
+{
+ "a": "L7-see",
+ "b": "L7",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "book": "midgame",
+ "wins": 289,
+ "draws": 128,
+ "losses": 183,
+ "games": 600,
+ "score": 0.5883333333333334,
+ "llr": 10.19984354800497,
+ "elo_estimate": 62.03110085126278,
+ "verdict": "accept H1",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 600,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}
