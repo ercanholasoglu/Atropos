@@ -17,6 +17,8 @@ question with a clean answer.
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from dataclasses import astuple, dataclass, fields, replace
 
 import chess
@@ -52,9 +54,39 @@ class EvalParams:
     bishop_pair_bonus: float = 30.0
     # Adopted after a sequential test found it worth +44 Elo on its own; a
     # newly measured term is exactly the kind that has never been tuned.
-    rook_open_file: float = 25.0
-    rook_semi_open_file: float = 12.0
+    # Zero since the instrument-v2 cut: the rook-on-open-file term was taken
+    # out of the engine's evaluation when a 600-game fixed-length re-run
+    # measured -2 [-26, +22] against the +44 it shipped on. The parameters stay
+    # because they are tunable, and a tuner that puts them back would be
+    # measuring the term rather than assuming it. `DEFAULT_PARAMS` has to
+    # reproduce the engine exactly, and a test asserts it does.
+    rook_open_file: float = 0.0
+    rook_semi_open_file: float = 0.0
     pst_scale: float = 1.0
+
+    #: The magnitude each parameter is measured in, used to normalise a search
+    #: over them. It is normally the default itself, but a parameter whose
+    #: default is **zero** has no scale of its own — and two of them are zero
+    #: since the instrument-v2 cut took the rook term out. Their nominal values
+    #: are the ones the term carried while it was in the engine, so a tuner
+    #: exploring from zero is asking "is any of this worth having?" in units
+    #: that mean something.
+    NOMINAL_SCALE: ClassVar[dict[str, float]] = {
+        "rook_open_file": 25.0,
+        "rook_semi_open_file": 12.0,
+    }
+
+    def scale_vector(self) -> list[float]:
+        """One positive scale per field, in ``to_vector`` order."""
+        values = self.to_vector()
+        names = [f.name for f in fields(self)]
+        out = []
+        for name, value in zip(names, values):
+            magnitude = abs(float(value))
+            if magnitude < 1e-9:
+                magnitude = self.NOMINAL_SCALE.get(name, 1.0)
+            out.append(magnitude)
+        return out
 
     @classmethod
     def names(cls) -> tuple[str, ...]:

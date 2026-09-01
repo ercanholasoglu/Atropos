@@ -142,9 +142,11 @@ class ParameterOptimizer:
         # sigma means the same relative nudge for a queen and for a scale
         # factor. A default of zero would divide by zero, so those stay
         # absolute.
-        self.scale = np.where(
-            np.abs(self.baseline.to_vector()) > 1e-9, np.abs(self.baseline.to_vector()), 1.0
-        )
+        # A parameter defaulting to zero has no scale of its own, and two do
+        # since the rook term came out of the evaluation. EvalParams carries a
+        # nominal magnitude for those, so a search starting at zero still
+        # moves in units that mean something.
+        self.scale = np.asarray(self.baseline.scale_vector(), dtype=float)
         self.theta = self.baseline.to_vector() / self.scale
 
     # --- helpers ----------------------------------------------------------

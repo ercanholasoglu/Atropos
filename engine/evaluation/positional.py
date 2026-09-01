@@ -116,12 +116,27 @@ def positional_score_v2(board: chess.Board) -> int:
 
 
 def positional_score(board: chess.Board) -> int:
+    """Pawn structure and bishop pair.
+
+    **The rook-on-open-file term was here and was taken out.** It went in on a
+    sequential result — 318 games, +44 Elo, accepted — and a fixed-length
+    re-run of 600 games measured **−2 [−26, +22]**, an interval that excludes
+    the +44 the decision rested on. It does not say the term hurts; it says the
+    number that justified shipping it is not supported, and the term also cost
+    6.9% of throughput, worth about −18 Elo at the measured conversion.
+
+    ``positional_score_rooks`` keeps the version with it, so every measurement
+    taken under "instrument v1" stays reproducible.
+    """
+    return positional_score_v2(board)
+
+
+def positional_score_rooks(board: chess.Board) -> int:
     """Pawn structure, bishop pair, and rooks on open files.
 
-    The rook term is here because a measurement put it here: tested alone
-    against the evaluation without it, 318 games, 56.3%, +44 Elo, accepted.
-    The same term had been rejected twice inside a bundle with two others that
-    turned out to restate what the piece-square tables already encode.
+    The evaluation as it stood under **instrument v1**. Kept because every
+    number this project recorded before the v2 cut was measured against it,
+    and those numbers stay valid for the engine they measured.
     """
     from engine.evaluation.structure import rook_file_score
 

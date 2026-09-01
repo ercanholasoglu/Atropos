@@ -63,9 +63,14 @@ class SearchConfig:
     use_null_move: bool = False
     use_lmr: bool = False
     use_aspiration: bool = False
-    # Drop captures that lose material to the recapture. Off by default
-    # so the shipped levels are unchanged until it is measured.
-    use_see_pruning: bool = False
+    # Drop captures that lose material to the recapture, in quiescence.
+    # **On** since the instrument-v2 cut: 1,200 fixed-length games measured
+    # +50 Elo [+30, +70], confirmed at +62 [+34, +91] on a second opening book
+    # with twice the capture density. It is the only change this project has
+    # measured with a tight interval clear of zero on the positive side, and a
+    # deterministic count of the throughput it saves independently predicts
+    # +65, agreeing to within the 15 Elo the pruning costs in accuracy.
+    use_see_pruning: bool = True
 
 
 class AdvancedSearch:

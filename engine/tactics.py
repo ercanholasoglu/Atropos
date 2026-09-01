@@ -148,6 +148,12 @@ TACTICAL_SUITE: tuple[TacticalPosition, ...] = (
         ("Qc2+",),
         note="mate in 9, white to move; Stockfish depth 16 prefers it by 8718 centipawns",
     ),
+    TacticalPosition(
+        "mined 9 (was a known miss until SEE)",
+        "rnb2kB1/pp1p4/2N2p2/2P3p1/7p/2N1P3/PPPQ1PPP/R3K2R w KQ - 0 19",
+        ("Qd5",),
+        note="mate in 3, white to move; Stockfish depth 16 prefers it by 8824 centipawns. Missed at depth 4 until SEE pruning went in at the instrument-v2 cut, which is what the known-miss set exists to catch",
+    ),
 )
 
 
@@ -205,36 +211,30 @@ class TacticalReport:
 KNOWN_MISSES: tuple[TacticalPosition, ...] = (
     TacticalPosition(
         "known miss 1",
-        "rnb2kB1/pp1p4/2N2p2/2P3p1/7p/2N1P3/PPPQ1PPP/R3K2R w KQ - 0 19",
-        ("Qd5",),
-        note="mate in 3, white to move; Stockfish depth 16 prefers it by 8824 centipawns",
-    ),
-    TacticalPosition(
-        "known miss 2",
         "rnb2Qn1/2kp3N/pp1p3p/8/2P5/1P1p4/P3QPPP/R1B1KB1R w KQ - 0 19",
         ("Qxd6+",),
         note="mate in 8, white to move; Stockfish depth 16 prefers it by 8681 centipawns",
     ),
     TacticalPosition(
-        "known miss 3",
+        "known miss 2",
         "4kb1R/8/2p2p2/N1Nbp3/1P1P2P1/2P1B3/5K2/2R2Q2 w - - 0 35",
         ("Ke2",),
         note="mate in 9, white to move; Stockfish depth 16 prefers it by 8663 centipawns",
     ),
     TacticalPosition(
-        "known miss 4",
+        "known miss 3",
         "r5nN/1Q6/n4p2/p1k1p3/2p4P/P4P2/P2PP3/R1B1KB1R w KQ - 1 22",
         ("Rb1",),
         note="mate in 8, white to move; Stockfish depth 16 prefers it by 8685 centipawns",
     ),
     TacticalPosition(
-        "known miss 5",
+        "known miss 4",
         "1r3r2/ppQ4p/2p1pkpP/P2p4/2P5/7N/P4P1P/R3KB1R w KQ - 11 26",
         ("Qg7+",),
         note="mate in 6, white to move; Stockfish depth 16 prefers it by 8894 centipawns",
     ),
     TacticalPosition(
-        "known miss 6",
+        "known miss 5",
         "1Q6/p4r1p/1pp1pkpP/P2p4/2P5/3B3N/P4P1P/R3K2R w KQ - 0 28",
         ("Qd8+",),
         note="wins material (+15.7), white to move; Stockfish depth 16 prefers it by 250 centipawns",

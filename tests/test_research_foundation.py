@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import dataclasses
+
 import chess
 import numpy as np
 import pytest
@@ -187,11 +189,39 @@ def test_a_materially_blind_engine_values_a_queen_differently():
 
 
 def test_optimizer_normalises_every_parameter_to_its_own_scale():
-    """One sigma has to mean the same nudge for a queen and for a scale factor."""
+    """One sigma has to mean the same nudge for a queen and for a scale factor.
+
+    The invariant is that ``theta * scale`` returns the defaults and every
+    scale is positive — not that every theta is 1. Two parameters default to
+    **zero** since the rook term came out of the evaluation, and a zero has no
+    scale of its own; ``EvalParams.NOMINAL_SCALE`` supplies one so a search
+    starting there still moves in units that mean something. Asserting
+    ``theta == 1`` everywhere was asserting that no default is ever zero.
+    """
     optimizer = ParameterOptimizer()
-    assert np.allclose(optimizer.theta, 1.0)
-    assert optimizer.scale[4] == 900.0  # queen
     assert optimizer.current == DEFAULT_PARAMS
+    assert np.all(optimizer.scale > 0), "a zero scale makes a parameter unsearchable"
+    assert optimizer.scale[4] == 900.0  # queen
+    assert np.allclose(optimizer.theta * optimizer.scale, DEFAULT_PARAMS.to_vector())
+
+
+def test_a_zeroed_parameter_is_still_searchable():
+    """Taking a term out of the evaluation must not take it out of the search.
+
+    The rook terms are zero in the engine because a measurement put them there.
+    A tuner that moves them is asking whether that measurement was right, which
+    is only possible if the step size is not also zero.
+    """
+    optimizer = ParameterOptimizer()
+    names = [f.name for f in dataclasses.fields(DEFAULT_PARAMS)]
+    index = names.index("rook_open_file")
+
+    assert DEFAULT_PARAMS.rook_open_file == 0.0
+    assert optimizer.scale[index] > 0
+
+    nudged = optimizer.theta.copy()
+    nudged[index] = 1.0
+    assert optimizer.params_from(nudged).rook_open_file > 0
 
 
 def test_optimizer_maps_theta_back_through_clipping():
