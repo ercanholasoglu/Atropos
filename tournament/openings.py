@@ -55,3 +55,27 @@ STARTING_OPENING = Opening(name="Start", moves=(), fen=chess.STARTING_FEN)
 def book(count: int | None = None) -> list[Opening]:
     """The first ``count`` openings (all of them by default)."""
     return OPENING_BOOK[:count] if count else list(OPENING_BOOK)
+
+
+def load_book(name: str) -> tuple[Opening, ...]:
+    """The named book, for measuring whether a result depends on its openings.
+
+    ``"default"`` is the eight mainline openings above. ``"midgame"`` is a set
+    of balanced middlegame positions built by ``scripts/build_book.py`` — the
+    same engines, played on from those openings, verified by Stockfish to be
+    within 60 centipawns of level so neither side starts a game already
+    winning.
+
+    They exist so a measured effect can be tested off the book it was measured
+    on. A null control cannot see a bias that both sides share, and every match
+    in this project shared these eight positions.
+    """
+    if name == "default":
+        return tuple(OPENING_BOOK)
+    if name == "midgame":
+        import json
+        from pathlib import Path
+
+        data = json.loads(Path("data/midgame_book.json").read_text())
+        return tuple(Opening(name=p["name"], moves=(), fen=p["fen"]) for p in data["positions"])
+    raise SystemExit(f"unknown book {name!r}; have 'default' and 'midgame'")

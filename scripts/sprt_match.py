@@ -35,7 +35,7 @@ from engine.base_engine import BaseEngine
 from engine.levels import available_levels, create_engine
 from scripts.eval_ab import VARIANTS, VariantEngine
 from tournament.match import play_game
-from tournament.openings import OPENING_BOOK
+from tournament.openings import OPENING_BOOK, load_book
 from scripts.telemetry import TelemetryRecorder
 from tournament.uci_engine import UciEngineProcess, UciLimits
 
@@ -97,16 +97,17 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
     )
 
 
-def play_one(job: tuple[str, str, int, float, int]) -> tuple[float, int]:
+def play_one(job: tuple[str, str, int, float, int, str]) -> tuple[float, int]:
     """One game as ``(score for a, nodes searched)``. Runs in its own process.
 
     Module-level and taking only plain data because process pools have to
     pickle what they are handed. Nodes come back with the score so a run can
     report what its answer cost, which is not reconstructable afterwards.
     """
-    a_spec, b_spec, index, movetime, max_plies = job
+    a_spec, b_spec, index, movetime, max_plies, book_name = job
 
-    opening = OPENING_BOOK[(index // 2) % len(OPENING_BOOK)]
+    book = load_book(book_name)
+    opening = book[(index // 2) % len(book)]
     a_is_white = index % 2 == 0
     first = build(a_spec, seed=1000 + index, movetime=movetime)
     second = build(b_spec, seed=2000 + index, movetime=movetime)
@@ -166,6 +167,12 @@ def main() -> int:
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--beta", type=float, default=0.05)
     parser.add_argument("--max-games", type=int, default=1200)
+    parser.add_argument(
+        "--book",
+        default="default",
+        choices=("default", "midgame"),
+        help="which openings to start from; see tournament.openings.load_book",
+    )
     parser.add_argument("--movetime", type=float, default=0.1)
     parser.add_argument("--max-plies", type=int, default=160)
     parser.add_argument("--minutes", type=float, default=15.0, help="budget for this chunk")
@@ -201,6 +208,7 @@ def main() -> int:
         "b": args.b,
         "movetime": args.movetime,
         "max_plies": args.max_plies,
+        "book": args.book,
     }
 
     if test.games:
@@ -243,7 +251,9 @@ def main() -> int:
         while not done() and time.monotonic() < deadline:
             # Seeds move with the game index, so a resumed run does not replay
             # the games it already has.
-            score, nodes = play_one((args.a, args.b, test.games, args.movetime, args.max_plies))
+            score, nodes = play_one(
+                (args.a, args.b, test.games, args.movetime, args.max_plies, args.book)
+            )
             test.record(score)
             recorder.add_nodes(nodes)
             recorder.add_games()
@@ -260,7 +270,7 @@ def main() -> int:
         with ProcessPoolExecutor(max_workers=workers) as pool:
             while not done() and time.monotonic() < deadline:
                 jobs = [
-                    (args.a, args.b, test.games + offset, args.movetime, args.max_plies)
+                    (args.a, args.b, test.games + offset, args.movetime, args.max_plies, args.book)
                     for offset in range(workers)
                 ]
                 for score, nodes in pool.map(play_one, jobs):

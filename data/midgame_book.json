@@ -1,0 +1,62 @@
+{
+ "balance_cp": 60,
+ "verify_depth": 14,
+ "positions": [
+  {
+   "name": "mid-sicilian-1",
+   "fen": "2kr1b1r/np2pppp/5n2/5b2/3p4/5N2/2P2PPP/Q4RK1 w - - 0 18",
+   "from_opening": "Sicilian",
+   "ply": 34,
+   "stockfish_cp": 43
+  },
+  {
+   "name": "mid-queen's-gambit-2",
+   "fen": "2r3k1/pp3ppp/1q2b3/1N1pP3/4n2P/3QP3/PP1B1PP1/3R2K1 b - - 0 20",
+   "from_opening": "Queen's Gambit",
+   "ply": 39,
+   "stockfish_cp": -15
+  },
+  {
+   "name": "mid-king's-indian-3",
+   "fen": "r5k1/2p1B2p/6p1/2Qqb3/3Np1bP/2P5/P4PP1/5RK1 b - - 2 22",
+   "from_opening": "King's Indian",
+   "ply": 43,
+   "stockfish_cp": -25
+  },
+  {
+   "name": "mid-sicilian-4",
+   "fen": "1r3rk1/p1q2ppp/3p1b2/4p3/2p1P3/4B1Q1/PPP2PPP/1R1R2K1 b - - 1 18",
+   "from_opening": "Sicilian",
+   "ply": 35,
+   "stockfish_cp": 31
+  },
+  {
+   "name": "mid-caro-kann-5",
+   "fen": "4rrk1/pp1n1ppp/1N2bb2/3p1p2/3P1P2/P2pB3/1PP1N1PP/1RK2B1R w - - 0 18",
+   "from_opening": "Caro-Kann",
+   "ply": 34,
+   "stockfish_cp": 13
+  },
+  {
+   "name": "mid-king's-indian-6",
+   "fen": "5rk1/p1p1ppbp/3qb1p1/3P4/4P3/4BN2/P4PPP/1Q3RK1 b - - 0 16",
+   "from_opening": "King's Indian",
+   "ply": 31,
+   "stockfish_cp": 46
+  },
+  {
+   "name": "mid-open-game-7",
+   "fen": "r1b1r1k1/ppp2pp1/3n3p/4n3/4pB2/1B6/PPPN1PPP/3R1RK1 b - - 1 19",
+   "from_opening": "Open Game",
+   "ply": 37,
+   "stockfish_cp": -30
+  },
+  {
+   "name": "mid-english-8",
+   "fen": "1k1r4/ppp2ppp/3q4/2bN4/3rP3/6P1/PPQ2P1P/3RR1K1 w - - 11 23",
+   "from_opening": "English",
+   "ply": 44,
+   "stockfish_cp": 4
+  }
+ ]
+}
