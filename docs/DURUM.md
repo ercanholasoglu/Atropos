@@ -728,17 +728,46 @@ açık (54 oyun, [−99, +72]).
 
 ### 6.3 atropos'un fazları (Python'da)
 
-| Faz | Konu | Durum |
+**Numaralandırma düzeltmesi:** bu tablo önce Evaluation V3'e Faz 17, Search V2'ye Faz 18
+diyordu. atropos'un kendi belgesi **16 ve 17** diyor; kaymıştı, düzeltildi.
+
+**Ve dürüst olmak gerekirse Faz 18-31 hiçbir yerde sayılmamış.** Elimdeki durum belgesi
+yalnızca Faz 16 ve 17'yi adlandırıyor; "31" sayısı bir Codex transkriptinden geliyor,
+maddelenmiş bir listeden değil. O yüzden "N faz kaldı" diye bir sayı **uyduramam.**
+Bunun yerine atropos'un kendi **Bölüm 5 «What Is Missing»** listesini — belgede
+maddelenmiş, sayılabilir tek liste — tek tek işledim.
+
+| atropos'un adlandırdığı fazlar | Durum |
+|---|---|
+| **Faz 16** — Evaluation V3 | ✅ ölçüldü. Demet +21 [−5, +47]; parçaları −2, +11, −53. **Hiçbiri sıfırı pozitif tarafta dışlamıyor** |
+| **Faz 17** — Search V2 | ✅ aspiration/LMR/check-extension L7'de vardı; **SEE yazıldı ve ölçüldü: +50 [+30, +70]** |
+| Faz 18-31 | belgede sayılmamış — aşağıdaki liste yerine geçiyor |
+
+**Bölüm 5 «What Is Missing» — 16 maddenin 16'sı:**
+
+| # | madde | durum |
 |---|---|---|
-| 17 | Evaluation v3 | ✅ ölçüldü; demet reddedildi, **v3-rooks +44 ile ship edildi** |
-| 17 | Static exchange evaluation | ✅ yazıldı + ölçüldü; **bayrak kapalı**, bkz. `docs/SEE_PREREG.md` |
-| 18 | Search v2 | ✅ L7'de zaten var (null-move, LMR, aspiration, check extension) |
-| 19 | Turnuva zaman yönetimi | ✅ `uci/time_manager.py` |
-| 20 | Profilleme + NPS | ✅ +%39; artık Elo'ya çevrilebiliyor (−207/katlama) |
-| 21 | Taktik suite | ✅ 16 pozisyon + 6 «known miss», Stockfish ile üretilip doğrulandı |
-| 22 | Benchmark baseline | ✅ `scripts/bench.py` — deterministik, `make bench` / `make bench-check` |
-| 23 | Kalibre Elo hattı | ✅ `elo/sprt.py` + `scripts/calibrate.py` + `scripts/anchor.py` |
-| 24-31 | NNUE hattı | `research/minimal_nnue` çekirdek soruyu cevapladı: bu ölçekte ödemiyor |
+| 1 | stronger time management | ✅ `uci/time_manager.py`; L8'in uyarlanabilir saati ölçüldü (çözülmedi) |
+| 2 | larger tactical suite | ✅ 16 pozisyon + 6 «known miss», Stockfish ile üretilip doğrulandı |
+| 3 | benchmark baselines | ✅ `scripts/bench.py` — hızı davranıştan ayırıyor |
+| 4 | external gauntlet infrastructure | ✅ `calibrate.py`, `anchor.py`, `--book` |
+| 5 | calibrated Elo estimation pipeline | ✅ `elo/sprt.py`, `elo/joint.py`, `rating_fit.py` |
+| 6 | evaluation v3 | ✅ ölçüldü (Faz 16) |
+| 7 | tapered evaluation | ✅ zaten vardı |
+| 8 | passed pawns | ✅ ölçüldü: +11 [−12, +34] |
+| 9 | open/semi-open files | ✅ ölçüldü: −2 [−26, +22] |
+| 10 | richer king safety | ✅ ölçüldü: **−53 [−84, −24]**, projedeki tek belirgin kötü varyant |
+| 11 | late move reductions | ✅ L7'de |
+| 12 | aspiration windows | ✅ L7'de |
+| 13 | static exchange evaluation | ✅ yazıldı + ölçüldü + ikinci kitapta doğrulandı |
+| 14 | NNUE feature extraction | `research/minimal_nnue` |
+| 15 | NNUE inference | `research/minimal_nnue` |
+| 16 | NNUE training pipeline | `research/minimal_nnue` — üçü birlikte çekirdek soruyu cevapladı: **bu ölçekte ödemiyor** |
+
+**Faz 15'in kendi artık listesinden kalan tek madde:** `games/` dizini ve PGN çıktısı.
+Oyunlar PGN üretiyor (`GameRecord.pgn`) ama diske hiç yazılmıyor — on beş bin oyun
+oynandı ve hiçbiri saklanmadı. Ölçüm projesi için gerçek bir eksik: sonradan
+"bu değişiklik *neden* yardım etti" diye bakmayı imkânsız kılıyor.
 
 atropos'un kendi durum belgesi ölçüm için **cutechess-cli + Stockfish skill level**
 öneriyor. İkisini de kullanmadık, ikisi de gerekçeli: cutechess yerine protokolü doğrudan

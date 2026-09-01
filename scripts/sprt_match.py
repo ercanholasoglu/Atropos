@@ -16,6 +16,7 @@ minutes lets it be driven in survivable chunks.
     python -m scripts.sprt_match --a v3-shelter --b v2 --minutes 15   # resumes
     python -m scripts.sprt_match --a L6 --b L5 --elo1 100
     python -m scripts.sprt_match --a ../atropos/build/atropos --b L5
+    python -m scripts.sprt_match --a L7-see --b L7 --pgn data/games/see.pgn
 """
 
 from __future__ import annotations
@@ -83,7 +84,10 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
             engine.adaptive_time = False
             engine.name = f"L{level}-uniform"
         elif flag:
-            raise SystemExit(f"unknown engine flag {flag!r}; defined flags are 'see' and 'uniform'")
+            raise SystemExit(
+                f"unknown engine flag {flag!r}; defined flags are "
+                f"'see', 'uniform', 'nodes<N>' and 'soft<N>'"
+            )
         return engine
 
     path = Path(name)
@@ -97,7 +101,7 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
     )
 
 
-def play_one(job: tuple[str, str, int, float, int, str]) -> tuple[float, int]:
+def play_one(job: tuple[str, str, int, float, int, str]) -> tuple[float, int, str]:
     """One game as ``(score for a, nodes searched)``. Runs in its own process.
 
     Module-level and taking only plain data because process pools have to
@@ -123,7 +127,22 @@ def play_one(job: tuple[str, str, int, float, int, str]) -> tuple[float, int]:
                 engine.close()
 
     white_score = {"1-0": 1.0, "0-1": 0.0, "1/2-1/2": 0.5}[record.result]
-    return (white_score if a_is_white else 1 - white_score), record.nodes
+    return (white_score if a_is_white else 1 - white_score), record.nodes, record.pgn
+
+
+def save_pgn(path: Path | None, pgn: str) -> None:
+    """Append one finished game, if the run was asked to keep them.
+
+    Fifteen thousand games were played in this project before anything wrote
+    one down, which makes "why did that change help?" unanswerable after the
+    fact. Appending is deliberate: a run that is interrupted keeps the games it
+    already played, the same way its tally does.
+    """
+    if path is None or not pgn:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(pgn.rstrip() + "\n\n")
 
 
 def load(path: Path, config: SprtConfig) -> Sprt:
@@ -172,6 +191,12 @@ def main() -> int:
         default="default",
         choices=("default", "midgame"),
         help="which openings to start from; see tournament.openings.load_book",
+    )
+    parser.add_argument(
+        "--pgn",
+        default=None,
+        help="append every finished game here (data/games/NAME.pgn by convention), "
+        "so a result can be looked at afterwards rather than only counted",
     )
     parser.add_argument("--movetime", type=float, default=0.1)
     parser.add_argument("--max-plies", type=int, default=160)
@@ -239,6 +264,7 @@ def main() -> int:
     # machine and both results are wrong. One at a time, on purpose.
     deadline = time.monotonic() + args.minutes * 60
     started_at = test.games
+    pgn_path = Path(args.pgn) if args.pgn else None
 
     def done() -> bool:
         """Whether to stop playing. In fixed mode only the counter stops it."""
@@ -251,9 +277,10 @@ def main() -> int:
         while not done() and time.monotonic() < deadline:
             # Seeds move with the game index, so a resumed run does not replay
             # the games it already has.
-            score, nodes = play_one(
+            score, nodes, pgn = play_one(
                 (args.a, args.b, test.games, args.movetime, args.max_plies, args.book)
             )
+            save_pgn(pgn_path, pgn)
             test.record(score)
             recorder.add_nodes(nodes)
             recorder.add_games()
@@ -273,7 +300,8 @@ def main() -> int:
                     (args.a, args.b, test.games + offset, args.movetime, args.max_plies, args.book)
                     for offset in range(workers)
                 ]
-                for score, nodes in pool.map(play_one, jobs):
+                for score, nodes, pgn in pool.map(play_one, jobs):
+                    save_pgn(pgn_path, pgn)
                     test.record(score)
                     recorder.add_nodes(nodes)
                     recorder.add_games()

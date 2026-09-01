@@ -435,9 +435,10 @@ def test_a_game_can_be_played_from_plain_data():
     """
     from scripts.sprt_match import play_one
 
-    score, nodes = play_one(("L1", "L1", 0, 0.02, 20, "default"))
+    score, nodes, pgn = play_one(("L1", "L1", 0, 0.02, 20, "default"))
     assert score in (0.0, 0.5, 1.0)
     assert nodes >= 0
+    assert pgn.startswith("[Event ")
 
 
 def test_the_same_job_index_replays_the_same_game():
@@ -559,3 +560,57 @@ def test_an_unknown_book_fails_loudly():
 
     with pytest.raises(SystemExit):
         load_book("no-such-book")
+
+
+def test_a_saved_game_round_trips_through_a_pgn_reader(tmp_path):
+    """Games are written so they can be replayed, not just counted.
+
+    An engine's own PGN writer agreeing with itself proves nothing; this
+    parses what was written with a reader that had no part in producing it,
+    and plays every move back onto a board.
+    """
+    import io
+
+    import chess.pgn
+
+    from scripts.sprt_match import play_one, save_pgn
+
+    target = tmp_path / "games.pgn"
+    for index in range(3):
+        _, _, pgn = play_one(("L2", "L1", index, 0.02, 20, "default"))
+        save_pgn(target, pgn)
+
+    handle = io.StringIO(target.read_text())
+    played = 0
+    while (game := chess.pgn.read_game(handle)) is not None:
+        board = game.board()
+        for move in game.mainline_moves():
+            assert move in board.legal_moves
+            board.push(move)
+        played += 1
+    assert played == 3
+
+
+def test_saving_is_opt_in_and_appends(tmp_path):
+    """No path means no file; a second call adds to the first.
+
+    Appending matters because a run that stops half way keeps the games it
+    already played, the same way its tally does.
+    """
+    from scripts.sprt_match import save_pgn
+
+    save_pgn(None, '[Event "x"]\n\n1. e4 *')  # must not raise or create anything
+    assert not list(tmp_path.iterdir())
+
+    target = tmp_path / "nested" / "games.pgn"
+    save_pgn(target, '[Event "one"]\n\n1. e4 *')
+    save_pgn(target, '[Event "two"]\n\n1. d4 *')
+    assert target.read_text().count("[Event") == 2
+
+
+def test_an_empty_game_is_not_written(tmp_path):
+    from scripts.sprt_match import save_pgn
+
+    target = tmp_path / "games.pgn"
+    save_pgn(target, "")
+    assert not target.exists()
