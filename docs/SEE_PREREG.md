@@ -194,3 +194,59 @@ price of the pruning — a figure nothing else here can produce.
 resolution floor again, and the flag stays off on the grounds that an
 unmeasurable change should not alter the instrument every other number was
 taken with.
+
+### Result
+
+**1,200 games, fixed length: 57.1%, +50 Elo, interval [+30, +70].**
+
+| against | value | |
+|---|---:|---|
+| declared range | +40 to +60 | **point estimate +50** |
+| declared interval | roughly [+30, +70] | **[+30, +70]** |
+| mechanism, throughput only | +65 | inside |
+| the 240-game sample | +48 | inside |
+| falsification | outside [+10, +90] | not falsified |
+
+The prediction holds on every criterion it was written with, which has not
+happened often here. Six of the thirteen pre-registrations in this project
+failed; this is not one of them.
+
+### The number the mechanism could not give
+
+The deterministic measurement said SEE removes 23.3% of the wall time to a
+given depth, worth **+65** at the measured conversion — throughput alone,
+before whatever the pruning costs in accuracy. The match says **+50**.
+
+**The difference, +15 Elo, is the price of the pruning.** It is what discarding
+captures that lose material to the recapture costs in lines that turn out to
+matter. Nothing else in this project can produce that figure: it needs a
+deterministic count and a played measurement of the same change, and it is the
+gap between them.
+
+That the price is small — under a quarter of the gain — is what a rule that
+only drops provably losing captures ought to look like.
+
+### Behaviour, against the other candidate
+
+`passers-rooks` measured +26 [+1, +51] at 600 games and **+12 [−8, +31]** at
+1,200: it fell as games accumulated, and the interval swallowed zero.
+SEE measured +48 at 240, +46 at 636, **+50 at 1,200**: it did not move, and the
+interval tightened away from zero.
+
+Those are what a real effect and the thin end of noise look like when you keep
+playing, and the only reason they can be told apart is that both were run at
+fixed length. A sequential test would have stopped both early and reported
+something near +110 for each.
+
+### The decision this was run to inform
+
+SEE is now **the only change measured in this project with a tight interval
+clear of zero on the positive side**: +50 [+30, +70] over 1,200 games, with an
+independent mechanistic account agreeing to within 15 Elo.
+
+It remains **off**, and that is still not mine to change. Level 7 is the
+instrument every current number was taken with, and switching it on rewrites
+what those numbers describe — the anchor, the calibration gauntlet, the ladder
+fit and the speed curve all measured a Level 7 without it. What has changed is
+that the case is no longer an argument. It is a measurement, and it is the
+strongest one here.

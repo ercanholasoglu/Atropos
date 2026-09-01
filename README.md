@@ -533,8 +533,10 @@ What the measurements actually say, all at 600 fixed games except where noted:
 | `v3-shelter` | + all three | 600 | +21 [−5, +47] | 49,064 |
 
 **3,672 A/B games. Exactly one interval is clear of zero, and it is clear on
-the negative side.** Nothing here has been shown to improve the evaluation; one
-term has been shown to make it worse.
+the negative side.** Nothing in the *evaluation* has been shown to improve the
+engine; one term has been shown to make it worse. The one change that did
+measure — SEE pruning at +50 [+30, +70] — is a search change, not an
+evaluation one, which is the same lesson the speed work taught.
 
 `passers-rooks` is the one that came closest, and it is a lesson in stopping
 where you said you would. At 600 games it measured **+26 [+1, +51]** — one Elo
@@ -790,22 +792,45 @@ along with what each outcome would mean, before any game was played.
 | run | games | Elo | 95% interval |
 |---|---:|---:|---:|
 | sequential (SPRT) | 120 | +73 | [+20, +130] |
-| **fixed length** | **240** | **+48** | **[+11, +87]** |
+| fixed length | 240 | +48 | [+11, +87] |
+| **fixed length** | **1,200** | **+50** | **[+30, +70]** |
 
-The pre-registration said an interval spanning both +79 and +20 is a null
-result on the magnitude question and would be reported as one. **It spans
-both.** SEE pruning is better than not having it — both intervals exclude zero
-— and how much better is unresolved between +11 and +87.
+At 240 games the magnitude was unresolved and was reported that way. Extended
+to 1,200 — declared in advance, with predictions from two independent places —
+it settles at **+50 [+30, +70]**.
+
+**The mechanism predicted +65**, from the deterministic count: SEE removes
+23.3% of the wall time to a given depth, worth that much at the measured
+conversion, before whatever the pruning costs in accuracy. The match says +50.
+**The difference of +15 Elo is the price of the pruning**, and nothing else
+here can produce that number — it needs a counted measurement and a played one
+of the same change, and it is the gap between them.
+
+Compare how the two candidates behaved as games accumulated:
+
+| | 240 | 600 | 1,200 |
+|---|---:|---:|---:|
+| `passers-rooks` | — | +26 [+1, +51] | **+12 [−8, +31]** |
+| **SEE pruning** | +48 [+11, +87] | +46 [+20, +73] | **+50 [+30, +70]** |
+
+One fell until the interval swallowed zero; the other did not move while its
+interval tightened away from it. That is what a real effect and the thin end of
+noise look like, and they are only distinguishable because both were run at
+fixed length — a sequential test would have stopped both early and reported
+about +110 for each.
 
 The sequential run said +73 and the fixed run said +48, which is the direction
 the stopping-rule bias predicts. It does not demonstrate it: the intervals
 overlap across most of their length, and 25 Elo between two samples this size
 is ordinary noise. Worth recording precisely because it is easy to over-read.
 
-The flag is **off by default**. The effect is positive, but Level 7 is the rung
-the Stockfish anchor and the Atropos gauntlet were both measured against.
-Turning it on changes the instrument every current number was taken with —
-a decision about what the ladder is for, not one the data settles.
+The flag is **off by default**, and that is still not a decision the data makes:
+Level 7 is the instrument the anchor, the calibration gauntlet, the ladder fit
+and the speed curve were all taken with, and switching it on rewrites what
+those numbers describe. What has changed is that **SEE is now the only change
+measured in this project with a tight interval clear of zero on the positive
+side**, with an independent mechanistic account agreeing to within 15 Elo. The
+case is no longer an argument.
 
 ### A tactical suite that was mined, not remembered
 

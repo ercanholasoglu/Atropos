@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-09-01T09:45:23+00:00",
+ "finished_at": "2026-09-01T09:54:27+00:00",
+ "commit": "d0bffde",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "L7-see",
+  "b": "L7",
+  "elo0": 0.0,
+  "elo1": 100.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 1200,
+  "minutes_budget": 9.0,
+  "games_before": 612
+ },
+ "wall_seconds": 543.6909743750002,
+ "cpu_seconds": 2301.646436,
+ "cpu_per_wall": 4.233372530500174,
+ "peak_rss_mb_largest_process": 173.625,
+ "nodes": 136076266,
+ "nodes_per_cpu_second": 59121.27243856146,
+ "games": 186,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 798,
+  "wins": 354,
+  "draws": 203,
+  "losses": 241,
+  "score": 0.5708020050125313,
+  "elo_estimate": 49.531122192229034,
+  "elo_interval_95": [
+   28.7299208703921,
+   70.69155300134504
+  ],
+  "llr": 2.235921835778086,
+  "verdict": "continue",
+  "diagnosis": "the effect looks real but smaller than the bracket asks: [+29, +71] sits under +100",
+  "state_file": "data/sprt_L7-see_vs_L7_fixed.json"
+ },
+ "notes": []
+}

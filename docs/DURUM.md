@@ -756,8 +756,13 @@ seçildi çünkü skill ayarları kasten hata yaptırıp ölçülen güçle ilgi
 - **Mutlak Elo** — hâlâ açık. Sabit derinlikli Stockfish merdivenin *aralıklarını* ölçtü
   ama ölçeğin nerede oturduğunu değil; onun için CCRL listesindeki bir motora karşı
   gerçek zaman kontrolü ya da Lichess bot havuzu gerekir (`docs/ANCHOR.md`).
-- **SEE'nin büyüklüğü** — çözülmedi, [+11, +87]. Pozitif olduğu iki koşuda da kesin;
-  ne kadar olduğu değil.
+- **SEE'nin büyüklüğü** ✅ çözüldü — 1.200 sabit oyun: **+50 Elo [+30, +70]**. Ön-kayıtlı
+  aralık ([+40, +60] nokta, [+30, +70] aralık) her ölçütte tuttu. Mekanizma yalnızca
+  throughput'tan **+65** öngörüyordu; aradaki **+15 budamanın bedeli** — ve o sayıyı bu
+  projede başka hiçbir şey üretemez, çünkü aynı değişikliğin hem sayılmış hem oynanmış
+  ölçümünü gerektiriyor. SEE artık **projede aralığı pozitif tarafta sıfırdan uzak duran
+  tek değişiklik**; bayrak hâlâ kapalı ve bu bir veri kararı değil (L7 bütün sayıların
+  aleti), ama gerekçe artık iddia değil ölçüm.
 - **SEE ship edilsin mi** — veri sorusu değil: L7, bu haftaki çıpanın ve gauntlet'in
   ölçüm aleti. Açılırsa mevcut bütün sayıların "SEE öncesi" diye etiketlenmesi gerekir.
 - **v3-passers** — 714 oyunda çözülmedi, [−12, +34]; ~+10'luk etki için dar bracket gerek
