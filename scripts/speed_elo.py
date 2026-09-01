@@ -100,6 +100,10 @@ from tournament.openings import OPENING_BOOK
 LEVEL = 7
 BASE_NODES = 5000
 BASE_MOVETIME = 0.09
+# Overridden by --base-movetime. The slope is a property of the region it
+# is measured in, not a constant of the engine, so the reference has to be
+# movable to find out where the curve flattens.
+REFERENCE = {"movetime": BASE_MOVETIME}
 DIVISORS_NODES = (2, 4, 8, 16)
 DIVISORS_MOVETIME = (1.5, 2, 4, 8)
 GAMES_PER_PAIRING = 240
@@ -120,14 +124,15 @@ def build(arm: str, divisor: float, seed: int) -> BaseEngine:
         # there.
         engine.node_limit = int(BASE_NODES / divisor)
     else:
-        engine = create_engine(LEVEL, seed=seed, time_limit=BASE_MOVETIME / divisor)
+        engine = create_engine(LEVEL, seed=seed, time_limit=REFERENCE["movetime"] / divisor)
     engine.name = f"L{LEVEL}-{arm}-div{divisor:g}"
     return engine
 
 
-def play_one(job: tuple[str, float, int, int]) -> tuple[float, int]:
+def play_one(job: tuple[str, float, int, int, float]) -> tuple[float, int]:
     """One game, scored for the *full-speed* side. Module level so it pickles."""
-    arm, divisor, index, max_plies = job
+    arm, divisor, index, max_plies, base_movetime = job
+    REFERENCE["movetime"] = base_movetime
 
     opening = OPENING_BOOK[(index // 2) % len(OPENING_BOOK)]
     fast_is_white = index % 2 == 0
@@ -171,7 +176,8 @@ def run_pairing(
         return False
     print(f"full speed vs 1/{divisor:g} ({arm}), from game {played}", flush=True)
     queue = [
-        (arm, divisor, i + args.index_offset, args.max_plies) for i in range(played, args.games)
+        (arm, divisor, i + args.index_offset, args.max_plies, args.base_movetime)
+        for i in range(played, args.games)
     ]
     workers = max(1, args.workers)
     hit_deadline = False
@@ -219,7 +225,7 @@ def summarise(arm: str, divisor: float, state: dict) -> dict:
         "interval_for_slowed": [-hi, -lo],
         "predicted_elo_for_slowed": PREDICTED.get(divisor),
         "budget_nodes": BASE_NODES // divisor if arm == "nodes" else None,
-        "budget_seconds": None if arm == "nodes" else BASE_MOVETIME / divisor,
+        "budget_seconds": None if arm == "nodes" else REFERENCE["movetime"] / divisor,
         "complete": played >= state["target"],
     }
 
@@ -249,6 +255,21 @@ def slope(rows: list[dict]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--arm", choices=("nodes", "movetime"), default="nodes")
+    parser.add_argument(
+        "--base-movetime",
+        type=float,
+        default=BASE_MOVETIME,
+        help="the reference budget the divisors divide. Moving it measures the "
+        "curve in a different region, which is the point: -162 Elo per doubling "
+        "was measured at a reference reaching depth 3.0 and is a property of "
+        "that depth, not of the engine.",
+    )
+    parser.add_argument(
+        "--divisors",
+        default=None,
+        help="comma-separated, overriding the arm default; a deeper reference "
+        "costs more per game so it buys fewer points",
+    )
     parser.add_argument("--games", type=int, default=GAMES_PER_PAIRING)
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--max-plies", type=int, default=200)
@@ -272,8 +293,13 @@ def main() -> int:
     parser.add_argument("--out", default=None, help="write somewhere other than the default")
     args = parser.parse_args()
     args.deadline = time.monotonic() + args.minutes * 60
+    # Workers are separate processes, so the reference has to travel in the
+    # job rather than as module state; play_one sets it from the tuple.
+    REFERENCE["movetime"] = args.base_movetime
 
     divisors: tuple[float, ...] = DIVISORS_NODES if args.arm == "nodes" else DIVISORS_MOVETIME
+    if args.divisors:
+        divisors = tuple(float(x) for x in args.divisors.split(","))
     if args.only is not None:
         divisors = (args.only,)
     out = Path(args.out or f"data/speed_elo_{args.arm}.json")
@@ -309,7 +335,7 @@ def main() -> int:
             "arm": args.arm,
             "level": LEVEL,
             "base_nodes": BASE_NODES,
-            "base_movetime": BASE_MOVETIME,
+            "base_movetime": args.base_movetime,
             "divisors": list(divisors),
             "games_per_pairing": args.games,
             "workers": args.workers,
@@ -324,7 +350,7 @@ def main() -> int:
                 "arm": args.arm,
                 "games_per_pairing": args.games,
                 "base_nodes": BASE_NODES,
-                "base_movetime": BASE_MOVETIME,
+                "base_movetime": args.base_movetime,
                 "pairings": rows,
                 "fit": slope(usable) if len(usable) >= 2 else None,
                 "complete": len(usable) == len(divisors),
