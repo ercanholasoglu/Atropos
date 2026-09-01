@@ -155,3 +155,42 @@ That is a decision about what the ladder is *for*, not a question the data
 answers. If it is switched on, `docs/ANCHOR.md`, the calibration table and the
 ladder SPRTs all need re-labelling as pre-SEE, the same way 1514 and 1538 are
 labelled to evaluation v2.
+
+---
+
+## Extension to 1,200 games, declared before playing them
+
+SEE is the largest positive effect this project has measured and it is sitting
+behind a flag, switched off, because 240 games left it at **+48 [+11, +87]** —
+an interval too wide to decide on. Everything else that was open has since been
+measured; this is the one live number left, so it gets the games.
+
+**Target: 1,200 total, fixed length, no stopping rule**, continuing from game
+index 240 so nothing is replayed. That gives about ±20.
+
+### Two predictions, from different places
+
+**From the mechanism.** The deterministic measurement — 23.3% less wall time to
+the same depth, counted not sampled — is 0.383 doublings, which at the measured
+−171 Elo per doubling is **+65**. That is the throughput component alone and
+ignores whatever the pruning costs in accuracy, so it is an upper estimate.
+
+**From the sample.** 240 games said +48.
+
+**Prediction: between +40 and +60, interval roughly [+30, +70].** The two
+accounts bracket it, and the gap between +65 and the eventual number is the
+price of the pruning — a figure nothing else here can produce.
+
+* **Interval clear of zero and near +50** → SEE is real, its size is known, and
+  the case for switching it on rests on a measurement rather than an argument.
+* **Interval clear of zero but well under +40** → the pruning costs more
+  accuracy than the throughput measurement suggests, and the gap is the finding.
+* **Interval contains zero** → 240 games was the thin end of noise, as happened
+  with `passers-rooks`, and SEE joins the list of things not shown to help.
+
+**Falsified if** the result lands outside [+10, +90].
+
+**No extension beyond 1,200.** If that does not resolve it, the answer is the
+resolution floor again, and the flag stays off on the grounds that an
+unmeasurable change should not alter the instrument every other number was
+taken with.
