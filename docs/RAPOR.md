@@ -206,6 +206,26 @@ Ayrıca bir süreç ihlali kaydettim: zaman kontrollü maç sürerken test süit
 
 ---
 
+## 7.5 Tezgâhın kendisi sınandı
+
+On beş bin oyun, sıfırı hiç kontrol edilmemiş bir alette oynanmıştı. **Level 7'ye karşı
+Level 7, 600 oyun: %51,50, +10,4 Elo [−17, +38].** Elo dönüşümünden geçmeyen ham skorda
+z = +0,73, **p = 0,46**. **Tezgâhın bu çözünürlükte ölçülebilir bir eğimi yok.**
+
+Bu, geri kalanı meşrulaştırıyor: renk sırasında, açılış kitabında, tohumlamada ya da
+skorlama yolunda bir yanlılık, bu projenin oyunlarını harcadığı etkilerle *aynı
+büyüklükte* burada görünürdü — SEE'nin +50'si, merdivenin tepedeki +18'i, değerlendirme
+terimlerinin +10/+25'i. Hiçbiri, bunun dışladığının yarısı kadar eğimli bir tezgâhta
+ayakta kalmazdı.
+
+Sertifika değil: aralık ±28, yani 10-15 Elo'luk bir eğim yakalanmazdı — ve burada ölçülen
+en küçük etkiler tam o boyutta. Ayrıca **iki kolu eşit etkileyen** bir yanlılığı göremez;
+temsili olmayan bir açılış kitabı görünmez, çünkü iki taraf da aynı kitabı oynuyor.
+
+Bu koşu **bir hatam yüzünden var.** İşlevsel olarak aynı iki motor arasında 49 Elo'luk
+bir fark gördüm ve hata payına *sonra* baktım: ±51, sıfırı rahatça kapsıyor. İşaret
+yanlıştı; kazara sorduğu soru değildi.
+
 ## 8. Açık kalanlar
 
 | konu | durum |

@@ -245,6 +245,35 @@ before, 68.8% after. The second was the sample; the colour-reversed opening
 book and 16 games make that unlikely, and the 1.5s run reproduces cleanly.
 The clock was the whole story.
 
+### The check that should have come first
+
+Fifteen thousand games were played on this harness before anything tested its
+zero. Every result assumes colours alternate fairly, the opening book is
+balanced, seeds do not favour a side and the scoring path does not tilt —
+assumptions nothing had measured.
+
+**Level 7 against Level 7, 600 games: 51.50%, +10.4 Elo [−17, +38].** On the
+raw score, which does not pass through the Elo conversion, 51.5% against a true
+50% is z = +0.73, p = 0.46. **The harness has no measurable tilt at this
+resolution.**
+
+That licenses the rest. A bias in colours, book, seeding or scoring would have
+appeared here at the same order as the effects this project spent its games
+chasing — SEE's +50, the ladder's +18 at the top, the evaluation terms' +10 to
++25 — and none of those would survive a tilt of even half what this rules out.
+
+It is not a certificate. The interval is ±28, so a tilt of 10 or 15 Elo would
+have gone unseen, and the smallest effects measured here are that size. And it
+cannot see a bias that affects both arms equally: an unrepresentative opening
+book is invisible to it, because both sides play the same book.
+
+The run exists because of a mistake. I flagged a 49-Elo gap between two engines
+that are functionally identical — Level 8 with its adaptive clock off is Level
+7's search at a time limit — and checked its error afterwards rather than
+first: ±51, comfortably containing zero. The flag was wrong; the question it
+raised was not. Full write-up in
+[`docs/NULL_CONTROL_PREREG.md`](docs/NULL_CONTROL_PREREG.md).
+
 ## Setup
 
 ```bash
