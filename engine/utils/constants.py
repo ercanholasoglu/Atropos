@@ -54,8 +54,8 @@ INITIAL_ELO: dict[int, int] = {
 }
 
 # What the levels actually are, from a joint maximum-likelihood fit over every
-# game recorded at 0.1s per move (`scripts/rating_fit.py`, 3,744 games at the
-# time of writing, all from fixed-length matches). Each entry is
+# game recorded at 0.1s per move (`scripts/rating_fit.py`, 4,704 games at
+# the time of writing, all from fixed-length matches). Each entry is
 # ``(rating, standard error)``.
 #
 # **The scale has no absolute zero.** Level 7 is held at its nominal 2100 as a
@@ -63,19 +63,19 @@ INITIAL_ELO: dict[int, int] = {
 # measured. Placing the whole scale against an outside reference needs a rated
 # engine at a rated time control — see docs/ANCHOR.md.
 #
-# The gaps these imply are 444, 704, 427, 193, 660, 19 and -35, against the
-# 400-then-six-300s the names above assert. Four of the seven miss their
-# nominal value by more than a confidence interval, and the top two are not
-# distinguishable from zero.
+# The gaps these imply are 423, 682, 407, 178, 637, 18 and -32,
+# against the 400-then-six-300s the names above assert. Re-run
+# `scripts/rating_fit.py` after adding games and update this table; a test
+# asserts the two still agree.
 MEASURED_ELO: dict[int, tuple[int, int]] = {
-    1: (-347, 80),
-    2: (97, 76),
-    3: (801, 67),
-    4: (1228, 60),
-    5: (1421, 55),
-    6: (2081, 18),
+    1: (-245, 78),
+    2: (178, 75),
+    3: (860, 66),
+    4: (1267, 59),
+    5: (1445, 55),
+    6: (2082, 18),
     7: (2100, 0),  # the gauge; its error is zero by construction, not by measurement
-    8: (2065, 22),
+    8: (2068, 22),
 }
 
 LEVEL_NAMES: dict[int, str] = {

@@ -94,17 +94,17 @@ taşımamışım.
 karşılıkları olan her eşleşmede onlarla değiştirilerek) sekiz basamağın hepsi ilk kez
 yerleşti:
 
-| aralık | ölçülen | %95 aralık | nominal |
-|---|---:|---:|---:|
-| L1 → L2 | +444 | [+229, +660] | 300 |
-| L2 → L3 | +703 | [+505, +902] | 300 — dışarıda |
-| L3 → L4 | +427 | [+251, +604] | 300 |
-| L4 → L5 | +193 | [+33, +352] | 300 |
-| L5 → L6 | +660 | [+546, +773] | 300 — dışarıda |
-| L6 → L7 | **+19** | **[−17, +55]** | 300 — dışarıda |
-| L7 → L8 | −35 | [−79, +9] | 300 — dışarıda |
+| aralık | ölçülen | %95 aralık | nominal | |
+|---|---:|---:|---:|---|
+| L1 → L2 | +423 | [+212, +634] | 400 | tutarlı |
+| L2 → L3 | +682 | [+486, +877] | 300 | **dışarıda** |
+| L3 → L4 | +407 | [+233, +581] | 300 | tutarlı |
+| L4 → L5 | +178 | [+21, +336] | 300 | tutarlı |
+| L5 → L6 | +637 | [+526, +748] | 300 | **dışarıda** |
+| L6 → L7 | **+18** | **[−17, +53]** | 300 | **dışarıda** |
+| L7 → L8 | −32 | [−76, +12] | 300 | **dışarıda** |
 
-**Yedi aralığın dördünde 300, güven aralığının dışında.** Gerçek merdiven altta dik
+**Yedinin dördü nominal adımını bir aralıktan fazla ıskalıyor.** Gerçek merdiven altta dik
 çıkıyor, Level 4'te düzleşiyor, quiescence ve TT'nin geldiği yerde tekrar sıçrıyor —
 ve sonra **duruyor**.
 
@@ -705,13 +705,13 @@ oyunlar birlikte uydurulduktan sonra.
 
 | aralık | ölçülen | %95 aralık | nominal | |
 |---|---:|---:|---:|---|
-| L1 → L2 | +444 | [+229, +660] | 400 | tutarlı |
-| L2 → L3 | +703 | [+505, +902] | 300 | **dışarıda** |
-| L3 → L4 | +427 | [+251, +604] | 300 | tutarlı |
-| L4 → L5 | +193 | [+33, +352] | 300 | tutarlı |
-| L5 → L6 | +660 | [+546, +773] | 300 | **dışarıda** |
-| L6 → L7 | **+19** | **[−17, +55]** | 300 | **dışarıda** |
-| L7 → L8 | −35 | [−79, +9] | 300 | **dışarıda** |
+| L1 → L2 | +423 | [+212, +634] | 400 | tutarlı |
+| L2 → L3 | +682 | [+486, +877] | 300 | **dışarıda** |
+| L3 → L4 | +407 | [+233, +581] | 300 | tutarlı |
+| L4 → L5 | +178 | [+20, +336] | 300 | tutarlı |
+| L5 → L6 | +637 | [+524, +750] | 300 | **dışarıda** |
+| L6 → L7 | **+18** | **[-18, +53]** | 300 | **dışarıda** |
+| L7 → L8 | -32 | [-75, +11] | 300 | **dışarıda** |
 
 **Yedinin dördü nominal adımını bir aralıktan fazla ıskalıyor**, ve üstteki ikisi sıfırdan
 ayırt edilemiyor. İki ölçek de artık `engine/utils/constants.py`'de: `INITIAL_ELO`

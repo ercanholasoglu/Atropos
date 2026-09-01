@@ -54,8 +54,8 @@ def main() -> int:
     print("-" * 68)
 
     rows = [
-        ("ladder gap L6 -> L7", "+19", f"{19 + shift:+.0f}", True),
-        ("ladder gap L7 -> L8", "-35", f"{-35 - shift:+.0f}", True),
+        ("ladder gap L6 -> L7", "+18", f"{18 + shift:+.0f}", True),
+        ("ladder gap L7 -> L8", "-32", f"{-32 - shift:+.0f}", True),
         ("Stockfish d1 vs L7", "-17", f"{-17 - shift:+.0f}", True),
         ("Stockfish d2 vs L7", "+61", f"{61 - shift:+.0f}", True),
         ("Stockfish d3 vs L7", "+72", f"{72 - shift:+.0f}", True),
@@ -72,8 +72,8 @@ def main() -> int:
     print()
     print("Reading it:")
     print("  * The ladder's top two gaps change sign in interest, not in kind.")
-    print(f"    L6->L7 goes from +19 [-17, +55] -- not distinguishable from zero --")
-    print(f"    to about {19 + shift:+.0f}, which would be a real rung again.")
+    print(f"    L6->L7 goes from +18 [-18, +53] -- not distinguishable from zero --")
+    print(f"    to about {18 + shift:+.0f}, which would be a real rung again.")
     print("  * Every Stockfish anchor row moves by the same amount, so the")
     print("    *mapping* to absolute Elo shifts but its uncertainty does not:")
     print("    R(d) was never known and still would not be.")

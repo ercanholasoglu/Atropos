@@ -118,7 +118,11 @@ def test_measured_elo_matches_the_recorded_fit() -> None:
     for level, (rating, stderr) in MEASURED_ELO.items():
         entry = recorded["ratings"].get(f"L{level}")
         assert entry is not None, f"L{level} is not in the recorded fit"
-        assert abs(entry["relative_to_gauge"] + gauge_offset - rating) < 1.5, level
+        assert abs(entry["relative_to_gauge"] + gauge_offset - rating) < 1.5, (
+            f"L{level}: MEASURED_ELO says {rating}, the recorded fit says "
+            f"{entry['relative_to_gauge'] + gauge_offset:.0f}. Adding games moves the "
+            f"fit; re-run `python -m scripts.rating_fit` and update MEASURED_ELO."
+        )
         assert abs(entry["stderr"] - stderr) < 1.5, level
 
 

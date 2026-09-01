@@ -2,7 +2,7 @@
 
 **Repo:** `github.com/ercanholasoglu/Atropos` (private) · **54 commit** · 435 dosya
 **Test:** 795 geçiyor, 6 xfail · mypy temiz (53 dosya)
-**Ölçüm:** 143 koşu, **10.864 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
+**Ölçüm:** 151 koşu. **10.876 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
 **Showcase:** https://claude.ai/code/artifact/4f9ebb66-e882-451a-a152-470a9632e0b3
 
 ---
@@ -91,13 +91,13 @@ Her komşu eşleşme **sabit uzunlukta, durma kuralı olmadan** yeniden oynandı
 
 | aralık | ölçülen | %95 aralık | nominal | |
 |---|---:|---:|---:|---|
-| L1 → L2 | +444 | [+229, +660] | 400 | tutarlı |
-| L2 → L3 | +703 | [+505, +902] | 300 | **dışarıda** |
-| L3 → L4 | +427 | [+251, +604] | 300 | tutarlı |
-| L4 → L5 | +193 | [+33, +352] | 300 | tutarlı |
-| L5 → L6 | +660 | [+546, +773] | 300 | **dışarıda** |
-| L6 → L7 | **+19** | **[−17, +55]** | 300 | **dışarıda** |
-| L7 → L8 | −35 | [−79, +9] | 300 | **dışarıda** |
+| L1 → L2 | +423 | [+212, +634] | 400 | tutarlı |
+| L2 → L3 | +682 | [+486, +877] | 300 | **dışarıda** |
+| L3 → L4 | +407 | [+233, +581] | 300 | tutarlı |
+| L4 → L5 | +178 | [+20, +336] | 300 | tutarlı |
+| L5 → L6 | +637 | [+524, +750] | 300 | **dışarıda** |
+| L6 → L7 | **+18** | **[−18, +53]** | 300 | **dışarıda** |
+| L7 → L8 | −32 | [−75, +11] | 300 | **dışarıda** |
 
 Gerçek merdiven altta dik çıkıyor, Level 4'te düzleşiyor, quiescence + TT'nin geldiği yerde sıçrıyor, **ve sonra duruyor.** Bir test iki ölçeğin uyuşmadığını iddia ediyor, yani merdiven sessizce "her basamak 300" demeye geri dönemez.
 
@@ -153,8 +153,8 @@ Endişe yerine tablo. Ortak uyum `L7-see`'yi zaten aynı ölçeğe yerleştirdi�
 
 | ölçüm | şimdi | SEE açıksa |
 |---|---:|---:|
-| merdiven L6 → L7 | +19 | **+81** |
-| merdiven L7 → L8 | −35 | −97 |
+| merdiven L6 → L7 | +18 | **+80** |
+| merdiven L7 → L8 | −32 | −94 |
 | Stockfish d1 vs L7 | −17 | −79 |
 | Stockfish d2 vs L7 | +61 | −1 |
 | L6 altındaki bütün aralıklar | — | **değişmez** |
@@ -163,7 +163,7 @@ Endişe yerine tablo. Ortak uyum `L7-see`'yi zaten aynı ölçeğe yerleştirdi�
 | benchmark | — | yeni baseline |
 
 Okunuşu:
-- **L6 → L7, +19 [−17, +55]'ten (sıfırdan ayırt edilemiyor) ~+81'e** çıkardı — yani gerçek bir basamak olurdu.
+- **L6 → L7, +18 [−18, +53]'ten (sıfırdan ayırt edilemiyor) ~+80'e** çıkardı — yani gerçek bir basamak olurdu.
 - Çıpanın bütün satırları aynı miktar kayıyor: mutlak Elo eşlemesi **kayar ama belirsizliği değişmez** — R(d) zaten bilinmiyordu, yine bilinmiyor olurdu.
 - **Yeniden koşulması gereken tek şey hız eğrisi**, çünkü SEE aramanın *hangi* node'ları ziyaret ettiğini değiştiriyor, yalnızca hızını değil (~960 oyun).
 - Geri kalan her şey, ölçtükleri motor için geçerli kalan sayıları **yeniden etiketlemek**.

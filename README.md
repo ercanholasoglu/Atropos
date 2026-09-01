@@ -160,13 +160,13 @@ The measured ladder, every gap against the step its labels claim:
 
 | gap | measured | 95% interval | nominal | |
 |---|---:|---:|---:|---|
-| L1 → L2 | +444 | [+229, +660] | 400 | consistent |
-| L2 → L3 | +703 | [+505, +902] | 300 | **outside** |
-| L3 → L4 | +427 | [+251, +604] | 300 | consistent |
-| L4 → L5 | +193 | [+33, +352] | 300 | consistent |
-| L5 → L6 | +660 | [+546, +773] | 300 | **outside** |
-| L6 → L7 | **+19** | **[−17, +55]** | 300 | **outside** |
-| L7 → L8 | −35 | [−79, +9] | 300 | **outside** |
+| L1 → L2 | +423 | [+212, +634] | 400 | consistent |
+| L2 → L3 | +682 | [+486, +877] | 300 | **outside** |
+| L3 → L4 | +407 | [+233, +581] | 300 | consistent |
+| L4 → L5 | +178 | [+20, +336] | 300 | consistent |
+| L5 → L6 | +637 | [+524, +750] | 300 | **outside** |
+| L6 → L7 | **+18** | **[-18, +53]** | 300 | **outside** |
+| L7 → L8 | -32 | [-75, +11] | 300 | **outside** |
 
 **Four of the seven miss their nominal step by more than an interval**, and the
 top two are not distinguishable from zero. The real ladder rises steeply at the
