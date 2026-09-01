@@ -435,7 +435,7 @@ def test_a_game_can_be_played_from_plain_data():
     """
     from scripts.sprt_match import play_one
 
-    score, nodes, pgn = play_one(("L1", "L1", 0, 0.02, 20, "default"))
+    score, nodes, pgn = play_one(("L1", "L1", 0, 0.02, 20, "default", None))
     assert score in (0.0, 0.5, 1.0)
     assert nodes >= 0
     assert pgn.startswith("[Event ")
@@ -446,8 +446,8 @@ def test_the_same_job_index_replays_the_same_game():
     silently repeat or skip games."""
     from scripts.sprt_match import play_one
 
-    first = play_one(("L2", "L1", 3, 0.02, 20, "default"))
-    again = play_one(("L2", "L1", 3, 0.02, 20, "default"))
+    first = play_one(("L2", "L1", 3, 0.02, 20, "default", None))
+    again = play_one(("L2", "L1", 3, 0.02, 20, "default", None))
     assert first == again
 
 
@@ -548,8 +548,8 @@ def test_the_book_is_part_of_the_job():
     """
     from scripts.sprt_match import play_one
 
-    default = play_one(("L2", "L1", 1, 0.02, 20, "default"))
-    midgame = play_one(("L2", "L1", 1, 0.02, 20, "midgame"))
+    default = play_one(("L2", "L1", 1, 0.02, 20, "default", None))
+    midgame = play_one(("L2", "L1", 1, 0.02, 20, "midgame", None))
     # Same engines, same index, different starting position: the node counts
     # have no reason to match, and if they do the book was ignored.
     assert default[1] != midgame[1]
@@ -577,7 +577,7 @@ def test_a_saved_game_round_trips_through_a_pgn_reader(tmp_path):
 
     target = tmp_path / "games.pgn"
     for index in range(3):
-        _, _, pgn = play_one(("L2", "L1", index, 0.02, 20, "default"))
+        _, _, pgn = play_one(("L2", "L1", index, 0.02, 20, "default", None))
         save_pgn(target, pgn)
 
     handle = io.StringIO(target.read_text())
@@ -614,3 +614,49 @@ def test_an_empty_game_is_not_written(tmp_path):
     target = tmp_path / "games.pgn"
     save_pgn(target, "")
     assert not target.exists()
+
+
+def test_the_component_log_path_travels_in_the_job(tmp_path):
+    """Like the book, it cannot be process state.
+
+    A pool worker is a fresh process. A log path set only in the parent would
+    leave every worker writing nothing, and the run would finish looking
+    successful with an empty file.
+    """
+    from scripts.sprt_match import play_one
+
+    target = tmp_path / "components.jsonl"
+    play_one(("L2", "L1", 0, 0.02, 20, "default", str(target)))
+    assert target.exists() and target.read_text().strip()
+
+    quiet = tmp_path / "not-written.jsonl"
+    play_one(("L2", "L1", 1, 0.02, 20, "default", None))
+    assert not quiet.exists()
+
+
+def test_a_logged_move_is_legal_from_the_position_it_records(tmp_path):
+    """The record has to pair the search with the board it searched.
+
+    The move hook fires after the move is pushed, so a naive logger records the
+    position that *follows* the move while the depth, nodes and PV describe the
+    one before it. This asserts the pairing, which is the bug that was there
+    until the output was read.
+    """
+    import json
+
+    import chess
+
+    from scripts.sprt_match import play_one
+
+    target = tmp_path / "components.jsonl"
+    play_one(("L2", "L1", 2, 0.02, 30, "default", str(target)))
+
+    rows = [json.loads(line) for line in target.read_text().splitlines()]
+    assert rows
+    for row in rows:
+        board = chess.Board(row["fen"])
+        move = chess.Move.from_uci(row["move"])
+        assert move in board.legal_moves, row["fen"]
+        board.push(move)
+        assert board.fen() == row["fen_after"]
+        assert row["eval"]["residual"] == 0
