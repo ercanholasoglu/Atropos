@@ -156,3 +156,44 @@ One of:
 
 Both are more work than this, and both produce a number that can be quoted
 without a footnote. What is here should be quoted *with* one.
+
+
+---
+
+## Correction: these figures are compressed, and by roughly half
+
+Every Elo in this document was computed with `elo_diff_from_score`, which
+inverts the logistic on a match score and **does not model draws**. The
+Stockfish pairings draw **56% to 68%** of their games, because a fixed-depth
+engine plays very consistently.
+
+That combination systematically shrinks the reported gap. Simulated, at a true
+difference of 100 Elo:
+
+| draw rate | what a score-only conversion reports |
+|---:|---:|
+| 0% | +100 |
+| 49% | +74 |
+| **67%** | **+52** |
+| 80% | +34 |
+
+Re-read with the draw model this project already has (`elo/joint.py`, the same
+Rao-Kupper form `elo.sprt` assumes):
+
+| pairing | as published | with draws modelled | drawn |
+|---|---:|---:|---:|
+| SF-d1 vs L7 (v1) | −17 | **−32** | 110/162 |
+| SF-d2 vs L7 (v1) | +61 | **+81** | 78/162 |
+| SF-d3 vs L7 (v1) | +72 | **+136** | 105/162 |
+
+**The measurements are unchanged; the conversion was wrong.** The W-D-L records
+in `data/` and `data/v1/` are what was played and remain the record.
+
+This does not alter the document's main conclusion — the anchor's uncertainty
+was always dominated by R(d) being unknown, and it still is. It does mean the
+*ladder-spacing* argument earlier in this document understated the gaps it was
+measuring, in the direction that made the labels look worse rather than better.
+
+It also explains why the anchor could not see the instrument-v2 cut
+(`docs/INSTRUMENT_V2.md`): at that draw rate and 162 games it is reading
+differences through a lens that halves them.

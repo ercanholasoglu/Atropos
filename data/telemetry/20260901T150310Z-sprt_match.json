@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-09-01T15:03:10+00:00",
+ "finished_at": "2026-09-01T15:12:14+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "L7",
+  "b": "L6",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 240,
+  "minutes_budget": 9.0,
+  "games_before": 0
+ },
+ "wall_seconds": 544.3735162501689,
+ "cpu_seconds": 2466.555771,
+ "cpu_per_wall": 4.530998840631485,
+ "peak_rss_mb_largest_process": 246.3125,
+ "nodes": 152135755,
+ "nodes_per_cpu_second": 61679.430397927135,
+ "games": 174,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 174,
+  "wins": 70,
+  "draws": 54,
+  "losses": 50,
+  "score": 0.5574712643678161,
+  "elo_estimate": 40.11240363750523,
+  "elo_interval_95": [
+   -2.5240870061010448,
+   83.99322320617009
+  ],
+  "llr": 1.6509747420417051,
+  "verdict": "continue",
+  "diagnosis": "the interval [-3, +84] still spans the whole bracket [+0, +40] \u2014 more games",
+  "state_file": "data/v2/L7_vs_L6.json"
+ },
+ "notes": []
+}

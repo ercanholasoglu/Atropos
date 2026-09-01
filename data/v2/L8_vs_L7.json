@@ -1,0 +1,24 @@
+{
+ "a": "L8",
+ "b": "L7",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "book": "default",
+ "wins": 82,
+ "draws": 76,
+ "losses": 82,
+ "games": 240,
+ "score": 0.5,
+ "llr": -1.8813375034048683,
+ "elo_estimate": -0.0,
+ "verdict": "out of games",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 240,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}

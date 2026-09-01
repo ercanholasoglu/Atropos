@@ -1,0 +1,118 @@
+{
+ "tool": "speed_elo",
+ "started_at": "2026-09-01T17:08:05+00:00",
+ "finished_at": "2026-09-01T17:16:11+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "arm": "movetime",
+  "level": 7,
+  "base_nodes": 5000,
+  "base_movetime": 0.09,
+  "divisors": [
+   1.5,
+   2,
+   4,
+   8
+  ],
+  "games_per_pairing": 240,
+  "workers": 6,
+  "max_plies": 200
+ },
+ "wall_seconds": 485.65311287506483,
+ "cpu_seconds": 2407.9937689999997,
+ "cpu_per_wall": 4.958258693627401,
+ "peak_rss_mb_largest_process": 238.265625,
+ "nodes": 129259535,
+ "nodes_per_cpu_second": 53679.347789043226,
+ "games": 356,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "pairings": [
+   {
+    "arm": "movetime",
+    "divisor": 1.5,
+    "doublings": 0.5849625007211562,
+    "games": 240,
+    "score_for_full_speed": 0.625,
+    "elo_for_slowed": -88.73949984654253,
+    "interval_for_slowed": [
+     -135.95944918762154,
+     -44.54044596751224
+    ],
+    "predicted_elo_for_slowed": null,
+    "budget_nodes": null,
+    "budget_seconds": 0.06,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 2,
+    "doublings": 1.0,
+    "games": 240,
+    "score_for_full_speed": 0.6958333333333333,
+    "elo_for_slowed": -143.75744441085095,
+    "interval_for_slowed": [
+     -194.6102208935445,
+     -98.16549237811277
+    ],
+    "predicted_elo_for_slowed": -60.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.045,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 4,
+    "doublings": 2.0,
+    "games": 240,
+    "score_for_full_speed": 0.7875,
+    "elo_for_slowed": -227.55665123012315,
+    "interval_for_slowed": [
+     -287.10302859514314,
+     -177.88133509981265
+    ],
+    "predicted_elo_for_slowed": -120.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.0225,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 8,
+    "doublings": 3.0,
+    "games": 193,
+    "score_for_full_speed": 0.7694300518134715,
+    "elo_for_slowed": -209.3465770689198,
+    "interval_for_slowed": [
+     -274.0448215233855,
+     -155.54907794428027
+    ],
+    "predicted_elo_for_slowed": -180.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.01125,
+    "complete": false
+   }
+  ],
+  "fit": {
+   "elo_per_doubling": -121.81916170803525,
+   "standard_error": 9.891863996140007,
+   "interval": [
+    -141.20721514046966,
+    -102.43110827560083
+   ],
+   "residuals": [
+    -17.47985837805531,
+    -21.938282702815698,
+    16.081672185947355
+   ]
+  }
+ },
+ "notes": []
+}

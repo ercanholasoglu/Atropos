@@ -1,0 +1,101 @@
+{
+ "tool": "speed_elo",
+ "started_at": "2026-09-01T16:59:56+00:00",
+ "finished_at": "2026-09-01T17:08:05+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "arm": "movetime",
+  "level": 7,
+  "base_nodes": 5000,
+  "base_movetime": 0.09,
+  "divisors": [
+   1.5,
+   2,
+   4,
+   8
+  ],
+  "games_per_pairing": 240,
+  "workers": 6,
+  "max_plies": 200
+ },
+ "wall_seconds": 488.39392070891336,
+ "cpu_seconds": 2520.3579480000003,
+ "cpu_per_wall": 5.160502293602777,
+ "peak_rss_mb_largest_process": 256.0,
+ "nodes": 139807850,
+ "nodes_per_cpu_second": 55471.42623568324,
+ "games": 291,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "pairings": [
+   {
+    "arm": "movetime",
+    "divisor": 1.5,
+    "doublings": 0.5849625007211562,
+    "games": 240,
+    "score_for_full_speed": 0.625,
+    "elo_for_slowed": -88.73949984654253,
+    "interval_for_slowed": [
+     -135.95944918762154,
+     -44.54044596751224
+    ],
+    "predicted_elo_for_slowed": null,
+    "budget_nodes": null,
+    "budget_seconds": 0.06,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 2,
+    "doublings": 1.0,
+    "games": 240,
+    "score_for_full_speed": 0.6958333333333333,
+    "elo_for_slowed": -143.75744441085095,
+    "interval_for_slowed": [
+     -194.6102208935445,
+     -98.16549237811277
+    ],
+    "predicted_elo_for_slowed": -60.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.045,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 4,
+    "doublings": 2.0,
+    "games": 77,
+    "score_for_full_speed": 0.8116883116883117,
+    "elo_for_slowed": -253.80480604364016,
+    "interval_for_slowed": [
+     -379.80287402890946,
+     -167.8468243399346
+    ],
+    "predicted_elo_for_slowed": -120.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.0225,
+    "complete": false
+   }
+  ],
+  "fit": {
+   "elo_per_doubling": -145.7826519694394,
+   "standard_error": 3.4621151887372705,
+   "interval": [
+    -152.56839773936446,
+    -138.99690619951434
+   ],
+   "residuals": [
+    -3.462115188737272,
+    2.0252075585884484
+   ]
+  }
+ },
+ "notes": []
+}

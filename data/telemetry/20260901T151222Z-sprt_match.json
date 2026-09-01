@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-09-01T15:12:22+00:00",
+ "finished_at": "2026-09-01T15:15:45+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "L7",
+  "b": "L6",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 240,
+  "minutes_budget": 5.0,
+  "games_before": 174
+ },
+ "wall_seconds": 203.3025899999775,
+ "cpu_seconds": 908.975874,
+ "cpu_per_wall": 4.471049158793799,
+ "peak_rss_mb_largest_process": 257.328125,
+ "nodes": 57523588,
+ "nodes_per_cpu_second": 63283.95466302552,
+ "games": 66,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 240,
+  "wins": 94,
+  "draws": 80,
+  "losses": 66,
+  "score": 0.5583333333333333,
+  "elo_estimate": 40.71957324001494,
+  "elo_interval_95": [
+   5.012302794597079,
+   77.3074100388504
+  ],
+  "llr": 2.4116104899891013,
+  "verdict": "out of games",
+  "diagnosis": "out of games",
+  "state_file": "data/v2/L7_vs_L6.json"
+ },
+ "notes": []
+}

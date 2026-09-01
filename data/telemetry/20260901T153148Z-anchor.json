@@ -1,0 +1,56 @@
+{
+ "tool": "anchor",
+ "started_at": "2026-09-01T15:31:48+00:00",
+ "finished_at": "2026-09-01T15:35:21+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "engine": "/opt/homebrew/bin/stockfish",
+  "depths": [
+   2
+  ],
+  "reference_level": 7,
+  "elo0": 0.0,
+  "elo1": 100.0,
+  "min_games": 160,
+  "movetime": 0.1,
+  "max_plies": 160
+ },
+ "wall_seconds": 212.85394854214974,
+ "cpu_seconds": 805.201135,
+ "cpu_per_wall": 3.7828808932832767,
+ "peak_rss_mb_largest_process": 372.96875,
+ "nodes": 43946167,
+ "nodes_per_cpu_second": 54577.87512929922,
+ "games": 162,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "depths": {
+   "2": {
+    "depth": 2,
+    "level": 7,
+    "wins": 54,
+    "draws": 93,
+    "losses": 15,
+    "games": 162,
+    "score": 0.6203703703703703,
+    "elo_vs_level": 85.31637839243638,
+    "elo_interval_95": [
+     51.562346942918424,
+     120.73254229547273
+    ],
+    "llr": 10.472878731703258,
+    "verdict": "accept H1",
+    "movetime": 0.1,
+    "min_games": 160
+   }
+  }
+ },
+ "notes": []
+}

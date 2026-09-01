@@ -1,0 +1,68 @@
+{
+ "tool": "calibrate",
+ "started_at": "2026-09-01T16:15:47+00:00",
+ "finished_at": "2026-09-01T16:27:14+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "engine": "/Users/ercanholasoglu/Desktop/atropos/build/atropos",
+  "name": "atropos",
+  "levels": "4-7",
+  "games_per_level": 120,
+  "workers": 6,
+  "movetime": 0.3,
+  "max_plies": 160
+ },
+ "wall_seconds": 499.27400670805946,
+ "cpu_seconds": 2657.143633,
+ "cpu_per_wall": 5.322014760030782,
+ "peak_rss_mb_largest_process": 29.625,
+ "nodes": 79543620,
+ "nodes_per_cpu_second": 29935.762226821254,
+ "games": 180,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "engine": "atropos",
+  "reported_name": "Atropos 0.0.1",
+  "performance_rating": 1467.4188482856562,
+  "rows": [
+   {
+    "level": 4,
+    "level_elo": 1200,
+    "games": 120,
+    "wins": 56,
+    "draws": 61,
+    "losses": 3,
+    "score": 0.7208333333333333,
+    "implied_elo": 1364.7885201711877,
+    "implied_interval": [
+     1300.3812621255279,
+     1442.0166350670381
+    ],
+    "complete": true
+   },
+   {
+    "level": 5,
+    "level_elo": 1500,
+    "games": 60,
+    "wins": 28,
+    "draws": 23,
+    "losses": 9,
+    "score": 0.6583333333333333,
+    "implied_elo": 1613.9372938282822,
+    "implied_interval": [
+     1526.684576403143,
+     1718.1926140453236
+    ],
+    "complete": false
+   }
+  ]
+ },
+ "notes": []
+}

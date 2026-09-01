@@ -72,6 +72,22 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
             engine.node_limit = int(digits)
             engine.node_limit_hard = flag.startswith("nodes")
             engine.name = f"L{level}-{flag}"
+        elif flag == "v1":
+            # The instrument as it stood before the v2 cut: rook-on-open-file
+            # term in the evaluation, SEE pruning off. Rebuilt rather than
+            # checked out, so both instruments can play each other in one
+            # process and the cut can be measured directly instead of inferred
+            # from two separate anchorings.
+            from engine.evaluation import tapered
+            from engine.evaluation.positional import positional_score_rooks
+
+            searcher = getattr(engine, "searcher", None)
+            if searcher is not None and hasattr(searcher.config, "use_see_pruning"):
+                searcher.config.use_see_pruning = False
+            engine.static_eval = lambda board: (  # type: ignore[assignment]
+                tapered.tapered_pst(board) + positional_score_rooks(board)
+            )
+            engine.name = f"L{level}-v1"
         elif flag == "see":
             searcher = getattr(engine, "searcher", None)
             if searcher is None or not hasattr(searcher.config, "use_see_pruning"):
@@ -86,7 +102,7 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
         elif flag:
             raise SystemExit(
                 f"unknown engine flag {flag!r}; defined flags are "
-                f"'see', 'uniform', 'nodes<N>' and 'soft<N>'"
+                f"'v1', 'see', 'uniform', 'nodes<N>' and 'soft<N>'"
             )
         return engine
 

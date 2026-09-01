@@ -1,0 +1,119 @@
+{
+ "tool": "speed_elo",
+ "started_at": "2026-09-01T17:24:20+00:00",
+ "finished_at": "2026-09-01T17:25:41+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "arm": "movetime",
+  "level": 7,
+  "base_nodes": 5000,
+  "base_movetime": 0.09,
+  "divisors": [
+   1.5,
+   2,
+   4,
+   8
+  ],
+  "games_per_pairing": 240,
+  "workers": 6,
+  "max_plies": 200
+ },
+ "wall_seconds": 81.2506428330671,
+ "cpu_seconds": 289.817482,
+ "cpu_per_wall": 3.566956172832285,
+ "peak_rss_mb_largest_process": 121.1875,
+ "nodes": 12612802,
+ "nodes_per_cpu_second": 43519.81085806273,
+ "games": 47,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "pairings": [
+   {
+    "arm": "movetime",
+    "divisor": 1.5,
+    "doublings": 0.5849625007211562,
+    "games": 240,
+    "score_for_full_speed": 0.625,
+    "elo_for_slowed": -88.73949984654253,
+    "interval_for_slowed": [
+     -135.95944918762154,
+     -44.54044596751224
+    ],
+    "predicted_elo_for_slowed": null,
+    "budget_nodes": null,
+    "budget_seconds": 0.06,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 2,
+    "doublings": 1.0,
+    "games": 240,
+    "score_for_full_speed": 0.6958333333333333,
+    "elo_for_slowed": -143.75744441085095,
+    "interval_for_slowed": [
+     -194.6102208935445,
+     -98.16549237811277
+    ],
+    "predicted_elo_for_slowed": -60.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.045,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 4,
+    "doublings": 2.0,
+    "games": 240,
+    "score_for_full_speed": 0.7875,
+    "elo_for_slowed": -227.55665123012315,
+    "interval_for_slowed": [
+     -287.10302859514314,
+     -177.88133509981265
+    ],
+    "predicted_elo_for_slowed": -120.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.0225,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 8,
+    "doublings": 3.0,
+    "games": 240,
+    "score_for_full_speed": 0.7645833333333333,
+    "elo_for_slowed": -204.63504830746783,
+    "interval_for_slowed": [
+     -261.3757313384106,
+     -156.31022941585658
+    ],
+    "predicted_elo_for_slowed": -180.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.01125,
+    "complete": true
+   }
+  ],
+  "fit": {
+   "elo_per_doubling": -88.1794170855641,
+   "standard_error": 15.754397579900585,
+   "interval": [
+    -119.05803634216925,
+    -57.30079782895895
+   ],
+   "residuals": [
+    -37.15784751603711,
+    -55.578027325286854,
+    -51.19781705899496,
+    59.90320294922449
+   ]
+  }
+ },
+ "notes": []
+}

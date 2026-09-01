@@ -1,0 +1,98 @@
+{
+ "tool": "calibrate",
+ "started_at": "2026-09-01T16:37:02+00:00",
+ "finished_at": "2026-09-01T16:46:21+00:00",
+ "commit": "f3b9882",
+ "tree_dirty": true,
+ "parameters": {
+  "engine": "/Users/ercanholasoglu/Desktop/atropos/build/atropos",
+  "name": "atropos",
+  "levels": "4-7",
+  "games_per_level": 120,
+  "workers": 6,
+  "movetime": 0.3,
+  "max_plies": 160
+ },
+ "wall_seconds": 558.6202441661153,
+ "cpu_seconds": 2276.8087480000004,
+ "cpu_per_wall": 4.07577199676808,
+ "peak_rss_mb_largest_process": 100.96875,
+ "nodes": 66669302,
+ "nodes_per_cpu_second": 29281.906993094526,
+ "games": 124,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "engine": "atropos",
+  "reported_name": "Atropos 0.0.1",
+  "performance_rating": 1505.717641704075,
+  "rows": [
+   {
+    "level": 4,
+    "level_elo": 1200,
+    "games": 120,
+    "wins": 56,
+    "draws": 61,
+    "losses": 3,
+    "score": 0.7208333333333333,
+    "implied_elo": 1364.7885201711877,
+    "implied_interval": [
+     1300.3812621255279,
+     1442.0166350670381
+    ],
+    "complete": true
+   },
+   {
+    "level": 5,
+    "level_elo": 1500,
+    "games": 120,
+    "wins": 44,
+    "draws": 63,
+    "losses": 13,
+    "score": 0.6291666666666667,
+    "implied_elo": 1591.8347762593025,
+    "implied_interval": [
+     1529.7728514142213,
+     1660.2888932814822
+    ],
+    "complete": true
+   },
+   {
+    "level": 6,
+    "level_elo": 1800,
+    "games": 120,
+    "wins": 5,
+    "draws": 25,
+    "losses": 90,
+    "score": 0.14583333333333334,
+    "implied_elo": 1492.9256733178086,
+    "implied_interval": [
+     1381.962206368174,
+     1568.7691548288299
+    ],
+    "complete": true
+   },
+   {
+    "level": 7,
+    "level_elo": 2100,
+    "games": 79,
+    "wins": 1,
+    "draws": 8,
+    "losses": 70,
+    "score": 0.06329113924050633,
+    "implied_elo": 1631.895313842017,
+    "implied_interval": [
+     1294.5533427418836,
+     1748.8631061870951
+    ],
+    "complete": false
+   }
+  ]
+ },
+ "notes": []
+}
