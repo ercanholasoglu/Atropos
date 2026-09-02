@@ -1,9 +1,9 @@
-# DRAFT — pre-registration: how narrow can the position key get?
+# Pre-registration: how narrow can the position key get?
 
-**Status: draft, awaiting approval. No games have been played and no
-collision counting has been run.** The rule this project set is that a run
-begins only after a committed pre-registration; this document is written to
-*become* that, not to substitute for it.
+**Approved 2026-09-02 and committed before any run.** Nothing below had been
+measured when the predictions were written: no games played, no collision
+counting done. The rule this project set is that a run begins only after a
+committed pre-registration, and this is it.
 
 ---
 
@@ -137,5 +137,3 @@ is a property of the configuration, not of the number 32.**
 * Every run recorded with telemetry.
 
 ---
-
-**Awaiting approval. Nothing runs until this is committed.**
