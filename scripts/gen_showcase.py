@@ -658,10 +658,10 @@ hr.rule {{ border: 0; border-top: 1px solid var(--rule); margin: 4rem 0 0; }}
     her sayının nereden geldiğinin, hangi tahminin tutmadığının ve neyin hâlâ
     bilinmediğinin kaydı.</p>
   <div class="stats">
-    <div class="stat"><div class="v">10.864</div><div class="k">telemetrili oyun</div></div>
-    <div class="stat"><div class="v">14</div><div class="k">ön-kayıtlı tahmin</div></div>
-    <div class="stat"><div class="v">6</div><div class="k">tutmadı</div></div>
-    <div class="stat"><div class="v">8</div><div class="k">geri alınan iddia</div></div>
+    <div class="stat"><div class="v">22.652</div><div class="k">telemetrili maç oyunu</div></div>
+    <div class="stat"><div class="v">18</div><div class="k">ön-kayıtlı tahmin</div></div>
+    <div class="stat"><div class="v">7</div><div class="k">tutmadı</div></div>
+    <div class="stat"><div class="v">9</div><div class="k">geri alınan iddia</div></div>
     <div class="stat"><div class="v">732</div><div class="k">test</div></div>
   </div>
 </header>
