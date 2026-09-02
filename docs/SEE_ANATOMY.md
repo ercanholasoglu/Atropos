@@ -90,3 +90,57 @@ endgame and costs throughput to compute, switching it off below some phase
 threshold should be free or better. That is a one-line change and a
 600-game measurement, and it exists as a question only because the games were
 kept.
+
+---
+
+## Correction: "no depth gain" is not "no work saved"
+
+The section above ends by proposing an experiment — gate SEE off below some
+phase, since it buys no depth in the endgame and costs throughput to compute.
+**That experiment should not be run, and the reason is a measurement that took
+thirty seconds and reverses the premise.**
+
+Searching the endgame positions from these very games, at fixed depth 4, with
+and without SEE:
+
+| positions | SEE | nodes | seconds | nps |
+|---|---|---:|---:|---:|
+| endgame (phase ≤ 9) | on | 176,557 | 2.51 | 70,328 |
+| endgame | **off** | 207,643 | 2.83 | 73,243 |
+| non-endgame | on | 404,279 | 7.75 | 52,167 |
+| non-endgame | **off** | 663,624 | 11.89 | 55,823 |
+
+**Turning SEE off in the endgame searches 17.6% more nodes and takes 12.9%
+longer.** It saves real work there. Gating it off would make the endgame
+*slower* — about −28 Elo in those positions, or −12 Elo over a whole game at
+the 44% of moves that are endgame moves.
+
+### Why the match logs said otherwise
+
+They did not, quite. They said the *depth* gain is −0.04 ply, and depth is
+quantised. Each additional ply costs roughly 2.6× the previous one, measured
+earlier: depth 5 is 0.49 s per move and depth 6 is 1.28 s. **A 12.9% time
+saving is nowhere near the cost of one more ply**, so it buys real work and
+zero whole plies, and shows up in a depth average as nothing.
+
+The capture-density correlation in the previous section stands — SEE's *depth*
+gain does track capture density, monotonically, +0.96. What does not follow,
+and what I inferred anyway, is that no depth gain means no benefit.
+
+### What this changes about the earlier section
+
+The phase table stays: SEE gains +0.36 ply in the opening, +0.22 in the
+middlegame, −0.04 in the endgame. **The conclusion drawn from its last row is
+withdrawn.** SEE is doing useful work in endgames; the work is just too small
+to cross a ply boundary.
+
+It also sharpens the non-endgame figure. On real middlegame positions from
+these games, SEE saves **53.4% of the time to a given depth** — far more than
+the 23.3% measured on the eight book positions, which are quiet openings with
+one capture available on average. The book understated the effect because the
+book is not where the effect lives.
+
+**Cost of finding this out: one deterministic measurement instead of 600
+games.** The proposal in the previous section survived exactly as long as it
+took to check its premise, which is the cheapest possible place for a bad
+experiment to die.
