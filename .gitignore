@@ -6,7 +6,11 @@ __pycache__/
 htmlcov/
 .mypy_cache/
 data/*.db
+# Games and per-move logs are outputs, not source. A single 1,200-game
+# component log is 63 MB; the analysis that reads it lives in docs/, and the
+# run that regenerates it is one command.
 data/games/*.pgn
+data/games/*.jsonl
 .DS_Store
 .env
 !data/games/.gitkeep

@@ -93,6 +93,17 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
                 lambda board: tapered.tapered_pst(board) + positional_score_rooks(board),
             )
             engine.name = f"L{level}-v1"
+        elif flag == "nosee":
+            # SEE pruning off, everything else as instrument v2 has it. This
+            # is what isolates SEE now that it is the default: `L7-see` and
+            # `L7` became the same engine at the v2 cut, and `L7-v1` also puts
+            # the rook term back, which measures the whole cut rather than the
+            # one change.
+            searcher = getattr(engine, "searcher", None)
+            if searcher is None or not hasattr(searcher.config, "use_see_pruning"):
+                raise SystemExit(f"L{level} has no quiescence to prune")
+            searcher.config.use_see_pruning = False
+            engine.name = f"L{level}-nosee"
         elif flag == "see":
             searcher = getattr(engine, "searcher", None)
             if searcher is None or not hasattr(searcher.config, "use_see_pruning"):
@@ -107,7 +118,7 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
         elif flag:
             raise SystemExit(
                 f"unknown engine flag {flag!r}; defined flags are "
-                f"'v1', 'see', 'uniform', 'nodes<N>' and 'soft<N>'"
+                f"'v1', 'see', 'nosee', 'uniform', 'nodes<N>' and 'soft<N>'"
             )
         return engine
 

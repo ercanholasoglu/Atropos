@@ -1,0 +1,24 @@
+{
+ "a": "L7",
+ "b": "L7-nosee",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "book": "default",
+ "wins": 554,
+ "draws": 317,
+ "losses": 329,
+ "games": 1200,
+ "score": 0.59375,
+ "llr": 23.61910177662142,
+ "elo_estimate": 65.9240994583969,
+ "verdict": "accept H1",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 100.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 1200,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}
