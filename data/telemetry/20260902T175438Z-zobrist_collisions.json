@@ -1,0 +1,68 @@
+{
+ "tool": "zobrist_collisions",
+ "started_at": "2026-09-02T17:54:38+00:00",
+ "finished_at": "2026-09-02T17:54:39+00:00",
+ "commit": "3ddbdc1",
+ "tree_dirty": true,
+ "parameters": {
+  "depth": 4,
+  "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "widths": [
+   16,
+   24,
+   32,
+   48
+  ]
+ },
+ "wall_seconds": 0.7387912080157548,
+ "cpu_seconds": 0.7228709999999998,
+ "cpu_per_wall": 0.978451005043071,
+ "peak_rss_mb_largest_process": 35.84375,
+ "nodes": 206604,
+ "nodes_per_cpu_second": 285810.33130392566,
+ "games": 0,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "depth": 4,
+  "nodes": 206604,
+  "distinct": 77796,
+  "seconds": 0.7187555420678109,
+  "rows": [
+   {
+    "width": 16,
+    "collisions": 32384,
+    "distinct": 77796,
+    "per_million": 416268.1885958147,
+    "expected": 46174.75598144531
+   },
+   {
+    "width": 24,
+    "collisions": 189,
+    "distinct": 77796,
+    "per_million": 2429.4308190652478,
+    "expected": 180.37014055252075
+   },
+   {
+    "width": 32,
+    "collisions": 2,
+    "distinct": 77796,
+    "per_million": 25.708262635611085,
+    "expected": 0.7045708615332842
+   },
+   {
+    "width": 48,
+    "collisions": 0,
+    "distinct": 77796,
+    "per_million": 0.0,
+    "expected": 1.0750898155720279e-05
+   }
+  ]
+ },
+ "notes": []
+}

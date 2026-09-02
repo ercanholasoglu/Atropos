@@ -1,0 +1,36 @@
+{
+ "depth": 5,
+ "nodes": 5072213,
+ "distinct": 898812,
+ "seconds": 18.39083275012672,
+ "rows": [
+  {
+   "width": 16,
+   "collisions": 833276,
+   "distinct": 898812,
+   "per_million": 927085.9757101596,
+   "expected": 6163505.64074707
+  },
+  {
+   "width": 24,
+   "collisions": 23609,
+   "distinct": 898812,
+   "per_million": 26266.894522992574,
+   "expected": 24076.193909168243
+  },
+  {
+   "width": 32,
+   "collisions": 90,
+   "distinct": 898812,
+   "per_million": 100.1321744703008,
+   "expected": 94.04763245768845
+  },
+  {
+   "width": 48,
+   "collisions": 0,
+   "distinct": 898812,
+   "per_million": 0.0,
+   "expected": 0.0014350529854993965
+  }
+ ]
+}
