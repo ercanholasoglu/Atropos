@@ -8,12 +8,12 @@
    "arm": "movetime",
    "divisor": 2.0,
    "doublings": 1.0,
-   "games": 22,
-   "score_for_full_speed": 0.7045454545454546,
-   "elo_for_slowed": -150.96733661097443,
+   "games": 101,
+   "score_for_full_speed": 0.6633663366336634,
+   "elo_for_slowed": -117.83835426342854,
    "interval_for_slowed": [
-    -372.6214139732324,
-    -9.65566631824979
+    -196.00868840523782,
+    -49.81659816292878
    ],
    "predicted_elo_for_slowed": -60.0,
    "budget_nodes": null,

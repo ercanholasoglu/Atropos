@@ -1,7 +1,7 @@
 # Atropos — yapılan işler ve son durum
 
 **Repo:** `github.com/ercanholasoglu/Atropos` (private) · **69 commit** · 561 dosya
-**Test:** 818 geçiyor, 5 xfail · mypy temiz
+**Test:** 842 toplanıyor (17 slow ayrılıyor, 5 xfail) · mypy temiz — son tam koşu 2b bitince
 **Ölçüm:** 232 koşu, **16.168 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
 **Showcase:** https://claude.ai/code/artifact/4f9ebb66-e882-451a-a152-470a9632e0b3
 
