@@ -94,3 +94,35 @@ place. The criterion it would have supported — *"is 16 bits clearly worse"* �
 is answered in part (b) by games, where saturation is the whole point.
 
 Reproduce: `python -m scripts.zobrist_width --depth 5`
+
+## Between (a) and (b): a deterministic prediction, recorded before the games
+
+Part (a) counted collisions over perft. The table does not see perft; it sees
+whatever one game puts in it. So before spending games, the same engine was
+played against itself at fixed depth 4 with no clock — fully deterministic, one
+game, the table persisting across moves as it does in play. Any divergence is
+the truncated key and nothing else.
+
+| width | first divergence | plies identical | tt entries filled | hits | index collisions |
+|---|---|---|---|---|---|
+| full | — | 73 | 55,584 | 30,132 | 1,478 |
+| 48 | none | 73 | 55,584 | 30,132 | 1,478 |
+| 32 | none | 73 | 55,584 | 30,133 | 1,478 |
+| 24 | none | 73 | 55,575 | 30,358 | 1,393 |
+| 16 | ply 6 | 5 | 47,951 | 181,271 | 0 |
+
+Read the last two columns together. At 16 bits the key is narrower than the
+table's index, so every index collision *becomes* a silent false hit: index
+collisions fall to zero and hits rise six-fold, from 30,132 to 181,271. Nothing
+is detected because there is nothing left to detect with. At 24 bits the same
+conversion happens 85 times over a whole game — 1,478 index collisions down to
+1,393, hits up by 226 — and the engine still plays all 73 plies identically.
+
+**Prediction, fixed before any game is played:** 48 and 32 bits will measure 0
+Elo, not "a small effect" — on this line the search is byte-identical, so games
+can only add noise around zero. 24 bits will be indistinguishable from zero at
+400 games. 16 bits will be clearly worse.
+
+The registered arms are run anyway, all four at the registered 400 games. A
+pre-registration that gets abandoned when the answer looks obvious in advance
+is not one.

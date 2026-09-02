@@ -80,11 +80,20 @@ class TranspositionTable:
     as a miss.
     """
 
-    def __init__(self, size: int = DEFAULT_SIZE) -> None:
+    def __init__(self, size: int = DEFAULT_SIZE, key_bits: int | None = None) -> None:
         if size & (size - 1):
             raise ValueError("size must be a power of two")
+        if key_bits is not None and not 1 <= key_bits <= 64:
+            raise ValueError("key_bits must be between 1 and 64")
         self.size = size
         self.mask = size - 1
+        # A narrower key is an experiment, not an option worth having: see
+        # `docs/ZOBRIST_PREREG.md`. `None` keeps the full key. The truncation
+        # happens before the index is taken, because that is what a genuinely
+        # narrow key would do — a 16-bit key cannot address more than 2**16
+        # slots however large the table is.
+        self.key_bits = key_bits
+        self.key_mask = -1 if key_bits is None else (1 << key_bits) - 1
         self.entries: list[TTEntry | None] = [None] * size
         self.hits = 0
         self.misses = 0
@@ -97,6 +106,7 @@ class TranspositionTable:
 
     def lookup(self, key: int) -> TTEntry | None:
         """The entry for ``key``, or None. Does not touch hit/miss counters."""
+        key &= self.key_mask
         entry = self.entries[key & self.mask]
         return entry if entry is not None and entry.key == key else None
 
@@ -110,6 +120,7 @@ class TranspositionTable:
         tight enough for the current window; otherwise it is ``None`` and only
         the move comes back — still worth having, as the first move to try.
         """
+        key &= self.key_mask
         entry = self.entries[key & self.mask]
         if entry is None or entry.key != key:
             self.misses += 1
@@ -138,6 +149,7 @@ class TranspositionTable:
         ply: int,
     ) -> None:
         """Record a result, keeping the deeper of two entries in a slot."""
+        key &= self.key_mask
         index = key & self.mask
         existing = self.entries[index]
         if existing is not None and existing.key != key:

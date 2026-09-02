@@ -71,6 +71,10 @@ class SearchConfig:
     # deterministic count of the throughput it saves independently predicts
     # +65, agreeing to within the 15 Elo the pruning costs in accuracy.
     use_see_pruning: bool = True
+    # Width of the position key, in bits. None is the full key. Anything else
+    # is the Zobrist width experiment (`docs/ZOBRIST_PREREG.md`) and makes the
+    # table return other positions' results silently; it is not a setting.
+    key_bits: int | None = None
 
 
 class AdvancedSearch:
@@ -84,7 +88,9 @@ class AdvancedSearch:
     ) -> None:
         self.evaluate = evaluate
         self.config = config or SearchConfig()
-        self.tt = tt or (TranspositionTable() if self.config.use_tt else None)
+        self.tt = tt or (
+            TranspositionTable(key_bits=self.config.key_bits) if self.config.use_tt else None
+        )
         self.killers = KillerMoves(MAX_PLY)
         self.history = HistoryHeuristic()
         self.pv_table = new_pv_table()

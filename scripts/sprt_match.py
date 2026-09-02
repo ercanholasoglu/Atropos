@@ -34,6 +34,7 @@ from elo.calculator import elo_diff_from_score
 from elo.sprt import Sprt, SprtConfig, Verdict
 from engine.base_engine import BaseEngine
 from engine.levels import available_levels, create_engine
+from engine.search.transposition import TranspositionTable
 from scripts.eval_ab import VARIANTS, VariantEngine
 from tournament.match import play_game
 from tournament.openings import OPENING_BOOK, load_book
@@ -93,6 +94,19 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
                 lambda board: tapered.tapered_pst(board) + positional_score_rooks(board),
             )
             engine.name = f"L{level}-v1"
+        elif flag.startswith("key"):
+            # Position key truncated to N bits, part (b) of the Zobrist
+            # experiment. The table is rebuilt rather than reconfigured
+            # because its entries hold full-width keys already.
+            digits = flag[3:]
+            if not digits.isdigit():
+                raise SystemExit(f"{flag!r} needs a bit width, e.g. L7-key24")
+            searcher = getattr(engine, "searcher", None)
+            if searcher is None or searcher.tt is None:
+                raise SystemExit(f"L{level} has no transposition table to narrow")
+            searcher.config.key_bits = int(digits)
+            searcher.tt = TranspositionTable(key_bits=int(digits))
+            engine.name = f"L{level}-{flag}"
         elif flag == "nosee":
             # SEE pruning off, everything else as instrument v2 has it. This
             # is what isolates SEE now that it is the default: `L7-see` and
@@ -118,7 +132,8 @@ def build(name: str, seed: int, movetime: float) -> BaseEngine:
         elif flag:
             raise SystemExit(
                 f"unknown engine flag {flag!r}; defined flags are "
-                f"'v1', 'see', 'nosee', 'uniform', 'nodes<N>' and 'soft<N>'"
+                f"'v1', 'see', 'nosee', 'uniform', 'key<N>', 'nodes<N>' "
+                f"and 'soft<N>'"
             )
         return engine
 
