@@ -1,8 +1,8 @@
 # Atropos — yapılan işler ve son durum
 
-**Repo:** `github.com/ercanholasoglu/Atropos` (private) · **69 commit** · 561 dosya
-**Test:** 842 toplanıyor (17 slow ayrılıyor, 5 xfail) · mypy temiz — son tam koşu 2b bitince
-**Ölçüm:** 232 koşu, **16.168 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
+**Repo:** `github.com/ercanholasoglu/Atropos` (private) · **75 commit**
+**Test:** 820 geçiyor, 5 xfail, 17 slow ayrılıyor · mypy temiz
+**Ölçüm:** 266 koşu · **22.652 maç oyunu** + 44.175 self-play eğitim oyunu, hepsi commit hash'i ve CPU/RAM telemetrisiyle
 **Showcase:** https://claude.ai/code/artifact/4f9ebb66-e882-451a-a152-470a9632e0b3
 
 ---
@@ -300,6 +300,77 @@ dışında** raporlanıyor.
 okuyarak bulundu:** maçın hamle kancası hamle *oynandıktan sonra* ateşleniyor, yani
 loglanan tahta hamle sonrası — oysa depth/nodes/pv hamle öncesini tarif ediyor. Kayıt artık
 ikisini de taşıyor, ayrışım öncekinden alınıyor.
+
+## 7.9 Uzun zaman kontrolü: 2b — eğim, ikinci bölgede
+
+**450 oyun, referans 1,0 sn (derinlik ~5,6): −129 Elo/katlama [−151, −107].** χ² = 2,1 (2 sd).
+
+Ön-kayıtlı nokta tahmini −100…−140 idi ve **−129 içinde**. Ama ayırt etme ölçütü
+("−127'den belirgin sığ") **tutmadı**: aralık −127'yi kapsıyor. Sığ referanstaki −162'ye
+karşı fark **+33 ± 21 = 1,56σ**, çözülmüyor. Önceden yazdığım ölçütlere göre geçerli olan
+okuma "A noktasından ayırt edilemez".
+
+**Öngörmediğim ve sonuçtan değerli olan kısım:** derin referanslı ölçüm çok daha iyi
+koşullanmış — x-hataları 0,009-0,021 katlama, sığ referansta 0,11-0,31. Sebebi
+`check_interval`: 0,09 sn'de bütçeler 2.048'lik saat-kontrol granülaritesine yakın, bölenler
+temiz katlama vermiyor (0,33/0,62/1,31/1,85). 1,0 sn'de 0,985/1,923/2,918'e oturuyor.
+**2a'nın yanında ikinci bağımsız gerekçe: 0,1 sn her şeyin ölçüleceği yanlış saatti.**
+
+Substrat sorusuna cevap tek eğim değil **aralık: 130-160 Elo/katlama**. Derinlik 7 ve 9
+noktaları koşulmadı ve gerekçeleri fiyatlandırıldı (6 saat, 60 saat).
+
+## 7.10 Öğrenme veri eğrisi (madde 4) — tahminim çürütüldü
+
+| eğitim | Elo (tablolara karşı) | süre |
+|---:|---:|---:|
+| 1.000 | −57 [−79, −36] | 253 sn |
+| 3.000 | **+10** [−11, +32] | 718 sn |
+| 10.000 | −63 [−85, −42] | 2.656 sn |
+| 30.000 | **−193** [−219, −169] | 6.936 sn |
+
+Eğim **−27 [−33, −21]** — ön-kayıttaki +40…+80'in ve çürütme sınırının ([0, +150]) dışında,
+ters işaretli. Ama doğru da tarif etmiyor (χ² = 76,5): eğri **3.000'de tepe yapıp düşüyor**.
+
+**Mekanizma ölçüldü, sonra müdahaleyle sınandı.** Materyal monotonik çürüyor (piyon 100→58,
+at 320→226), yerleşim yayılımı şişiyor (vezir std 14→58, el yazımında 7,3). 30k'nın
+yerleşimini koruyup yalnızca materyal ortalamalarını geri koydum:
+
+| | Elo |
+|---|---:|
+| 30k, eğitildiği gibi | −193 |
+| **30k, materyal onarılmış** | **−122** |
+| 1k | −57 |
+
+Materyali geri koymak **+71 ± 18 (4σ)** kurtarıyor — kontrollü tek değişken, yani nedensel.
+Kalan **−65 ± 16** yerleşim deseninin kendisi (eleme yoluyla, daha zayıf kanıt).
+
+**Teslim edilecek ekstrapolasyon yok, ve bulgu bu:** eğri yükselmiyor, tepesi bile
++10 [−11, +32] — sıfırı kapsıyor. Dönüş 3.000 oyunda, **on iki dakikalık eğitimde**.
+44.000 oyun, kalan 256.000'in boşa gideceği bilgisini ve sebebini satın aldı: *materyali
+yerinde tutan hiçbir şey yok.* Savunduğu değişiklik bütçeye değil öğreniciye.
+
+## 7.11 SEE'nin anatomisi (madde 5a)
+
+Projenin en iyi kurulmuş etkisi "sayıldı ama incelenmedi"ydi. Aynı 1.200 oyun,
+**134.317 hamle** loglanarak yeniden koşuldu.
+
+Önce bir hata: `L7-see vs L7` alet v2'de hiçbir şey ölçmüyor (SEE artık varsayılan, ikisi
+aynı motor); `L7-v1` de kale terimini geri koyduğu için tüm kesiti ölçer. **`L7-nosee`**
+eklendi ve koşudan önce doğrulandı.
+
+**Sonuç: +66 Elo [+46, +86]**, kesit öncesi +50 [+30, +70] ile tutarlı.
+
+Loglar mekanizmayı gösterdi: aynı saatte **3,99 vs 3,83 pli**, üstelik node başına biraz
+daha yavaş çalışarak. Ve eşit dağılmıyor — açılış **+0,36**, orta oyun +0,22, **son oyun
+−0,04** (loglanan hamlelerin yarısı orada).
+
+Sebep budadığı şey: 33.000 pozisyon mevcut alış sayısına göre gruplanınca kazanç
+**0 alışta +0,05'ten 6+ alışta +0,63'e** monotonik çıkıyor — ek alış başına +0,095 pli,
+**korelasyon +0,96**. Bunu test değil **betimleme** olarak kaydettim: öngörü veriden okundu,
+önceden yapılmadı.
+
+Sormayı mümkün kıldığı soru: **SEE'yi faza göre kapatmak bedava ya da daha iyi olmalı** —
+tek satır, 600 oyun, ve yalnızca oyunlar saklandığı için var.
 
 ## 8. Açık kalanlar
 
