@@ -178,3 +178,75 @@ It also sharpens something already in the README, which noted that Level 7's
 advantage was clock-dependent from a 16-game comparison at 0.3 s and 1.5 s.
 That observation was right and under-powered. This is the same finding at 300
 games with an interval.
+
+## 2b — the slope, measured a second time
+
+**450 games, reference 1.0 s (depth ~5.6): −129 Elo per doubling,
+interval [−151, −107].** χ² = 2.1 on 2 dof, p ≈ 0.71.
+
+| budget | games | nodes | doublings | Elo | ±y | ±x |
+|---|---:|---:|---:|---:|---:|---:|
+| B/2 | 150 | 31,795 | 0.985 | −115 | 30 | 0.009 |
+| B/4 | 150 | 16,589 | 1.923 | −297 | 40 | 0.012 |
+| B/8 | 150 | 8,325 | 2.918 | −346 | 44 | 0.021 |
+
+### Against what was written down
+
+| criterion | declared | outcome |
+|---|---|---|
+| point estimate | −100 to −140 | **−129 — inside** |
+| falsification | outside [−250, −30] | not approached |
+| "clearly shallower than −127" → flattening | — | **not met**: the interval contains −127 |
+| "indistinguishable from point A" → flat | — | **this is the one that applies** |
+
+**The prediction's number was right and its discrimination was not.** −129
+against −162 is a difference of **+33 ± 21, or 1.56σ**, which does not resolve.
+By the criterion fixed in advance, the honest reading is the second row: **the
+slope is not distinguishable between reference depth 3.0 and reference depth
+5.6.**
+
+It moved in the predicted direction, and that is worth exactly as much as the
+direction of a 1.6σ shift is worth — which is to say it is consistent with
+flattening and equally consistent with a flat curve. Separating −129 from −162
+needs roughly four times these games, about six hours at this clock, and the
+question does not justify it: for every conversion this project actually makes,
+the two numbers give answers within 20%.
+
+### The part that was not predicted, and is better than the result
+
+**The deep-reference measurement is far better conditioned than the shallow
+one.** Compare the x-errors: 0.009 to 0.021 doublings here, against 0.11 to
+0.31 at the 0.09 s reference.
+
+The reason is the check interval. At 0.09 s the budgets were 1,300 to 4,800
+nodes, close enough to the 2,048-node clock-check granularity that what each
+budget actually bought wobbled by 5% between repetitions and the divisors did
+not deliver clean doublings — 0.33, 0.62, 1.31, 1.85 where 0.58, 1, 2, 3 were
+asked for. At 1.0 s the budgets are 8,000 to 63,000 nodes, far above that
+floor, and the divisors land on **0.985, 1.923, 2.918**.
+
+The consequence is visible in the fit. At the shallow reference a
+through-origin line was rejected and one point sat 3.6σ out until the error
+bars were corrected; here χ² is 2.1 on 2 dof with no point beyond 1.2σ.
+
+**A measurement taken at the operating point this project has always used is
+fighting its own instrument's granularity.** That is a second, independent
+reason — alongside 2a's depth finding — that 0.1 s was the wrong clock to have
+measured everything at.
+
+### What this gives the substrate question
+
+Elo per doubling against reference depth:
+
+| reference | depth | Elo per doubling | 95% interval |
+|---|---:|---:|---:|
+| 0.09 s | 3.0 | −162 | [−198, −127] |
+| 1.00 s | 5.6 | −129 | [−151, −107] |
+| ~3.1 s | 7.0 | **not run** | ~6 h |
+| — | 9.0 | **not run** | ~60 h |
+
+Two points, consistent with each other, and no evidence of curvature between
+them. **A substrate change that made this engine k times faster would be worth
+roughly 130 to 160 Elo per doubling anywhere in the range measured** — and the
+honest form of that answer is a range with two endpoints rather than a single
+slope, because the two measurements do not separate.

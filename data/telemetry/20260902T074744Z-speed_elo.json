@@ -1,0 +1,100 @@
+{
+ "tool": "speed_elo",
+ "started_at": "2026-09-02T07:47:44+00:00",
+ "finished_at": "2026-09-02T07:56:41+00:00",
+ "commit": "925251e",
+ "tree_dirty": true,
+ "parameters": {
+  "arm": "movetime",
+  "level": 7,
+  "base_nodes": 5000,
+  "base_movetime": 1.0,
+  "divisors": [
+   2.0,
+   4.0,
+   8.0
+  ],
+  "games_per_pairing": 150,
+  "workers": 6,
+  "max_plies": 200
+ },
+ "wall_seconds": 536.7257454160135,
+ "cpu_seconds": 2358.799563,
+ "cpu_per_wall": 4.394794889467629,
+ "peak_rss_mb_largest_process": 228.84375,
+ "nodes": 111509482,
+ "nodes_per_cpu_second": 47273.826801196505,
+ "games": 49,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "pairings": [
+   {
+    "arm": "movetime",
+    "divisor": 2.0,
+    "doublings": 1.0,
+    "games": 150,
+    "score_for_full_speed": 0.66,
+    "elo_for_slowed": -115.22600739984543,
+    "interval_for_slowed": [
+     -177.93900236001983,
+     -59.06425336281045
+    ],
+    "predicted_elo_for_slowed": -60.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.5,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 4.0,
+    "doublings": 2.0,
+    "games": 150,
+    "score_for_full_speed": 0.8466666666666667,
+    "elo_for_slowed": -296.8303539753457,
+    "interval_for_slowed": [
+     -390.2165247789665,
+     -229.12334556615014
+    ],
+    "predicted_elo_for_slowed": -120.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.25,
+    "complete": true
+   },
+   {
+    "arm": "movetime",
+    "divisor": 8.0,
+    "doublings": 3.0,
+    "games": 11,
+    "score_for_full_speed": 0.9545454545454546,
+    "elo_for_slowed": -528.8877178935676,
+    "interval_for_slowed": [
+     -2399.999826281142,
+     -277.2413083692059
+    ],
+    "predicted_elo_for_slowed": -180.0,
+    "budget_nodes": null,
+    "budget_seconds": 0.125,
+    "complete": false
+   }
+  ],
+  "fit": {
+   "elo_per_doubling": -141.77734307010738,
+   "standard_error": 13.275667835130967,
+   "interval": [
+    -167.79765202696407,
+    -115.75703411325068
+   ],
+   "residuals": [
+    26.55133567026195,
+    -13.275667835130946
+   ]
+  }
+ },
+ "notes": []
+}
