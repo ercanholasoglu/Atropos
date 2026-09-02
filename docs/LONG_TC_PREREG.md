@@ -128,3 +128,53 @@ Elo per doubling against reference depth, two points, with the third named and
 priced rather than pretended. That is the measured answer to "what would a
 substrate change be worth" — a faster engine moves along this curve, and the
 curve says how much that is worth where it would land.
+
+---
+
+# Results
+
+## 2a — the mechanism is depth, confirmed
+
+**300 games at 1.0 s: 67.17%, +124 Elo, interval [+84, +168].** W-D-L
+159-85-56.
+
+Every criterion fixed in advance:
+
+| criterion | declared | measured |
+|---|---|---|
+| point estimate | +90 to +150 | **+124** |
+| interval | roughly [+50, +190] | [+84, +168] |
+| must exclude the 0.1 s figure of +41 | — | **excluded** |
+| falsification | outside [−50, +250] | not approached |
+
+The estimate was stable from 84 games onward (+84, +116, +115, +120, +124)
+while the interval tightened, which is the shape of a real effect rather than
+the thin end of noise — the same contrast this project drew between SEE and
+`passers-rooks`.
+
+### What it says
+
+Level 7's depth advantage over Level 6 goes from **0.25 ply at 0.1 s to 1.00
+ply at 1.0 s**, and the measured gap goes from **+41 [+3, +80] to +124 [+84,
++168]** — roughly three times. Null-move pruning and late move reductions
+work through depth, and given depth to buy, they pay.
+
+### What it costs the rest of the project
+
+This is bigger than one pairing. **Every match in this repository was played at
+0.1 s**, and at that clock Level 7's defining techniques are barely engaged.
+The ladder's top rung looked marginal — under instrument v1 it was +18
+[−18, +53], not distinguishable from zero — and the reason was the operating
+point, not the engine.
+
+That does not invalidate the earlier numbers. They are correct for the clock
+they were measured at, and every comparison drawn between them is between
+engines measured at the same clock. What it changes is what they generalise
+to: **a result at 0.1 s is a result about search that has not been given room
+to work**, and the ladder's spacing, the anchor and the atropos calibration all
+inherit that.
+
+It also sharpens something already in the README, which noted that Level 7's
+advantage was clock-dependent from a 16-game comparison at 0.3 s and 1.5 s.
+That observation was right and under-powered. This is the same finding at 300
+games with an interval.
