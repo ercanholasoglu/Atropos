@@ -161,3 +161,48 @@ def test_lookup_does_not_move_the_counters():
     assert table.lookup(1) is not None
     assert table.lookup(2) is None
     assert table.hits == 0 and table.misses == 0
+
+
+def test_narrow_key_returns_another_position_silently() -> None:
+    """The failure a narrow key causes is a *false hit*, not a miss.
+
+    Two keys that differ only above the truncation are the same key to the
+    table, so the second position is handed the first one's score and move and
+    nothing reports it. This is the behaviour `docs/ZOBRIST.md` measures.
+    """
+    table = TranspositionTable(size=64, key_bits=16)
+    a = 0x1234
+    b = (1 << 40) | 0x1234  # identical in the low 16 bits, different above
+    table.store(a, depth=3, score=1.5, flag=EXACT, move=None, ply=0)
+    entry = table.lookup(b)
+    assert entry is not None
+    assert entry.score == 1.5
+
+
+def test_full_key_keeps_the_two_apart() -> None:
+    table = TranspositionTable(size=64)
+    a = 0x1234
+    b = (1 << 40) | 0x1234
+    table.store(a, depth=3, score=1.5, flag=EXACT, move=None, ply=0)
+    assert table.lookup(b) is None
+
+
+def test_narrow_key_converts_index_collisions_into_hits() -> None:
+    """A key narrower than the index cannot detect anything.
+
+    With 4 key bits and 64 slots the index is the key, so a slot mismatch is
+    impossible: the counter that used to catch collisions reads zero, and the
+    collisions it used to catch are now returned as results.
+    """
+    table = TranspositionTable(size=64, key_bits=4)
+    for key in range(0, 256, 16):  # all congruent mod 16, so all one key
+        table.store(key, depth=1, score=float(key), flag=EXACT, move=None, ply=0)
+    assert table.collisions == 0
+    assert table.lookup(0) is not None
+
+
+def test_key_bits_must_be_a_usable_width() -> None:
+    for bad in (0, 65, -1):
+        with pytest.raises(ValueError):
+            TranspositionTable(size=64, key_bits=bad)
+    TranspositionTable(size=64, key_bits=64)  # fine
