@@ -1,0 +1,30 @@
+{
+ "tool": "learning_curve_repair",
+ "started_at": "2026-09-02T13:24:38+00:00",
+ "finished_at": "2026-09-02T13:24:38+00:00",
+ "commit": "9c84843",
+ "tree_dirty": true,
+ "parameters": {
+  "source": "weights_30000",
+  "match_games": 1000,
+  "change": "each piece table re-centred on its starting material value"
+ },
+ "wall_seconds": 0.03462679195217788,
+ "cpu_seconds": 0.15217299999999995,
+ "cpu_per_wall": 4.394660649192161,
+ "peak_rss_mb_largest_process": 35.40625,
+ "nodes": 0,
+ "nodes_per_cpu_second": 0.0,
+ "games": 0,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {},
+ "notes": [
+  "run ended with BrokenProcessPool: A process in the process pool was terminated abruptly while the future was running or pending."
+ ]
+}

@@ -1,0 +1,15 @@
+{
+ "points": [
+  {
+   "training_games": "30000repaired",
+   "match_games": 1000,
+   "score_vs_tables": 0.331,
+   "elo_vs_tables": -122.23924959684172,
+   "interval": [
+    -145.67656077213763,
+    -99.82552395097984
+   ],
+   "training_seconds": 6936.091498667141
+  }
+ ]
+}

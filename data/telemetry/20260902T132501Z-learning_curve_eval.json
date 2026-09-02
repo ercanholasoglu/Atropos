@@ -1,0 +1,38 @@
+{
+ "tool": "learning_curve_eval",
+ "started_at": "2026-09-02T13:25:01+00:00",
+ "finished_at": "2026-09-02T13:30:06+00:00",
+ "commit": "9c84843",
+ "tree_dirty": true,
+ "parameters": {
+  "training_games": "30000repaired",
+  "match_games": 1000,
+  "movetime": 0.2
+ },
+ "wall_seconds": 304.96492966706865,
+ "cpu_seconds": 1701.371479,
+ "cpu_per_wall": 5.578908633387431,
+ "peak_rss_mb_largest_process": 38.0,
+ "nodes": 141250171,
+ "nodes_per_cpu_second": 83021.35820627566,
+ "games": 1000,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "training_games": "30000repaired",
+  "match_games": 1000,
+  "score_vs_tables": 0.331,
+  "elo_vs_tables": -122.23924959684172,
+  "interval": [
+   -145.67656077213763,
+   -99.82552395097984
+  ],
+  "training_seconds": 6936.091498667141
+ },
+ "notes": []
+}

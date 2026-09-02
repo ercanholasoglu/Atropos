@@ -43,7 +43,7 @@ WEIGHTS_DIR = Path("data/learning_curve")
 MOVETIME = 0.2
 
 
-def weights_path(games: int) -> Path:
+def weights_path(games: int | str) -> Path:
     return WEIGHTS_DIR / f"weights_{games}.json"
 
 
@@ -108,7 +108,28 @@ def train(sizes: list[int], args) -> None:
         print(f"{games:>6} games: {time.perf_counter() - started:.0f}s", flush=True)
 
 
-def evaluate(sizes: list[int], args) -> None:
+def _write(out: Path, results: list[dict]) -> None:
+    """Merge these points into whatever the file already holds, atomically.
+
+    Called after every point rather than at the end. The first run of this was
+    killed after three of four and wrote nothing; those points survived only
+    because run telemetry had recorded them independently, which is luck rather
+    than design.
+    """
+    out.parent.mkdir(parents=True, exist_ok=True)
+    existing = json.loads(out.read_text())["points"] if out.exists() else []
+    by_size = {r["training_games"]: r for r in existing}
+    by_size.update({r["training_games"]: r for r in results})
+    tmp = out.with_suffix(".tmp")
+    tmp.write_text(
+        json.dumps(
+            {"points": sorted(by_size.values(), key=lambda r: r["training_games"])}, indent=1
+        )
+    )
+    tmp.replace(out)
+
+
+def evaluate(sizes: list, args) -> None:
     """Play each trained set against the hand-written tables, fixed length."""
     results = []
     for games in sizes:
@@ -154,6 +175,7 @@ def evaluate(sizes: list[int], args) -> None:
             }
             results.append(row)
             recorder.snapshot(row)
+            _write(Path(args.out), results)
             print(
                 f"{games:>6} training games -> {score:>6.1%}, "
                 f"{row['elo_vs_tables']:+.0f} Elo "
@@ -162,17 +184,8 @@ def evaluate(sizes: list[int], args) -> None:
                 flush=True,
             )
 
-    out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    existing = json.loads(out.read_text())["points"] if out.exists() else []
-    by_size = {r["training_games"]: r for r in existing}
-    by_size.update({r["training_games"]: r for r in results})
-    out.write_text(
-        json.dumps(
-            {"points": sorted(by_size.values(), key=lambda r: r["training_games"])}, indent=1
-        )
-    )
-    print(f"\nwritten to {out}")
+    _write(Path(args.out), results)
+    print(f"\nwritten to {args.out}")
 
 
 def main() -> int:
@@ -188,9 +201,13 @@ def main() -> int:
     parser.add_argument("--out", default="data/learning_curve.json")
     args = parser.parse_args()
 
-    sizes = [int(x) for x in (args.train or args.sizes).split(",")]
+    # Training sizes are integers; evaluation labels need not be. A repaired
+    # or hand-modified weight set is a point on the same axis and should be
+    # measurable by the same path, so the label is kept as written.
+    raw = [x.strip() for x in (args.train or args.sizes).split(",")]
+    sizes = [int(x) if x.isdigit() else x for x in raw]
     if args.train:
-        train(sizes, args)
+        train([s for s in sizes if isinstance(s, int)], args)
     if args.evaluate:
         evaluate(sizes, args)
     if not args.train and not args.evaluate:
