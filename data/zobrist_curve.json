@@ -1,0 +1,81 @@
+{
+ "distinct_positions": 898812,
+ "rows": [
+  {
+   "width": 16,
+   "collisions": 833276,
+   "per_million": 927085.9757101596,
+   "games": 402,
+   "wins": 16,
+   "draws": 7,
+   "losses": 379,
+   "elo": -611.1874740300906,
+   "interval": [
+    -684.3428484433279,
+    -538.0320996168533
+   ],
+   "score_only_elo": -517.0387312508473,
+   "draw_elo": 129.3337568083941,
+   "draw_elo_fixed": true,
+   "draw_rate": 0.017412935323383085,
+   "registered": "<= -200"
+  },
+  {
+   "width": 24,
+   "collisions": 23681,
+   "per_million": 26347.000262568814,
+   "games": 402,
+   "wins": 112,
+   "draws": 132,
+   "losses": 158,
+   "elo": -44.88944718589156,
+   "interval": [
+    -76.3576594569881,
+    -13.421234914795022
+   ],
+   "score_only_elo": -39.93120641010753,
+   "draw_elo": 120.38254293102834,
+   "draw_elo_fixed": false,
+   "draw_rate": 0.3283582089552239,
+   "registered": "-30 to -150"
+  },
+  {
+   "width": 32,
+   "collisions": 95,
+   "per_million": 105.69507305198418,
+   "games": 402,
+   "wins": 121,
+   "draws": 147,
+   "losses": 134,
+   "elo": -12.978190769883211,
+   "interval": [
+    -44.22752205776749,
+    18.27114051800106
+   ],
+   "score_only_elo": -11.239398154553989,
+   "draw_elo": 133.39018899825862,
+   "draw_elo_fixed": false,
+   "draw_rate": 0.3656716417910448,
+   "registered": "-20 to +10"
+  },
+  {
+   "width": 48,
+   "collisions": 0,
+   "per_million": 0.0,
+   "games": 402,
+   "wins": 125,
+   "draws": 148,
+   "losses": 129,
+   "elo": -3.999363863373064,
+   "interval": [
+    -35.23186208769621,
+    27.233134360950082
+   ],
+   "score_only_elo": -3.4571846014025223,
+   "draw_elo": 134.22853849589526,
+   "draw_elo_fixed": false,
+   "draw_rate": 0.3681592039800995,
+   "registered": "-10 to +10"
+  }
+ ]
+}

@@ -126,3 +126,109 @@ can only add noise around zero. 24 bits will be indistinguishable from zero at
 The registered arms are run anyway, all four at the registered 400 games. A
 pre-registration that gets abandoned when the answer looks obvious in advance
 is not one.
+
+## Part (b) — Elo
+
+Each width plays the full-key engine, 400 registered fixed-length games at
+0.1 s per move, six workers, six-piece opening book, no stopping rule. Ratings
+are fitted with the Rao-Kupper three-outcome model, not converted from the
+score: these pairings draw 33–37% and a score-only conversion compresses what
+it reports (`docs/RATING_FIT.md`).
+
+| bits | collisions at perft(5) | rate | games | W-D-L | Elo vs full key | 95% interval | registered |
+|---|---|---|---|---|---|---|---|
+| 16 | 833,276 | 92.7% | 402 | 16-7-379 | **−611**\* | [−684, −538] | ≤ −200 |
+| 24 | 23,681 | 2.6% | 402 | 112-132-158 | **−45** | [−76, −13] | −30 to −150 |
+| 32 | 95 | 0.011% | 402 | 121-147-134 | −13 | [−44, +18] | −20 to +10 |
+| 48 | 0 | 0% | 402 | 125-148-129 | −4 | [−35, +27] | −10 to +10 |
+
+\* draw parameter fixed at 129, the value the other three arms agree on
+(120/133/134). Fitted freely it goes to −2397 and the interval opens to
+±44,000: 7 draws in 402 games is not a drawishness estimate, it is a singular
+Hessian. The point estimate moves between −583 and −680 as the assumed draw
+parameter moves from 100 to 200, so read the width of that range, not the
+digits. Note also *why* it has so few draws — a 16-bit engine does not hold
+positions well enough to draw them.
+
+**Two of four intervals exclude zero.** 32 and 48 bits are not distinguishable
+from the full key at 400 games; that is not a demonstration that they cost
+nothing, only that nothing was resolved. 24 bits costs a measured 45 Elo.
+
+Every registered band contains its measured point estimate.
+
+### The registered falsifiable claim survives
+
+*"The curve has a knee between 24 and 48 bits. Falsified if 16 bits is not
+clearly worse than 48."*
+
+16 bits measures −611 [−684, −538]; 48 bits measures −4 [−35, +27]. Not
+falsified. The width at which the cost stops being resolvable lies between 24
+and 32, inside the registered range.
+
+One thing that is *not* shown: 24 bits is not resolvably worse than 32. The
+difference between −45 and −13 is 32 Elo with a combined interval near ±45.
+"24 is the last resolvable cost" and "24 is measurably worse than 32" are
+different claims and only the first was measured.
+
+### My own prediction was falsified at 24 bits
+
+The deterministic check recorded before the games predicted 24 bits would be
+indistinguishable from zero. It measured −45 [−76, −13], zero excluded.
+
+The reason is scale, and it was checkable in advance. The deterministic game
+ran at fixed depth 4 and left 55,584 entries in the table. Real games at 0.1 s
+per move search ~570,000 nodes per game and fill the table to its 2²⁰ = 1,048,576
+capacity. Collisions go as n², so the same key width that produced 85 silent
+false hits in the deterministic game produces roughly 32,000 in a real one — a
+350-fold difference. The deterministic check measured the right quantity on the
+wrong table.
+
+The prediction for 32 and 48 bits — no measurable cost — survives, but its
+stated mechanism ("byte-identical, so games can only add noise") is wrong for
+the same reason. At 32 bits a full table collides about 128 times per game. The
+engine is not identical; the cost of those collisions is merely below what 400
+games resolve.
+
+### Against Zobrist's 1970 figures
+
+Zobrist quotes 3% at 20 bits and 0.1% at 35 bits. A collision *rate* is not a
+property of a bit width alone — it depends on how many positions are in the
+table — so the two figures can only be compared once that number is supplied.
+Under the same birthday model they imply:
+
+| Zobrist's figure | implied positions |
+|---|---|
+| 3% at 20 bits | 62,915 |
+| 0.1% at 35 bits | 68,719,477 |
+
+Three orders of magnitude apart: the two percentages do not describe one table,
+and quoting them side by side as a curve would be wrong.
+
+What is comparable is the functional form, rate ≈ n/2^(b+1), and that is what
+the measurement confirms. At perft(5)'s 898,812 positions the model gives
+2.679% at 24 bits and 0.0105% at 32; measured, 2.635% and 0.0106%. The exponent
+is right and the constant is right to within 2%. Zobrist's arithmetic holds on
+a hash function he never saw, in a language that did not exist when he wrote it.
+
+The rate also transfers to play without adjustment, which is luck but checkable
+luck: perft(5)'s 898,812 distinct positions land within 15% of the table's
+1,048,576-entry capacity, so the counted rate is close to the rate a real game
+runs at.
+
+### What this answers, and what it does not
+
+For a 2²⁰-entry table at 0.1 s per move, a 32-bit key costs nothing this
+project can measure and a 24-bit key costs 45 Elo. The knee is a property of
+that configuration, not of the number 32: it sits where n²/2^(b+1) becomes
+comparable to the number of positions in the table, so a bigger table or a
+longer time control moves it right. Nothing here was measured at 1.0 s per
+move, where `docs/LONG_TC_PREREG.md` showed the engine behaves differently.
+
+Reproduce: `python -m scripts.zobrist_report`
+
+### Slip
+
+The first command omitted `--minutes` and took its default of 15, so three of
+the four arms were cut at the clock rather than at the registered 400 games
+(294, 282, 330). They were topped up afterwards from their state files and all
+four ended at 402. No result was read off the short arms.

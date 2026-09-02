@@ -1,0 +1,52 @@
+{
+ "tool": "sprt_match",
+ "started_at": "2026-09-02T19:01:50+00:00",
+ "finished_at": "2026-09-02T19:07:18+00:00",
+ "commit": "5458bc9",
+ "tree_dirty": true,
+ "parameters": {
+  "a": "L7-key24",
+  "b": "L7",
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "workers": 6,
+  "movetime": 0.1,
+  "max_plies": 160,
+  "max_games": 400,
+  "minutes_budget": 30.0,
+  "games_before": 294
+ },
+ "wall_seconds": 327.44456487498246,
+ "cpu_seconds": 1559.198343,
+ "cpu_per_wall": 4.7617169751933375,
+ "peak_rss_mb_largest_process": 197.171875,
+ "nodes": 99140178,
+ "nodes_per_cpu_second": 63584.07090739193,
+ "games": 108,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "games_total": 402,
+  "wins": 112,
+  "draws": 132,
+  "losses": 158,
+  "score": 0.4427860696517413,
+  "elo_estimate": -39.93120641010753,
+  "elo_interval_95": [
+   -68.18025597916734,
+   -12.199299483269439
+  ],
+  "llr": -10.1808196927798,
+  "verdict": "accept H0",
+  "diagnosis": "accept H0",
+  "state_file": "data/fixed_L7-key24_vs_L7.json"
+ },
+ "notes": []
+}

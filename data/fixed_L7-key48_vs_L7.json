@@ -1,0 +1,24 @@
+{
+ "a": "L7-key48",
+ "b": "L7",
+ "movetime": 0.1,
+ "max_plies": 160,
+ "book": "default",
+ "wins": 125,
+ "draws": 148,
+ "losses": 129,
+ "games": 402,
+ "score": 0.49502487562189057,
+ "llr": -3.7762881500904903,
+ "elo_estimate": -3.4571846014025223,
+ "verdict": "accept H0",
+ "config": {
+  "elo0": 0.0,
+  "elo1": 40.0,
+  "alpha": 0.05,
+  "beta": 0.05,
+  "max_games": 400,
+  "initial_draw_elo": 250.0,
+  "min_games_for_draw_estimate": 20
+ }
+}
