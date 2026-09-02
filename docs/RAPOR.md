@@ -1,8 +1,8 @@
 # Atropos — yapılan işler ve son durum
 
-**Repo:** `github.com/ercanholasoglu/Atropos` (private) · **57 commit** · 453 dosya
-**Test:** 795 geçiyor, 6 xfail · mypy temiz (53 dosya)
-**Ölçüm:** 151 koşu, **10.876 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
+**Repo:** `github.com/ercanholasoglu/Atropos` (private) · **69 commit** · 561 dosya
+**Test:** 818 geçiyor, 5 xfail · mypy temiz
+**Ölçüm:** 232 koşu, **16.168 oyun**, hepsi commit hash'i ve CPU/RAM telemetrisiyle
 **Showcase:** https://claude.ai/code/artifact/4f9ebb66-e882-451a-a152-470a9632e0b3
 
 ---
@@ -226,13 +226,88 @@ Bu koşu **bir hatam yüzünden var.** İşlevsel olarak aynı iki motor arasın
 bir fark gördüm ve hata payına *sonra* baktım: ±51, sıfırı rahatça kapsıyor. İşaret
 yanlıştı; kazara sorduğu soru değildi.
 
+## 7.6 Alet v2 — tek kesit (2026-09-01)
+
+Tek commit, `alet-v2` etiketli: **SEE açık, kale terimi çıkarıldı.** Ayrı ayrı değil, çünkü
+ayrı ayrı iki yeniden çıpalama ve arada tanımsız bir alet demek. Hiçbir şey silinmedi —
+`positional_score_rooks` v1 değerlendirmesini tutuyor, v1 kayıtları `data/v1/`'de.
+
+**Patlama yarıçapı akıl yürütülmedi, ölçüldü:** L1–L4 bit-birebir aynı (benchmark 24
+pozisyonun 24'ünde aynı node), L5 yalnız kale teriminden, L6–L8 ikisinden. L7 aynı
+derinlikte %38 daha az node arıyor.
+
+### Kesitin doğrudan ölçümü: **600 oyun, +80 Elo [+52, +109]**
+
+L7-v2, süreç içinde yeniden inşa edilmiş L7-v1'e karşı; rekonstrüksiyon oyun oynanmadan
+doğrulandı. `see_impact.py` ortak uyumdan **+62** (aralık içinde), doğrudan A/B'den **+50**
+(dışında) öngörmüştü. **Kesit, ayrı ölçülmüş parçalarının toplamından fazla** — SEE kale
+terimini hâlâ taşıyan bir L7'de, kale terimi ise L6'nın aramasında ölçülmüştü; bu
+kombinasyon hiç oynanmamıştı.
+
+| eşleşme | alet v1 | **alet v2** |
+|---|---:|---:|
+| L5 vs L4 | +149 | **+160** [+125, +206] |
+| L6 vs L5 | +527 | **+651** [+644, +1190] |
+| L7 vs L6 | +18 [−18, +53] | **+41 [+3, +80]** |
+| L8 vs L7 | −32 | **0** [−36, +36] |
+| atropos rating | 1518 | 1518 (değişmedi; alet ±65 Elo, göremez) |
+
+### Çıpa uyuşmadı — ve sebebi metodolojik
+
+Üç derinlik havuzlanınca çıpa "L7 **+1 ± 14** değişti" diyor, doğrudan ölçüm +80. **3,3σ.**
+İki sorun: (1) kendi içinde tutarsız — d1/d2 zayıfladı, d3 güçlendi diyor; (2) **dönüşümü
+beraberlikleri yok sayıyor, eşleşmeler üç oyunun ikisini berabere bitiriyor.** Simülasyon:
+%67 beraberlikte gerçek 100 Elo **+52** okunuyor. **Çıpanın yayınladığı her sayı ~iki kat
+sıkışmış** (d1 −17→−32, d3 +72→+136). Düzeltmek tutarsızlığı çözmüyor: çıpa bu boyuttaki
+farkı 162 oyunla göremiyor. İşi mutlak yerleştirme, fark tespiti değil.
+
+### Hız eğrisi yeniden ölçüldü
+
+960 oyun: **−162 [−198, −127]**, v1'in −171 [−194, −149]'una karşı. Aralıklar örtüşüyor —
+**bir katlamanın değeri değişmedi**, motor mutlak olarak hızlanmış olsa da (aynı saatte
+4.827 node, v1'de 6.144). Dönüştürdüğü aramada bir değişikliğe rağmen ayakta kaldı.
+
+## 7.7 Uzun zaman kontrolü: 2a — mekanizma derinlikmiş
+
+Ön-kayıt koşudan önce commit'lendi, içindeki her sayı önce ölçüldü.
+
+**Gerekçe:** L7'nin L6'ya derinlik avantajı **0,1 sn'de 0,25 pli**, 1,0 sn'de **1,00 pli**.
+Null-move ve LMR derinlik satın alan kumarlar; 0,1 sn'de kumar ölçülüyor, ödülü ölçülmüyordu.
+
+**Sonuç: 300 oyun, 1,0 sn, %67,17, +124 Elo [+84, +168].**
+
+| ölçüt | ilan edilen | ölçülen |
+|---|---|---|
+| nokta tahmini | +90…+150 | **+124** ✓ |
+| aralık | ~[+50, +190] | [+84, +168] ✓ |
+| 0,1 sn'deki +41 dışlansın | — | **dışlandı** ✓ |
+
+Tahmin 84 oyundan beri kararlı, aralık daralıyor — gerçek etkinin şekli.
+
+**Projeye faturası:** bu depodaki her maç 0,1 sn'de oynandı, yani L7'yi tanımlayan
+tekniklerin neredeyse hiç devreye girmediği bir saatte. Eski sayılar geçersiz değil —
+ölçüldükleri saat için doğrular — ama **neye genellendikleri** değişti.
+
+## 7.8 Bileşen loglama (madde 5b)
+
+`engine/evaluation/breakdown.py`: değerlendirme materyal / yerleşim / piyon yapısı / fil
+çifti olarak ayrılıyor. **Sözleşme: parçalar motorun hesapladığına birebir eşit.** Test bunu
+yüzlerce pozisyonda kontrol ediyor ve hemen işe yaradı — ilk sürümüm kale terimini toplama
+katıyordu, 480 pozisyonun 131'i uyuşmadı. Kale terimi ve kral güvenliği artık **toplamın
+dışında** raporlanıyor.
+
+`sprt_match --log-components` hamle başına bir JSON satırı. **Bir sıralama hatası çıktıyı
+okuyarak bulundu:** maçın hamle kancası hamle *oynandıktan sonra* ateşleniyor, yani
+loglanan tahta hamle sonrası — oysa depth/nodes/pv hamle öncesini tarif ediyor. Kayıt artık
+ikisini de taşıyor, ayrışım öncekinden alınıyor.
+
 ## 8. Açık kalanlar
 
 | konu | durum |
 |---|---|
 | Mutlak Elo | Dış bağımlılık: CCRL listesindeki motor + gerçek zaman kontrolü, ya da Lichess bot havuzu |
-| SEE'nin büyüklüğü | ✅ çözüldü — **+50 [+30, +70]**, 1.200 oyun |
-| İki ters karar | Sizin kararınız (§5) |
+| SEE'nin büyüklüğü | ✅ **+50 [+30, +70]**, ikinci kitapta +62; artık motorda |
+| İki ters karar | ✅ **alet v2 kesitiyle çözüldü** (§7.6): SEE açık, kale terimi çıktı |
 | v3-passers, L8'in saati | Çözülmedi — ve "çözülmedi" ≠ "reddedildi" |
 | Zobrist deneyi | **Başlatmadım** — ön-kaydı sizde |
 
