@@ -14,6 +14,14 @@ separately:
   the same depth visits the same nodes, every run. A change here means the
   search or the evaluation behaves differently, and no timing claim is
   comparable across it.
+
+  This was not true until the position key was made process-stable. Five runs
+  of this benchmark on one commit gave 188,242, 188,242, 188,246, 188,246 and
+  188,246 nodes, because the key was re-drawn every process and that changed
+  which positions shared a table slot. The claim above is the point of the
+  instrument, so it is now also a test:
+  ``test_the_key_is_the_same_in_a_different_process``. Found by the Zobrist
+  width experiment (``docs/ZOBRIST.md``), not by the benchmark itself.
 * **time** — noisy. Machine load, thermal state and whatever else is running
   move it by a few percent, which is why it is reported with a spread over
   repeats rather than as a single number.

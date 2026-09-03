@@ -16,11 +16,18 @@ would silently return the wrong move.
 python-chess already maintains exactly such a key for its own repetition
 detection, assembled straight from the piece bitboards, and reading it costs
 ~0.4µs. That is what this module uses.
+
+**On reproducibility.** That key is hashed, and one of its elements is ``None``
+whenever there is no en passant square. See :func:`position_key` for why that
+one detail made every search in this project process-dependent, and what is
+done about it. Found by the Zobrist width experiment, which had to measure a
+collision count that would not sit still (``docs/ZOBRIST.md``).
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import chess
 
@@ -37,7 +44,17 @@ DEFAULT_SIZE = 1 << 20  # entries, must be a power of two
 def position_key(board: chess.Board) -> int:
     """A hashable key identifying a position, castling and en passant rights
     included. See the module docstring for why this is not a Zobrist hash."""
-    return hash(board._transposition_key())
+    # python-chess types this as Hashable; it is and has always been a
+    # tuple, and this module already depends on that by reading it at all.
+    key = cast(tuple, board._transposition_key())
+    # The en passant slot holds None when there is none, and CPython derives
+    # hash(None) from the address of the singleton, so it moves with every
+    # process and PYTHONHASHSEED does not fix it. Left in, the key -- and so
+    # which positions share a table slot, and so which nodes the search
+    # visits -- was re-drawn on every run. Dropping the slot rather than
+    # hashing None makes the key stable. The two cases cannot be confused:
+    # one tuple is shorter than the other.
+    return hash(key if key[-1] is not None else key[:-1])
 
 
 @dataclass(slots=True)

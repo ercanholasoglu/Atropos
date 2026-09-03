@@ -232,3 +232,46 @@ The first command omitted `--minutes` and took its default of 15, so three of
 the four arms were cut at the clock rather than at the registered 400 games
 (294, 282, 330). They were topped up afterwards from their state files and all
 four ended at 402. No result was read off the short arms.
+
+## A defect the experiment found on its way past
+
+Part (a) had to be reported as several draws because the position key changes
+with every process. That is a nuisance for counting collisions. It is worse
+than a nuisance for the rest of the project.
+
+`scripts/bench.py` opens by claiming that node counts are deterministic —
+"the same commit searching the same positions to the same depth visits the
+same nodes, every run" — and that claim is the whole reason the benchmark can
+separate *faster* from *different*. Five runs of it on one unchanged commit:
+
+```
+188,242   188,242   188,246   188,246   188,246
+```
+
+The key was re-drawn each process, so which positions shared a table slot
+changed, so replacement decisions changed, so the search visited different
+nodes. The spread is 0.002% and never mattered to a result — but the property
+the instrument advertises was not holding, and nothing in the repository would
+have noticed.
+
+**Fix.** `position_key` now drops the en-passant slot when it is empty instead
+of hashing `None`. The two cases stay distinct because one tuple is shorter
+than the other. Five runs afterwards: 187,980 five times.
+
+**Cost.** 62,060 nodes per second against 62,071 before — 0.02%, well inside
+the spread. Node composition shifts by 0.14%, so this is a per-node cost
+comparison, not a claim that the engine got faster.
+
+**What it does to earlier numbers.** Every measurement in this repository was
+taken with the key re-drawn per process, which means it was averaged over
+random slot arrangements rather than taken at one. Fixing the draw removes a
+nuisance variable; it cannot bias strength, because the previous behaviour was
+an unbiased sample over exactly the thing now held constant. Nothing is
+re-anchored and no earlier number is withdrawn.
+
+**What it does not fix.** `test_level_beats_the_one_below[7-6]` failed once in
+this session and passed on its own afterwards. That test plays twelve
+clock-limited games and asserts a score above 0.6; it is stochastic by
+construction, as its own docstring says, and a stable key does not make it less
+so. One failure and two passes is not enough to tell a flaky gate from a
+regression, and nothing here claims otherwise.

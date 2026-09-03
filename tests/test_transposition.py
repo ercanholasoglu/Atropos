@@ -206,3 +206,37 @@ def test_key_bits_must_be_a_usable_width() -> None:
         with pytest.raises(ValueError):
             TranspositionTable(size=64, key_bits=bad)
     TranspositionTable(size=64, key_bits=64)  # fine
+
+
+def test_the_key_is_the_same_in_a_different_process() -> None:
+    """Reproducibility, not correctness: the same position must hash the same
+    tomorrow and in the next worker.
+
+    It did not. ``_transposition_key`` holds ``None`` when there is no en
+    passant square, and CPython derives ``hash(None)`` from the address of the
+    singleton, so the key moved with every process — and with it, which
+    positions shared a table slot and which nodes the search visited. This
+    has to be a subprocess test: within one process the bug is invisible.
+    """
+    import subprocess
+    import sys
+
+    program = (
+        "import chess;from engine.search.transposition import position_key;"
+        "print(position_key(chess.Board()),"
+        "position_key(chess.Board('rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3')))"
+    )
+    runs = {
+        subprocess.run([sys.executable, "-c", program], capture_output=True, text=True).stdout
+        for _ in range(3)
+    }
+    assert len(runs) == 1, f"key differs between processes: {runs}"
+
+
+def test_en_passant_rights_still_change_the_key() -> None:
+    """The stable key drops the en passant slot when it is empty. Positions
+    that differ only in that right must still hash differently, or the fix
+    would have bought reproducibility with a wrong answer."""
+    with_ep = chess.Board("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3")
+    without = chess.Board("rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3")
+    assert position_key(with_ep) != position_key(without)
