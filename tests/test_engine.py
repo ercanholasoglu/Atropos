@@ -265,10 +265,32 @@ def test_level_beats_the_one_below(higher, lower):
     """Regression guard, not the headline number.
 
     Twelve games is far too small a sample to certify the ">70% against the
-    level below" success criterion — at a true 80% it would fail by chance
-    about one run in five. So the threshold here is set where only a real
-    regression trips it, and ``scripts/ladder.py`` runs the long gauntlet
-    that produces the number quoted in the README.
+    level below" success criterion, and ``scripts/ladder.py`` runs the long
+    gauntlet that produces the number quoted in the README. The threshold here
+    is set where only a real regression trips it.
+
+    **Where 0.35 comes from.** It used to be 0.6, and that number was taken
+    from a sequential run that stopped as soon as it could — L7 vs L6, 65
+    games, 63.1% — which is exactly the bias ``docs/SPRT_BIAS.md`` was written
+    about. Measured at this test's own 0.2s time control over 240 fixed-length
+    games, L7 scores **0.606** against L6 (118-55-67, +79 Elo [+38, +121];
+    ``data/fixed_L7_vs_L6_02s.json``). So the old threshold sat on top of the
+    true mean and the gate was asking a 12-game sample to beat its own
+    expectation: it failed 48.5% of the time by simulation, and 5 times in 12
+    real runs.
+
+    From that distribution, over 12 games:
+
+        threshold   fails when healthy   catches 0.50   catches 0.40
+             0.60                48.5%          79.1%          94.8%
+             0.45                 8.9%          31.4%          62.3%
+             0.35                 2.2%          12.6%          36.4%
+
+    0.35 is chosen for a 2.2% false-failure rate. What it buys is narrow, and
+    saying so is the point: it catches an engine that has actually broken, not
+    one that has merely lost its edge — at a true 0.50 it notices one time in
+    eight. Twelve games cannot do better than that, and no threshold on twelve
+    games can.
 
     Every engine gets the same short thinking time, which is both how engines
     are normally compared and the only way to keep this bounded: Level 5 at
@@ -280,7 +302,7 @@ def test_level_beats_the_one_below(higher, lower):
         openings=book(6),
         max_plies=200,
     )
-    assert match.score > 0.6, match.summary()
+    assert match.score > 0.35, match.summary()
 
 
 # --- Level 5 --------------------------------------------------------------

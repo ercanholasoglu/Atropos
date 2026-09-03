@@ -250,3 +250,23 @@ them. **A substrate change that made this engine k times faster would be worth
 roughly 130 to 160 Elo per doubling anywhere in the range measured** — and the
 honest form of that answer is a range with two endpoints rather than a single
 slope, because the two measurements do not separate.
+
+## A third point, measured for a different reason
+
+`tests/test_engine.py` gates L7 against L6 at 0.2 s, and the gate was failing
+about half the time. Fixing its threshold needed the true score at *that* time
+control, so the pairing was measured there too: **240 fixed-length games,
+118-55-67, score 0.606, +79 Elo [+38, +121]** (`data/fixed_L7_vs_L6_02s.json`).
+
+| movetime | Elo | 95% interval |
+|---|---:|---|
+| 0.1 s | +41 | [+3, +80] |
+| 0.2 s | **+79** | [+38, +121] |
+| 1.0 s | +124 | [+84, +168] |
+
+Three points, rising monotonically, each interval overlapping its neighbour and
+the 0.1 s and 1.0 s ends separated. Nothing here resolves the shape of the
+curve — adjacent points do not separate — but the direction that 2a established
+holds at a third budget: the further this engine gets from 0.1 s, the more L7's
+techniques are worth. The measurement that has been quoted throughout this
+project was taken at the operating point where they are worth least.
