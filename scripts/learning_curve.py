@@ -43,8 +43,8 @@ WEIGHTS_DIR = Path("data/learning_curve")
 MOVETIME = 0.2
 
 
-def weights_path(games: int | str) -> Path:
-    return WEIGHTS_DIR / f"weights_{games}.json"
+def weights_path(games: int | str, directory: Path | None = None) -> Path:
+    return (directory or WEIGHTS_DIR) / f"weights_{games}.json"
 
 
 def play_one(job: tuple[str, int, int, float, int]) -> tuple[float, int]:
@@ -79,9 +79,10 @@ def train(sizes: list[int], args) -> None:
     """Run the learner at each size, keeping what it cost as well as what it learned."""
     import subprocess
 
-    WEIGHTS_DIR.mkdir(parents=True, exist_ok=True)
+    directory = Path(getattr(args, "dir", WEIGHTS_DIR))
+    directory.mkdir(parents=True, exist_ok=True)
     for games in sizes:
-        target = weights_path(games)
+        target = weights_path(games, directory)
         if target.exists() and not args.retrain:
             print(f"{games:>6} games: already trained, skipping")
             continue
@@ -100,6 +101,8 @@ def train(sizes: list[int], args) -> None:
                 str(args.seed),
                 "--match-games",
                 "0",  # strength is measured separately, properly
+                "--learning-rate",
+                str(args.learning_rate),
                 "--out",
                 str(target),
             ],
@@ -133,7 +136,7 @@ def evaluate(sizes: list, args) -> None:
     """Play each trained set against the hand-written tables, fixed length."""
     results = []
     for games in sizes:
-        path = weights_path(games)
+        path = weights_path(games, Path(getattr(args, "dir", WEIGHTS_DIR)))
         if not path.exists():
             print(f"{games}: no weights, skipping")
             continue
@@ -198,6 +201,10 @@ def main() -> int:
     parser.add_argument("--max-plies", type=int, default=160)
     parser.add_argument("--seed", type=int, default=11)
     parser.add_argument("--retrain", action="store_true")
+    # Item 1d of the diagnosis: if the peak is an optimisation artefact rather
+    # than a property of the method, a smaller step should move or remove it.
+    parser.add_argument("--learning-rate", type=float, default=40.0)
+    parser.add_argument("--dir", default=str(WEIGHTS_DIR), help="where weights go")
     parser.add_argument("--out", default="data/learning_curve.json")
     args = parser.parse_args()
 

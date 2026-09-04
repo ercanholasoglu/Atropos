@@ -1,0 +1,84 @@
+{
+ "rows": [
+  {
+   "training_games": 1000,
+   "weight_l2": 9035.0910560524,
+   "weight_linf": 938.8124532053744,
+   "train_td_error": 0.11851329464497291,
+   "validation_td_error": 0.2459028216438145,
+   "mean_abs_value": 0.35348211760688847,
+   "terminal_error": 0.5205939419764337,
+   "sign_agreement": 0.6505376344086021,
+   "correlation": 0.25164480049395344,
+   "positions": 4177,
+   "piece_means": {
+    "pawn": 89.19752189242615,
+    "knight": 317.17965909156,
+    "bishop": 328.0148895376734,
+    "rook": 498.48477792552984,
+    "queen": 900.0625243511156,
+    "king": -6.106226635438361e-16
+   }
+  },
+  {
+   "training_games": 3000,
+   "weight_l2": 9001.566393434707,
+   "weight_linf": 956.5761417081942,
+   "train_td_error": 0.07583407130322183,
+   "validation_td_error": 0.23246404228880688,
+   "mean_abs_value": 0.34234903262884303,
+   "terminal_error": 0.5299345466886242,
+   "sign_agreement": 0.6500488758553274,
+   "correlation": 0.2673320207297816,
+   "positions": 4177,
+   "piece_means": {
+    "pawn": 80.22508296045186,
+    "knight": 310.97813735594013,
+    "bishop": 324.69393246902655,
+    "rook": 497.0163541973652,
+    "queen": 899.5015219721085,
+    "king": -3.3306690738754696e-16
+   }
+  },
+  {
+   "training_games": 10000,
+   "weight_l2": 8869.042443491153,
+   "weight_linf": 969.9643326641028,
+   "train_td_error": 0.07112270178527107,
+   "validation_td_error": 0.1938343730767714,
+   "mean_abs_value": 0.326181990760586,
+   "terminal_error": 0.536689378102854,
+   "sign_agreement": 0.6441837732160313,
+   "correlation": 0.25449921604616066,
+   "positions": 4177,
+   "piece_means": {
+    "pawn": 64.91095898617644,
+    "knight": 287.19808826051246,
+    "bishop": 309.13184059379034,
+    "rook": 490.28140961076014,
+    "queen": 895.7433493713231,
+    "king": 6.661338147750939e-16
+   }
+  },
+  {
+   "training_games": 30000,
+   "weight_l2": 8482.64873209187,
+   "weight_linf": 963.8338053358,
+   "train_td_error": 0.1522713671251345,
+   "validation_td_error": 0.1590376257395244,
+   "mean_abs_value": 0.31554681907783694,
+   "terminal_error": 0.5477661637161132,
+   "sign_agreement": 0.6427174975562072,
+   "correlation": 0.2809616626689293,
+   "positions": 4177,
+   "piece_means": {
+    "pawn": 57.92568992899164,
+    "knight": 226.30605102329562,
+    "bishop": 268.1769343323168,
+    "rook": 459.3693776924391,
+    "queen": 882.6281695948646,
+    "king": 5.440092820663267e-15
+   }
+  }
+ ]
+}
