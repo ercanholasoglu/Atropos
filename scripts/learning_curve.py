@@ -47,17 +47,26 @@ def weights_path(games: int | str, directory: Path | None = None) -> Path:
     return (directory or WEIGHTS_DIR) / f"weights_{games}.json"
 
 
-def play_one(job: tuple[str, int, int, float, int]) -> tuple[float, int]:
-    """One game, learned weights against the hand-written tables.
+def play_one(job: tuple[str, int, int, float, int, str]) -> tuple[float, int, str]:
+    """One game, learned weights against a reference evaluation.
 
     Module level and taking plain data because a pool spawns on macOS. The
     weights come from a file rather than the tuple: a full piece-square table
     is 768 floats and pickling it per game is a cost with no purpose.
     """
-    path, index, _games, movetime, max_plies = job
+    path, index, _games, movetime, max_plies, opponent = job
 
     learned = np.array(json.loads(Path(path).read_text())["weights"], dtype=float)
-    reference = PieceSquareEvaluator.from_engine_tables().weights
+    # Two references, because two different questions are asked of these
+    # weights. Against the hand-written tables: is the learner as good as the
+    # human? Against material-only: how much of the way there did it get? The
+    # published "38% closed" figure is the second, and it cannot be recovered
+    # from the first -- these three engines are not additive
+    # (`docs/ADDITIVITY_PREREG.md`).
+    if opponent == "material":
+        reference = PieceSquareEvaluator.material_only().weights
+    else:
+        reference = PieceSquareEvaluator.from_engine_tables().weights
 
     opening = OPENING_BOOK[(index // 2) % len(OPENING_BOOK)]
     learned_is_white = index % 2 == 0
@@ -65,14 +74,18 @@ def play_one(job: tuple[str, int, int, float, int]) -> tuple[float, int]:
         PieceSquareEvaluator(learned), name="learned", seed=1000 + index, time_limit=movetime
     )
     b = LearnedEngine(
-        PieceSquareEvaluator(reference), name="tables", seed=2000 + index, time_limit=movetime
+        PieceSquareEvaluator(reference), name=opponent, seed=2000 + index, time_limit=movetime
     )
     white, black = (a, b) if learned_is_white else (b, a)
     record = play_game(
         white, black, start_fen=opening.fen, max_plies=max_plies, opening=opening.name
     )
     white_score = {"1-0": 1.0, "0-1": 0.0, "1/2-1/2": 0.5}[record.result]
-    return (white_score if learned_is_white else 1 - white_score), record.nodes
+    score = white_score if learned_is_white else 1 - white_score
+    # The outcome as well as the score: a Rao-Kupper fit needs wins, draws and
+    # losses separately, and a score-only conversion compresses whenever the
+    # pairing draws a lot (`docs/RATING_FIT.md`).
+    return score, record.nodes, {1.0: "w", 0.5: "d", 0.0: "l"}[score]
 
 
 def train(sizes: list[int], args) -> None:
@@ -143,11 +156,21 @@ def evaluate(sizes: list, args) -> None:
 
         with TelemetryRecorder(
             "learning_curve_eval",
-            {"training_games": games, "match_games": args.games, "movetime": MOVETIME},
+            {
+                "training_games": games,
+                "match_games": args.games,
+                "movetime": MOVETIME,
+                "opponent": args.opponent,
+                "weights": str(path),
+            },
         ) as recorder:
-            jobs = [(str(path), i, games, MOVETIME, args.max_plies) for i in range(args.games)]
+            jobs = [
+                (str(path), i, games, MOVETIME, args.max_plies, args.opponent)
+                for i in range(args.games)
+            ]
             total = 0.0
             played = 0
+            tally = {"w": 0, "d": 0, "l": 0}
             with ProcessPoolExecutor(max_workers=args.workers) as pool:
                 pending = {
                     pool.submit(play_one, jobs.pop(0)) for _ in range(min(args.workers, len(jobs)))
@@ -155,9 +178,10 @@ def evaluate(sizes: list, args) -> None:
                 while pending:
                     done = next(as_completed(pending))
                     pending.discard(done)
-                    score, nodes = done.result()
+                    score, nodes, outcome = done.result()
                     total += score
                     played += 1
+                    tally[outcome] += 1
                     recorder.add_games()
                     recorder.add_nodes(nodes)
                     if jobs:
@@ -168,6 +192,10 @@ def evaluate(sizes: list, args) -> None:
             row = {
                 "training_games": games,
                 "match_games": played,
+                "opponent": args.opponent,
+                "wins": tally["w"],
+                "draws": tally["d"],
+                "losses": tally["l"],
                 "score_vs_tables": score,
                 "elo_vs_tables": elo_diff_from_score(score),
                 "interval": [
@@ -205,6 +233,12 @@ def main() -> int:
     # than a property of the method, a smaller step should move or remove it.
     parser.add_argument("--learning-rate", type=float, default=40.0)
     parser.add_argument("--dir", default=str(WEIGHTS_DIR), help="where weights go")
+    parser.add_argument(
+        "--opponent",
+        choices=("tables", "material"),
+        default="tables",
+        help="what the learned weights play against",
+    )
     parser.add_argument("--out", default="data/learning_curve.json")
     args = parser.parse_args()
 

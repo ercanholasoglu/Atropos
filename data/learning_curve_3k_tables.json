@@ -1,0 +1,19 @@
+{
+ "points": [
+  {
+   "training_games": 3000,
+   "match_games": 600,
+   "opponent": "tables",
+   "wins": 290,
+   "draws": 64,
+   "losses": 246,
+   "score_vs_tables": 0.5366666666666666,
+   "elo_vs_tables": 25.524430311101813,
+   "interval": [
+    -2.2472049677336603,
+    53.62622861236426
+   ],
+   "training_seconds": 717.9186410419643
+  }
+ ]
+}

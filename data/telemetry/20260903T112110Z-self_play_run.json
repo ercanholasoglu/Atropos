@@ -1,0 +1,73 @@
+{
+ "tool": "self_play_run",
+ "started_at": "2026-09-03T11:21:10+00:00",
+ "finished_at": "2026-09-03T11:21:10+00:00",
+ "commit": "21ca500",
+ "tree_dirty": false,
+ "parameters": {
+  "games": 3,
+  "depth": 2,
+  "max_plies": 20,
+  "learning_rate": 40.0,
+  "lam": 0.7,
+  "epsilon": 0.12,
+  "seed": 11,
+  "match_games": 0
+ },
+ "wall_seconds": 0.06226766691543162,
+ "cpu_seconds": 0.06160499999998592,
+ "cpu_per_wall": 0.9893577686739782,
+ "peak_rss_mb_largest_process": 577.859375,
+ "nodes": 4552,
+ "nodes_per_cpu_second": 73890.10632255564,
+ "games": 3,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "Ercan-MacBook-Pro.local"
+ },
+ "result": {
+  "games": 3,
+  "outcomes": {
+   "white": 0,
+   "black": 0,
+   "draw": 3
+  },
+  "shapes": {
+   "pawn": {
+    "learned_centre_minus_rim": 0.0,
+    "reference_centre_minus_rim": 22.5,
+    "shape_correlation": -0.0700178889569762
+   },
+   "knight": {
+    "learned_centre_minus_rim": 0.0,
+    "reference_centre_minus_rim": 70.0,
+    "shape_correlation": -0.06792753229916
+   },
+   "bishop": {
+    "learned_centre_minus_rim": 0.0,
+    "reference_centre_minus_rim": 30.0,
+    "shape_correlation": -0.14577885922495876
+   },
+   "rook": {
+    "learned_centre_minus_rim": 0.14250143698927786,
+    "reference_centre_minus_rim": 0.0,
+    "shape_correlation": -0.13238035500498407
+   },
+   "queen": {
+    "learned_centre_minus_rim": 0.0,
+    "reference_centre_minus_rim": 25.0,
+    "shape_correlation": 0.08673869527888943
+   },
+   "king": {
+    "learned_centre_minus_rim": 0.0,
+    "reference_centre_minus_rim": -40.0,
+    "shape_correlation": -0.038295488698132325
+   }
+  },
+  "match_scores": {}
+ },
+ "notes": []
+}

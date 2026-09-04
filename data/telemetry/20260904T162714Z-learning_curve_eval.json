@@ -1,0 +1,44 @@
+{
+ "tool": "learning_curve_eval",
+ "started_at": "2026-09-04T16:27:14+00:00",
+ "finished_at": "2026-09-04T16:29:52+00:00",
+ "commit": "702277b",
+ "tree_dirty": true,
+ "parameters": {
+  "training_games": 10000,
+  "match_games": 600,
+  "movetime": 0.2,
+  "opponent": "tables",
+  "weights": "data/learning_curve_lr8/weights_10000.json"
+ },
+ "wall_seconds": 158.04517429182306,
+ "cpu_seconds": 916.8690610000001,
+ "cpu_per_wall": 5.801310069151773,
+ "peak_rss_mb_largest_process": 37.375,
+ "nodes": 83021197,
+ "nodes_per_cpu_second": 90548.58597742561,
+ "games": 600,
+ "machine": {
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "processor": "arm",
+  "cpu_count": 10,
+  "python": "3.11.15",
+  "host": "192.168.1.5"
+ },
+ "result": {
+  "training_games": 10000,
+  "match_games": 600,
+  "opponent": "tables",
+  "wins": 304,
+  "draws": 92,
+  "losses": 204,
+  "score_vs_tables": 0.5833333333333334,
+  "elo_vs_tables": 58.451214271295235,
+  "interval": [
+   30.572800372901813,
+   87.0975174933802
+  ],
+  "training_seconds": 1896.0076876659878
+ },
+ "notes": []
+}
