@@ -31,6 +31,23 @@ The slowed side's Elo, negative because it lost:
 > `docs/SPEED_CLOCK2_PREREG.md` have how that number was arrived at, including
 > a stretch where one point looked like a 3.6σ outlier and turned out to be
 > error bars that were too small.
+>
+> **And read this before quoting −171 either.** It is the slope at *reference
+> depth 3.0*. The curve has since been measured at two more depths
+> (`docs/SPEED_C.md`) and it flattens:
+>
+> | reference | depth | Elo per doubling |
+> |---|---:|---:|
+> | 0.09 s | 3.00 | −171 [−194, −149] |
+> | 1.00 s | 5.60 | −129 [−151, −107] |
+> | 12.0 s | 7.75 | **−58.9** [−84.1, −33.8] |
+>
+> Depth 3.0 against depth 7.75 is a difference of 112 Elo per doubling, 6.5σ.
+> **Every conversion below was made with the depth-3.0 number and is therefore
+> an upper bound on what a speedup is worth to an engine given more time.**
+> Nothing in the table of conversions has been redone; the games that produced
+> those comparisons were played at 0.1 s, where −171 is the right slope, so
+> they stand as measured. What does not stand is quoting −171 as *the* number.
 
 That interval is not the one the least-squares fit reports. The fit says
 ±5, which treats the four points as exact; their own sampling errors run from
@@ -185,6 +202,14 @@ now predicted rather than asserted.
 The +39% speedup is worth **+81 Elo**, not the +29 an unmeasured rule of thumb
 suggested. The old note that a ten-game calibration could not have detected it
 still stands: ±110 Elo of noise swamps +81.
+
+## The whole curve, and what a substrate change is worth
+
+Three points, `docs/SPEED_C.md`. Integrating the slope over 8.5 doublings —
+the Python-to-Rust question — as the depth rises with it, from depth 3.0 to
+9.07: **939 Elo, 95% interval [806, 1,086]**, and the two candidate shapes for
+the curve agree to within 6% once the third point constrains them. About 815
+of that lies inside the range where the curve has actually been measured.
 
 ## Reproducing
 
